@@ -1,0 +1,122 @@
+self.puzzle_clue_icon_1 = QPushButton(self)
+        self.puzzle_clue_icon_2 = QPushButton(self)
+        self.puzzle_clue_icon_3 = QPushButton(self)
+        self.puzzle_clue_icon_4 = QPushButton(self)
+        self.puzzle_clue_icon_5 = QPushButton(self)
+        self.puzzle_clue_icon_6 = QPushButton(self)
+        self.puzzle_clue_icon_7 = QPushButton(self)
+        self.puzzle_clue_icon_8 = QPushButton(self)
+        self.puzzle_clue_icon_9 = QPushButton(self)
+        self.puzzle_clue_icon_10 = QPushButton(self)
+
+
+# def puzzle_clue_icon_size_determiner(self):
+    #
+    #     with open("assets/application data/device configurations.json") as device_configurations_json_file:
+    #         initial_dictionary = json.load(device_configurations_json_file)
+    #
+    #     clue_icon_size = initial_dictionary["Clue Size On Screen"]
+    #
+    #     if clue_icon_size == 0:
+    #         clue_icon_size = self.screen_width / 21
+    #         return clue_icon_size
+    #
+    #     elif clue_icon_size == 1:
+    #         clue_icon_size = self.screen_width / 18
+    #         return clue_icon_size
+    #
+    #     elif clue_icon_size == 2:
+    #         clue_icon_size = self.screen_width / 15
+    #         return clue_icon_size
+    #
+    #     elif clue_icon_size == 3:
+    #         clue_icon_size = self.screen_width / 12
+    #         return clue_icon_size
+    #
+    #     else:
+    #         pass
+
+    # def puzzle_clue_icon_container(self):
+    #
+    #     with open("assets/application data/device configurations.json") as device_configurations_json_file:
+    #         initial_dictionary = json.load(device_configurations_json_file)
+    #
+    #     clue_icon_position = initial_dictionary["Clue Position Vertical"]
+    #
+    #     if clue_icon_position == "Right":
+    #         self.master_clue_icon_container_layout = QVBoxLayout(self.clue_icon_container)
+    #         self.master_clue_icon_container_layout.setAlignment(Qt.AlignRight)
+    #
+    #     elif clue_icon_position == "Left":
+    #         self.master_clue_icon_container_layout = QVBoxLayout(self.clue_icon_container)
+    #         self.master_clue_icon_container_layout.setAlignment(Qt.AlignLeft)
+    #
+    #     elif clue_icon_position == "Top":
+    #         self.master_clue_icon_container_layout = QHBoxLayout(self.clue_icon_container)
+    #         self.master_clue_icon_container_layout.setAlignment(Qt.AlignTop)
+    #
+    #     elif clue_icon_position == "Bottom":
+    #         self.master_clue_icon_container_layout = QHBoxLayout(self.clue_icon_container)
+    #         self.master_clue_icon_container_layout.setAlignment(Qt.AlignBottom)
+    #
+    #     else:
+    #         pass
+    #
+    #     clue_icon_size = self.puzzle_clue_icon_size_determiner()
+    #
+    #     self.puzzle_clue_icon_1.setIcon(QIcon("assets/icons/clue_icon.png"))
+    #     self.puzzle_clue_icon_1.setIconSize(QSize(clue_icon_size, clue_icon_size))
+    #     self.puzzle_clue_icon_1.setStyleSheet("""QPushButton{background-color:transparent;}""")
+    #
+    #     self.puzzle_clue_icon_2.setIcon(QIcon("assets/icons/clue_icon.png"))
+    #     self.puzzle_clue_icon_2.setIconSize(QSize(clue_icon_size, clue_icon_size))
+    #     self.puzzle_clue_icon_2.setStyleSheet("""QPushButton{background-color:transparent;}""")
+    #
+    #     self.puzzle_clue_icon_3.setIcon(QIcon("assets/icons/clue_icon.png"))
+    #     self.puzzle_clue_icon_3.setIconSize(QSize(clue_icon_size, clue_icon_size))
+    #     self.puzzle_clue_icon_3.setStyleSheet("""QPushButton{background-color:transparent;}""")
+    #
+    #     self.puzzle_clue_icon_4.setIcon(QIcon("assets/icons/clue_icon.png"))
+    #     self.puzzle_clue_icon_4.setIconSize(QSize(clue_icon_size, clue_icon_size))
+    #     self.puzzle_clue_icon_4.setStyleSheet("""QPushButton{background-color:transparent;}""")
+    #
+    #     self.puzzle_clue_icon_5.setIcon(QIcon("assets/icons/clue_icon.png"))
+    #     self.puzzle_clue_icon_5.setIconSize(QSize(clue_icon_size, clue_icon_size))
+    #     self.puzzle_clue_icon_5.setStyleSheet("""QPushButton{background-color:transparent;}""")
+    #
+    #     self.puzzle_clue_icon_6.setIcon(QIcon("assets/icons/clue_icon.png"))
+    #     self.puzzle_clue_icon_6.setIconSize(QSize(clue_icon_size, clue_icon_size))
+    #     self.puzzle_clue_icon_6.setStyleSheet("""QPushButton{background-color:transparent;}""")
+    #
+    #     self.puzzle_clue_icon_7.setIcon(QIcon("assets/icons/clue_icon.png"))
+    #     self.puzzle_clue_icon_7.setIconSize(QSize(clue_icon_size, clue_icon_size))
+    #     self.puzzle_clue_icon_7.setStyleSheet("""QPushButton{background-color:transparent;}""")
+    #
+    #     self.puzzle_clue_icon_8.setIcon(QIcon("assets/icons/clue_icon.png"))
+    #     self.puzzle_clue_icon_8.setIconSize(QSize(clue_icon_size, clue_icon_size))
+    #     self.puzzle_clue_icon_8.setStyleSheet("""QPushButton{background-color:transparent;}""")
+    #
+    #     self.puzzle_clue_icon_9.setIcon(QIcon("assets/icons/clue_icon.png"))
+    #     self.puzzle_clue_icon_9.setIconSize(QSize(clue_icon_size, clue_icon_size))
+    #     self.puzzle_clue_icon_9.setStyleSheet("""QPushButton{background-color:transparent;}""")
+    #
+    #     self.puzzle_clue_icon_10.setIcon(QIcon("assets/icons/clue_icon.png"))
+    #     self.puzzle_clue_icon_10.setIconSize(QSize(clue_icon_size, clue_icon_size))
+    #     self.puzzle_clue_icon_10.setStyleSheet("""QPushButton{background-color:transparent;}""")
+    #
+    #     number_of_clues = initial_dictionary["Maximum Number Of Clues"]
+    #     number_of_clues_added = 0
+    #
+    #     widgets = [self.puzzle_clue_icon_1, self.puzzle_clue_icon_2, self.puzzle_clue_icon_3, self.puzzle_clue_icon_4,
+    #                self.puzzle_clue_icon_5, self.puzzle_clue_icon_6, self.puzzle_clue_icon_7, self.puzzle_clue_icon_8,
+    #                self.puzzle_clue_icon_9, self.puzzle_clue_icon_10]
+    #
+    #     for widget in widgets:
+    #         if number_of_clues_added != number_of_clues:
+    #             self.master_clue_icon_container_layout.addWidget(widget)
+    #             number_of_clues_added += 1
+    #
+    #         else:
+    #             break
+    #
+    #     self.clue_icon_container.show()
