@@ -101,9 +101,6 @@ class EndAudioMediaWidget(QWidget):
     def __init__(self, file_name):
         super(EndAudioMediaWidget, self).__init__()
 
-        self.raise_()
-        self.activateWindow()
-
         # widgets
         self.master_audio_player = mpv.MPV()
 
