@@ -31,10 +31,10 @@ parts:
 apps:
   cluemaster-mediadisplay:
     command: echo Cluemaster_Display
-    plugs:
-    - browser-support
-    - desktop
-    - gsettings
-    - network
-    - wayland
-    - x11
+    #plugs:
+    #- browser-support
+    #- desktop
+    #- gsettings
+    #- network
+    #- wayland
+    #- x11
