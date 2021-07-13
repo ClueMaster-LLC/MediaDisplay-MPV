@@ -23,4 +23,4 @@ parts:
   
 apps:
   cluemaster-mediadisplay:
-    command: echo Cluemaster_Display
+    command: Cluemaster_Display
