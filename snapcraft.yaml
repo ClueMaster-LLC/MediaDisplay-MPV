@@ -29,7 +29,7 @@ parts:
     
   
 apps:
-  cluemaster_mediadisplay:
+  cmdisplay:
     command: echo Cluemaster_Display
     #plugs:
     #- browser-support
