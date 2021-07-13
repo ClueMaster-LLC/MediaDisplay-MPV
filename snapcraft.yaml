@@ -1,0 +1,26 @@
+name: cluemaster-mediadisplay
+version: '0.4.5'
+summary: Media TV Display for ClueMaster.io
+description: |
+  This is a dev test app intended to show and verify our first snap
+#base: core20
+grade: devel
+confinement: devmode
+    
+parts:
+  cmdisplay:
+    plugin: dump
+    #python-version: python3
+    source: https://github.com/ClueMaster-LLC/MediaDisplay-MPV.git
+    #source: https://drive.google.com/open?id=1Qw8PrspYNjDGDo02bDEAg3AZbawi3YXP&authuser=robert%40skysim360.com&usp=drive_fs
+    #source: ../Cluemaster_Display
+    #organize:
+    #  splash_screen: bin/
+  #stage-packages: 
+     #- libmpv-dev
+     #- mpv
+    
+  
+apps:
+  cluemaster-mediadisplay:
+    command: echo Cluemaster_Display
