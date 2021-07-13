@@ -11,7 +11,7 @@ architectures:
     - build-on: amd64
     
 parts:
-  cluemaster_mediadisplay:
+  cmdisplay:
     plugin: python
     #python-version: python3
     source: https://github.com/ClueMaster-LLC/MediaDisplay-MPV.git
@@ -29,7 +29,7 @@ parts:
     
   
 apps:
-  cluemaster-mediadisplay:
+  cluemaster_mediadisplay:
     command: echo Cluemaster_Display
     #plugs:
     #- browser-support
