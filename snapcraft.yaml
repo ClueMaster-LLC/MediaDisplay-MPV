@@ -3,9 +3,12 @@ version: '0.4.5'
 summary: Media TV Display for ClueMaster.io
 description: |
   This is a dev test app intended to show and verify our first snap
-#base: core20
+base: core20
 grade: devel
 confinement: devmode
+
+architectures:
+    - build-on: amd64
     
 parts:
   cmdisplay:
