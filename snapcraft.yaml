@@ -19,13 +19,13 @@ parts:
     #source: ../Cluemaster_Display
     #organize:
     #  splash_screen: bin/
-  build-packages: 
-    - libmpv-dev
-    - python3-pip
-    - python3-setuptools
-    - python3-wheel
-  stage-packages:
-    - libmpv1
+  #build-packages: 
+  #  - libmpv-dev
+  #  - python3-pip
+  #  - python3-setuptools
+  #  - python3-wheel
+  #stage-packages:
+  #  - libmpv1
     
   
 apps:
@@ -36,8 +36,5 @@ apps:
     - desktop
     - gsettings
     - network
-    - opengl
-    - pulseaudio
-    - screen-inhibit-control
     - wayland
     - x11
