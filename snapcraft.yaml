@@ -9,7 +9,7 @@ confinement: devmode
     
 parts:
   cmdisplay:
-    plugin: dump
+    plugin: python
     #python-version: python3
     source: https://github.com/ClueMaster-LLC/MediaDisplay-MPV.git
     #source: https://drive.google.com/open?id=1Qw8PrspYNjDGDo02bDEAg3AZbawi3YXP&authuser=robert%40skysim360.com&usp=drive_fs
@@ -23,4 +23,4 @@ parts:
   
 apps:
   cluemaster-mediadisplay:
-    command: Cluemaster_Display
+    command: bin/Cluemaster_Display
