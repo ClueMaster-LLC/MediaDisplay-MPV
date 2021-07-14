@@ -30,7 +30,7 @@ parts:
   
 apps:
   cluemaster-mediadisplay:
-    command: echo "this is a test just to see if the snap works"
+    command: cluemaster-mediadisplay
     #plugs:
     #- browser-support
     #- desktop
