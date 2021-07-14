@@ -15,8 +15,8 @@ parts:
     plugin: dump
     #python-version: python3
     #source: https://github.com/ClueMaster-LLC/MediaDisplay-MPV.git
-    #source: https://drive.google.com/open?id=1Qw8PrspYNjDGDo02bDEAg3AZbawi3YXP&authuser=robert%40skysim360.com&usp=drive_fs
-    source: ../Cluemaster_Display
+    source: https://drive.google.com/drive/folders/1avv-PsqpkrUjaja3-SySJCeFpACz1JRh?usp=sharing
+    #source: ../Cluemaster_Display
     #organize:
     #  splash_screen: bin/
   #build-packages: 
@@ -30,7 +30,7 @@ parts:
   
 apps:
   cluemaster-mediadisplay:
-    command: ./bin/Cluemaster_Display
+    command: ./bin/Cluemaster_Display/Cluemaster_Display
     plugs:
     #- browser-support
     #- desktop
