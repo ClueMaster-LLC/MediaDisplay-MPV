@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="cluemaster-mediadisplay",
+    name="cluemaster_mediadisplay",
     version="0.4.7",
     description="Cluemaster Display",
     author="Mrittunjoy Sarkar",
