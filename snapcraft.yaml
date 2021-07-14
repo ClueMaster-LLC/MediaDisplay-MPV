@@ -19,22 +19,22 @@ parts:
     #source: ../Cluemaster_Display
     #organize:
     #  splash_screen: bin/
-  #build-packages: 
-  #  - libmpv-dev
+  build-packages: 
+    - libmpv-dev
   #  - python3-pip
   #  - python3-setuptools
   #  - python3-wheel
-  #stage-packages:
-  #  - libmpv1
+  stage-packages:
+    - libmpv1
     
   
 apps:
   cluemaster-mediadisplay:
-    command: cluemaster-mediadisplay
-    #plugs:
+    command: ./Cluemaster_Display
+    plugs:
     #- browser-support
     #- desktop
     #- gsettings
-    #- network
+    - network
     #- wayland
     #- x11
