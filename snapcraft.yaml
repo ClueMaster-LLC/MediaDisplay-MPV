@@ -28,9 +28,9 @@ parts:
   #  - libmpv1
     
   
-apps:
-  cmdisplay:
-    command: echo Cluemaster_Display
+#apps:
+  #cmdisplay:
+    #command: echo Cluemaster_Display
     #plugs:
     #- browser-support
     #- desktop
