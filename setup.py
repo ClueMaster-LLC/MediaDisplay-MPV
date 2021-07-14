@@ -5,7 +5,7 @@ with open("README") as master_readme_file:
 
 setup(
     name="cluemaster-mediadisplay",
-    version="0.4.6",
+    version="0.4.7",
     description="Cluemaster Display",
     long_description=long_description_x,
     author="Mrittunjoy Sarkar",
