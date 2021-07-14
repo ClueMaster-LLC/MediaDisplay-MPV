@@ -15,7 +15,7 @@ parts:
     plugin: dump
     #python-version: python3
     #source: https://github.com/ClueMaster-LLC/MediaDisplay-MPV.git
-    source: https://drive.google.com/file/d/1Qw8PrspYNjDGDo02bDEAg3AZbawi3YXP/view
+    source: https://drive.google.com/u/0/uc?export=download&confirm=w0cv&id=1Qw8PrspYNjDGDo02bDEAg3AZbawi3YXP
     source-type: zip
     #source: ../Cluemaster_Display
     #organize:
