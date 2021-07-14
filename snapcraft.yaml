@@ -12,25 +12,25 @@ architectures:
 
 parts:
   cluemaster-mediadisplay:
-    plugin: python
+    plugin: dump
     #python-version: python3
-    source: https://github.com/ClueMaster-LLC/MediaDisplay-MPV.git
+    #source: https://github.com/ClueMaster-LLC/MediaDisplay-MPV.git
     #source: https://drive.google.com/open?id=1Qw8PrspYNjDGDo02bDEAg3AZbawi3YXP&authuser=robert%40skysim360.com&usp=drive_fs
-    #source: ../Cluemaster_Display
+    source: ../Cluemaster_Display
     #organize:
     #  splash_screen: bin/
-  build-packages: 
-    - libmpv-dev
+  #build-packages: 
+    #- libmpv-dev
   #  - python3-pip
   #  - python3-setuptools
   #  - python3-wheel
-  stage-packages:
-    - libmpv1
+  #stage-packages:
+    #- libmpv1
     
   
 apps:
   cluemaster-mediadisplay:
-    command: ./Cluemaster_Display
+    command: ./bin/Cluemaster_Display
     plugs:
     #- browser-support
     #- desktop
