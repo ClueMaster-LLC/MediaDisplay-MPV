@@ -9,7 +9,7 @@ confinement: devmode
 
 architectures:
     - build-on: amd64
-    
+
 parts:
   cluemaster-mediadisplay:
     plugin: python
@@ -28,9 +28,9 @@ parts:
   #  - libmpv1
     
   
-#apps:
-  #cmdisplay:
-    #command: echo Cluemaster_Display
+apps:
+  cluemaster-mediadisplay:
+    command: echo "this is a test just to see if the snap works"
     #plugs:
     #- browser-support
     #- desktop
