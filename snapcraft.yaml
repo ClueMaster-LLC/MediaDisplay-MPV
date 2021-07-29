@@ -8,7 +8,7 @@ description: |
   and photo clues.
 
 grade: stable # must be 'stable' to release into candidate/stable channels / devel
-confinement: strice # use 'strict' once you have the right plugs and slots /devmode
+confinement: strict # use 'strict' once you have the right plugs and slots /devmode
 
 architectures:
     - build-on: amd64
