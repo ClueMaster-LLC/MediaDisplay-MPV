@@ -31,7 +31,8 @@ parts:
   cluemaster-mediadisplay:
     after: [desktop-qt5]
     plugin: dump
-    source: https://github.com/ClueMaster-LLC/MediaDisplay-MPV/tree/main/binaries/
+    source: https://github.com/ClueMaster-LLC/MediaDisplay-MPV.git
+    source-subdir: binaries
     stage-packages:
       - libcanberra-gtk0
       - libdrm2
