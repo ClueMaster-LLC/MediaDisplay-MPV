@@ -352,7 +352,7 @@ class GameIdle(QMainWindow):
 
         if self.shutdownRequestReceived is False:
             self.shutdownRequestReceived = True
-            os.system('$SNAP/poweroff')
+            os.system('systemctl reboot -i')
             self.close()
 
         else:
