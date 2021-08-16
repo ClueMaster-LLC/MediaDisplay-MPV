@@ -1,0 +1,108 @@
+name: cluemaster-mediadisplay # you probably want to 'snapcraft register <name>'
+base: core20 # the base snap is the execution environment for this snap
+version: '1.0.3' # just for humans, typically '1.2+git' or '1.3.2'
+summary: Clumaster.io Media Display for Escape Rooms # 79 char long summary
+description: |
+  ClueMaster Media Display is a Dynamic TV Display software for escape rooms.
+  It shows escape room countdown timers, visual text messages, video, audio,
+  and photo clues.
+
+grade: stable # must be 'stable' to release into candidate/stable channels
+confinement: strict # use 'strict' once you have the right plugs and slots
+
+apps:
+  cluemaster-mediadisplay:
+    command: bin/desktop-launch prepare-launch python3 $SNAP/splash_screen.py
+    desktop: usr/share/applications/cluemaster-mediadisplay.desktop
+    autostart: cluemaster-mediadisplay.desktop
+    plugs:
+      - home
+      - desktop-legacy
+      - desktop
+      - wayland
+      - x11
+      - unity7
+      - network
+      - opengl
+      - gsettings
+      - pulseaudio
+      - network-bind
+      - screen-inhibit-control
+      - audio-playback
+
+parts:
+  copy-source-code:
+    plugin: dump
+    source: cluemaster_display/
+    stage-packages:
+      - ffmpeg
+      - locales
+      - libmpv1
+      - va-driver-all
+      - vdpau-driver-all
+      - mesa-va-drivers
+      - libvdpau-va-gl1
+      - libglu1-mesa
+      - samba-libs
+      - git
+
+  cluemaster-mediadisplay:
+    after: [copy-source-code]
+    plugin: python
+    python-packages:
+      - PyQt5==5.14.1
+      - requests==2.22.0
+      - git+https://github.com/hiransarkar21/python-mpv
+      - simplejson==3.16.0
+    stage-packages:
+      - python3-pyqt5
+      - python3-pyqt5.qtsvg
+      - python3-pyqt5.qtmultimedia
+      - python3-requests
+      - python3-simplejson
+      - python3
+
+  desktop-files-and-icons:
+    plugin: dump
+    source: snap/gui/
+    organize:
+      "cluemaster-mediadisplay.desktop": "usr/share/applications/"
+      "cluemaster-mediadisplay.png": "usr/share/applications/"
+    stage:
+      - usr/share/applications/cluemaster-mediadisplay.desktop
+      - usr/share/applications/cluemaster-mediadisplay.png
+
+  extras:
+    plugin: dump
+    source: static/
+    organize:
+      "prepare-launch": "bin/"
+
+  desktop-qt5:
+    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
+    source-subdir: qt
+    plugin: make
+    make-parameters: ["FLAVOR=qt5"]
+    build-packages:
+      - build-essential
+      - qtbase5-dev
+      - dpkg-dev
+    stage-packages:
+      - libxkbcommon0
+      - ttf-ubuntu-font-family
+      - dmz-cursor-theme
+      - light-themes
+      - adwaita-icon-theme
+      - gnome-themes-standard
+      - shared-mime-info
+      - libqt5gui5
+      - libgdk-pixbuf2.0-0
+      - libqt5svg5 # for loading icon themes which are svg
+      - try: [appmenu-qt5] # not available on core18
+      - locales-all
+      - xdg-user-dirs
+      - fcitx-frontend-qt5
+
+layout:
+  /usr/share/libdrm/amdgpu.ids:
+    symlink: $SNAP/usr/share/libdrm/amdgpu.ids
