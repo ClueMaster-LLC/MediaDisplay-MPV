@@ -1,14 +1,14 @@
-name: cluemaster-mediadisplay # you probably want to 'snapcraft register <name>'
-base: core20 # the base snap is the execution environment for this snap
-version: '1.0.18' # just for humans, typically '1.2+git' or '1.3.2'
+name: cluemaster-mediadisplay
+base: core20
+version: '1.0.18'
 summary: Clumaster.io Media Display for Escape Rooms # 79 char long summary
 description: |
   ClueMaster Media Display is a Dynamic TV Display software for escape rooms.
   It shows escape room countdown timers, visual text messages, video, audio,
   and photo clues.
    
-grade: stable # must be 'stable' to release into candidate/stable channels
-confinement: strict # use 'strict' once you have the right plugs and slots
+grade: stable 
+confinement: strict
 
 apps:
   cluemaster-mediadisplay:
@@ -95,8 +95,8 @@ parts:
       - shared-mime-info
       - libqt5gui5
       - libgdk-pixbuf2.0-0
-      - libqt5svg5 # for loading icon themes which are svg
-      - try: [appmenu-qt5] # not available on core18
+      - libqt5svg5
+      - try: [appmenu-qt5]
       - locales-all
       - xdg-user-dirs
       - fcitx-frontend-qt5
