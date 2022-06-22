@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=Cluemaster Mediadisplay
-Exec=cluemaster-mediadisplay
-Icon=${SNAP}/meta/gui/cluemaster-mediadisplay.png
-Type=Application
-Categories=AudioVideo;Graphics;Audio;Video;Player;
-Keywords=cluemaster;mediadisplay;clue;cluemaster-mediadisplay;video;audio;
