@@ -37,6 +37,7 @@ class GameDetails(QThread):
         headers["Authorization"] = f"Basic {device_unique_code}:{api_key}"
 
         game_details_url = GAME_DETAILS_API.format(device_unique_code)
+        room_info_api_url = ROOM_INFO_API.format(device_unique_code=device_unique_code)
 
         while True:
             try:
@@ -69,6 +70,14 @@ class GameDetails(QThread):
                         pass
                     else:
                         self.updateCluesUsed.emit(clue_used)
+
+                    # checking if music, video and photo is disabled from room_info api
+                    response_of_room_info_api = requests.get(room_info_api_url, headers=headers)
+                    json_response_of_room_info_api = response_of_room_info_api.json()
+                    response['isMusic'] = json_response_of_room_info_api['IsMusic']
+                    response['isVideo'] = json_response_of_room_info_api['IsVideo']
+                    response['IsPhoto'] = json_response_of_room_info_api['IsPhoto']
+                    
 
                     with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameDetails.json"), "w") as game_details_json_file:
                         json.dump(response, game_details_json_file)

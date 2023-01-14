@@ -109,13 +109,16 @@ class AuthenticationBackend(QThread):
 
                             response_of_room_info_api = requests.get(room_info_api_url, headers=headers)
                             response_of_room_info_api.raise_for_status()
+                            json_response_of_room_info_api = response_of_room_info_api.json()
+                            
 
-                            music_file_url = response_of_room_info_api.json()["MusicPath"]
-                            picture_file_url = response_of_room_info_api.json()["PhotoPath"]
-                            video_file_url = response_of_room_info_api.json()["VideoPath"]
-                            intro_video_file_url = response_of_room_info_api.json()["IntroVideoPath"]
-                            end_success_file_url = response_of_room_info_api.json()["SuccessVideoPath"]
-                            end_fail_file_url = response_of_room_info_api.json()["FailVideoPath"]
+                            # music_file_url = json_response_of_room_info_api["MusicPath"] if json_response_of_room_info_api["IsMusic"] is not None else None
+                            music_file_url = json_response_of_room_info_api["MusicPath"]
+                            picture_file_url = json_response_of_room_info_api["PhotoPath"]
+                            video_file_url = json_response_of_room_info_api["VideoPath"]
+                            intro_video_file_url = json_response_of_room_info_api["IntroVideoPath"]
+                            end_success_file_url = json_response_of_room_info_api["SuccessVideoPath"]
+                            end_fail_file_url = json_response_of_room_info_api["FailVideoPath"]
 
                             # music directory
                             try:
