@@ -811,6 +811,8 @@ class NormalWindow(QMainWindow):
             with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameDetails.json")) as game_details_json_file:
                 initial_dictionary_of_game_details = json.load(game_details_json_file)
 
+            print(">>> Master Media Files - Music", initial_dictionary_of_game_details['isMusic'])
+
             with open(os.path.join(MASTER_DIRECTORY, "assets/application data/device configurations.json")) as device_configurations_json_file:
                 initial_dictionary_of_room_info = json.load(device_configurations_json_file)
 
@@ -824,6 +826,8 @@ class NormalWindow(QMainWindow):
                 if game_details_response["isMusic"] is True:
                     # background or master audio is enabled
                     self.master_background_audio_container()
+                else:
+                    pass
 
             elif game_details_response["isMusic"] is True:
                 # background or master audio is enabled
