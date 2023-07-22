@@ -179,13 +179,19 @@ class ShutdownRestartRequest(QThread):
 
                 if requestId == 8:
                     url = POST_DEVICE_API.format(device_unique_code=unique_code, deviceRequestId=deviceRequestId)
-                    requests.post(url, headers=headers).raise_for_status()
-                    self.restart.emit()
+                    response = requests.post(url, headers=headers)
+                    if response.status_code == 200:
+                        self.restart.emit()
+                    else:
+                        pass
 
                 elif requestId == 9:
                     url = POST_DEVICE_API.format(device_unique_code=unique_code, deviceRequestId=deviceRequestId)
-                    requests.post(url, headers=headers).raise_for_status()
-                    self.shutdown.emit()
+                    response = requests.post(url, headers=headers)
+                    if response.status_code == 200:
+                        self.shutdown.emit()
+                    else:
+                        pass
 
             except requests.exceptions.ConnectionError:
                 # if the code inside the try block faces connection error while making api calls, then pass
