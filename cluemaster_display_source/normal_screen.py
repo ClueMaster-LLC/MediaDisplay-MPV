@@ -467,17 +467,8 @@ class NormalWindow(QMainWindow):
                 pass
 
         elif game_status == 2:
-            # if status is 2 then stop game
-
-            if self.is_game_in_progress is True:
-                if self.stop_game_response_received is False:
-                    self.stop_game_response_received = True
-                    self.is_game_in_progress = False
-                    self.stop_game()
-                else:
-                    pass
-            else:
-                pass
+            # if status is 2 then the game has finished or stopped in the webapp, do nothing
+            pass
 
         elif game_status == 3:
             # if status is 3 then reset game
