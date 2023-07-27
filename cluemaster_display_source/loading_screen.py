@@ -8,7 +8,7 @@ import shutil
 import platform_facts
 from apis import *
 from requests.structures import CaseInsensitiveDict
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QApplication, QShortcut
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QApplication, QShortcut, QHBoxLayout, QProgressBar
 from PyQt5.QtGui import QFont, QMovie, QKeySequence
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 
@@ -17,6 +17,10 @@ MASTER_DIRECTORY = os.path.join(os.environ.get("HOME"), "CluemasterDisplay")
 
 
 class LoadingBackend(QThread):
+    authentication_details = pyqtSignal(dict)
+    downloading_media = pyqtSignal()
+    media_file_downloaded = pyqtSignal()
+    downloading_configurations = pyqtSignal()
     proceed = pyqtSignal(bool)
     complete_reset = pyqtSignal()
 
@@ -51,6 +55,7 @@ class LoadingBackend(QThread):
 
                 room_info_api = requests.get(room_info_api_url, headers=headers)
                 room_info_api.raise_for_status()
+
                 if room_info_api.content.decode("utf-8") != "No Configurations Files Found":
                     # checking responses of room info api, if response is not No Configurations Files Found, then
                     # move forward and validate every media files and check for updated or new files
@@ -68,12 +73,21 @@ class LoadingBackend(QThread):
                     response_of_room_info_api = requests.get(room_info_api_url, headers=headers)
                     response_of_room_info_api.raise_for_status()
 
+                    # emit authentication details
+                    self.authentication_details.emit(
+                        {"media_files": len(response_of_room_info_api.json()["ClueMediaFiles"]) + 6})
+                    time.sleep(2)
+
                     music_file_url = response_of_room_info_api.json()["MusicPath"]
                     picture_file_url = response_of_room_info_api.json()["PhotoPath"]
                     video_file_url = response_of_room_info_api.json()["VideoPath"]
                     intro_video_file_url = response_of_room_info_api.json()["IntroVideoPath"]
                     end_success_file_url = response_of_room_info_api.json()["SuccessVideoPath"]
                     end_fail_file_url = response_of_room_info_api.json()["FailVideoPath"]
+
+                    # emit downloading media slot
+                    self.downloading_media.emit()
+                    time.sleep(2)
 
                     if os.path.isdir(main_room_data_directory) is False:
                         os.mkdir(main_room_data_directory)
@@ -115,6 +129,12 @@ class LoadingBackend(QThread):
                                 with open(os.path.join(room_data_music_subfolder, file_name), "wb") as file:
                                     file.write(file_bytes.content)
 
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+                            else:
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+
                     except IndexError:
                         pass
 
@@ -138,6 +158,12 @@ class LoadingBackend(QThread):
                                 file_bytes.raise_for_status()
                                 with open(os.path.join(room_data_picture_subfolder, file_name), "wb") as file:
                                     file.write(file_bytes.content)
+
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+                            else:
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
 
                     except IndexError:
                         pass
@@ -163,6 +189,12 @@ class LoadingBackend(QThread):
                                 with open(os.path.join(room_data_video_subfolder, file_name), "wb") as file:
                                     file.write(file_bytes.content)
 
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+                            else:
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+
                     except IndexError:
                         pass
 
@@ -186,6 +218,12 @@ class LoadingBackend(QThread):
                                 file_bytes.raise_for_status()
                                 with open(os.path.join(room_data_intro_media_subfolder, file_name), "wb") as file:
                                     file.write(file_bytes.content)
+
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+                            else:
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
 
                     except IndexError:
                         pass
@@ -211,6 +249,12 @@ class LoadingBackend(QThread):
                                 with open(os.path.join(room_data_success_end_media_subfolder, file_name), "wb") as file:
                                     file.write(file_bytes.content)
 
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+                            else:
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+
                     except IndexError:
                         pass
 
@@ -234,6 +278,12 @@ class LoadingBackend(QThread):
                                 file_bytes.raise_for_status()
                                 with open(os.path.join(room_data_fail_end_media_subfolder, file_name), "wb") as file:
                                     file.write(file_bytes.content)
+
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+                            else:
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
 
                     except IndexError:
                         pass
@@ -264,6 +314,12 @@ class LoadingBackend(QThread):
                                     clue_media_content.raise_for_status()
                                     with open(os.path.join(main_clue_media_file_directory, file_name), "wb") as file:
                                         file.write(clue_media_content.content)
+
+                                    # emit file downloaded signal
+                                    self.media_file_downloaded.emit()
+                                else:
+                                    # emit file downloaded signal
+                                    self.media_file_downloaded.emit()
 
                                 index += int(1)
                                 continue
@@ -299,6 +355,10 @@ class LoadingBackend(QThread):
                             self.check_api_token_status()
                         else:
                             print(">> Console output - Not a 401 error")
+
+                    # emit downloading configurations signal
+                    self.downloading_configurations.emit()
+                    time.sleep(3)
 
                     data = {"Room Minimum Players": response_of_room_info_api.json()["RoomMinPlayers"],
                             "Room Maximum Players": response_of_room_info_api.json()["RoomMaxPlayers"],
@@ -366,9 +426,6 @@ class LoadingScreen(QWidget):
         self.screen_width = QApplication.desktop().width()
         self.screen_height = QApplication.desktop().height()
 
-        # widgets
-        self.font = QFont("Ubuntu", 21)
-
         # instance methods
         self.window_config()
         self.frontend()
@@ -382,9 +439,10 @@ class LoadingScreen(QWidget):
         fullScreen_ShortCut = QShortcut(QKeySequence("F11"), self)
         fullScreen_ShortCut.activated.connect(self.go_fullScreen)
 
-        self.font.setWordSpacing(2)
-        self.font.setLetterSpacing(QFont.AbsoluteSpacing, 1)
+        self.setStyleSheet("""
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');""")
         self.setStyleSheet("background-color: #191F26;")
+
         self.setCursor(Qt.BlankCursor)
         self.showFullScreen()
 
@@ -406,6 +464,7 @@ class LoadingScreen(QWidget):
         """ this method contains all the codes for the labels and the animations in the authentications window"""
 
         self.main_layout = QVBoxLayout()
+        self.footer_layout = QHBoxLayout()
 
         gif = QMovie(os.path.join(ROOT_DIRECTORY, "assets/icons/loading_beaker.gif"))
         gif.start()
@@ -414,19 +473,34 @@ class LoadingScreen(QWidget):
         loading_gif.setAlignment(Qt.AlignHCenter)
         loading_gif.setMovie(gif)
 
-        did_you_know = QLabel(self)
-        did_you_know.setAlignment(Qt.AlignHCenter)
-        did_you_know.setStyleSheet("color: #fff; font-weight:bold;")
-        did_you_know.setFont(QFont("Ubuntu", int(self.screen_height / 35)))
+        self.loading_label = QLabel(self)
+        self.loading_label.setAlignment(Qt.AlignHCenter)
+        self.loading_label.setText("confirming media files download ...")
+        self.loading_label.setFont(QFont("IBM Plex Mono", 25))
+        self.loading_label.setStyleSheet("color: white; margin-bottom : 50px;")
+        self.loading_label.show()
 
-        fact = random.choice(platform_facts.facts)
-        did_you_know.setText(str(fact))
+        self.download_media_files_progressbar = QProgressBar(self)
+        self.download_media_files_progressbar.setAlignment(Qt.AlignHCenter)
+        self.download_media_files_progressbar.setTextVisible(False)
+        self.download_media_files_progressbar.setFixedWidth(int(30 / 100 * self.screen_width))
+        self.download_media_files_progressbar.setFixedHeight(int(4 / 100 * self.screen_height))
+
+        stylesheet = """QProgressBar{background-color: transparent; border: 3px solid #4e71cf; border-radius: 5px;}
+                QProgressBar::chunk{background-color: #4e71cf;}"""
+
+        self.download_media_files_progressbar.setStyleSheet(stylesheet)
+        self.download_media_files_progressbar.hide()
+
+        self.footer_layout.addStretch(1)
+        self.footer_layout.addWidget(self.download_media_files_progressbar, alignment=Qt.AlignHCenter)
+        self.footer_layout.addStretch(1)
 
         self.main_layout.addStretch()
         self.main_layout.addWidget(loading_gif)
         self.main_layout.addStretch()
-        self.main_layout.addWidget(did_you_know)
-        self.main_layout.addSpacing(120)
+        self.main_layout.addWidget(self.loading_label)
+        self.main_layout.addLayout(self.footer_layout)
 
         self.setLayout(self.main_layout)
         self.connect_backend_thread()
@@ -436,8 +510,43 @@ class LoadingScreen(QWidget):
 
         self.loading_thread = LoadingBackend()
         self.loading_thread.start()
+        self.loading_thread.authentication_details.connect(self.authentication_details)
+        self.loading_thread.downloading_media.connect(self.downloading_media)
+        self.loading_thread.media_file_downloaded.connect(self.update_media_files_downloader_progressbar)
+        self.loading_thread.downloading_configurations.connect(self.downloading_configurations)
         self.loading_thread.proceed.connect(self.switch_window)
         self.loading_thread.complete_reset.connect(self.reset_game)
+
+    def authentication_details(self, details):
+        """updating the self.auth_details variable with latest authentication details from backend
+        details = {"media_files": "media+clue"}
+        """
+
+        self.auth_details = details
+
+    def downloading_media(self):
+        """hiding the self.loading_label and replacing it with the self.download_media_files_progressbar"""
+
+        self.loading_label.hide()
+
+        self.download_media_files_progressbar.setMaximum(self.auth_details["media_files"])
+        self.main_layout.insertSpacing(-1, 30)
+        self.download_media_files_progressbar.show()
+
+    def update_media_files_downloader_progressbar(self):
+        """check the latest files_downloaded field from self.auth_details and updates the progressbar"""
+
+        files_downloaded = self.download_media_files_progressbar.value()
+        files_downloaded += 1
+
+        self.download_media_files_progressbar.setValue(files_downloaded)
+
+    def downloading_configurations(self):
+        """hide the progressbar and show the self.loading_label and update its text to downloading configurations ..."""
+        self.download_media_files_progressbar.hide()
+
+        self.loading_label.setText("confirming configurations download ...")
+        self.loading_label.show()
 
     def reset_game(self):
         import splash_screen
