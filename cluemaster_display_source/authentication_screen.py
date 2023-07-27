@@ -143,6 +143,7 @@ class AuthenticationBackend(QThread):
                                     with open(os.path.join(room_data_music_subfolder, file_name), "wb") as file:
                                         file.write(music_file.content)
 
+                                    # emit file downloaded signal
                                     self.media_file_downloaded.emit()
 
                             except IndexError:
@@ -163,6 +164,7 @@ class AuthenticationBackend(QThread):
                                     with open(os.path.join(room_data_picture_subfolder, file_name), "wb") as file:
                                         file.write(picture_file.content)
 
+                                    # emit file downloaded signal
                                     self.media_file_downloaded.emit()
 
                             except IndexError:
@@ -183,6 +185,7 @@ class AuthenticationBackend(QThread):
                                     with open(os.path.join(room_data_video_subfolder, file_name), "wb") as file:
                                         file.write(video_file.content)
 
+                                    # emit file downloaded signal
                                     self.media_file_downloaded.emit()
 
                             except IndexError:
@@ -203,6 +206,7 @@ class AuthenticationBackend(QThread):
                                     with open(os.path.join(room_data_intro_media_subfolder, file_name), "wb") as file:
                                         file.write(intro_video_file.content)
 
+                                    # emit file downloaded signal
                                     self.media_file_downloaded.emit()
 
                             except IndexError:
@@ -223,6 +227,7 @@ class AuthenticationBackend(QThread):
                                     with open(os.path.join(room_data_success_end_media_subfolder, file_name), "wb") as file:
                                         file.write(end_success_file.content)
 
+                                    # emit file downloaded signal
                                     self.media_file_downloaded.emit()
 
                             except IndexError:
@@ -243,6 +248,7 @@ class AuthenticationBackend(QThread):
                                     with open(os.path.join(room_data_fail_end_media_subfolder, file_name), "wb") as file:
                                         file.write(end_fail_file.content)
 
+                                    # emit file downloaded signal
                                     self.media_file_downloaded.emit()
 
                             except IndexError:
@@ -272,7 +278,9 @@ class AuthenticationBackend(QThread):
                                         with open(os.path.join(main_clue_media_file_directory, file_name), "wb") as file:
                                             file.write(clue_media_content.content)
 
+                                        # emit file downloaded signal
                                         self.media_file_downloaded.emit()
+
                                         index += int(1)
                                         continue
                                 else:
@@ -287,6 +295,7 @@ class AuthenticationBackend(QThread):
                             requests.post(identify_device_url, headers=headers).raise_for_status()
                             continue
                 else:
+                    # emit downloading configurations signal
                     self.downloading_configurations.emit()
                     time.sleep(3)
 
@@ -361,7 +370,6 @@ class AuthenticationWindow(QWidget):
 
         self.setStyleSheet("""
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         """)
 
         # instance methods
