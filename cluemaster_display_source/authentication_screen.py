@@ -8,13 +8,18 @@ from apis import *
 from requests.structures import CaseInsensitiveDict
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QFont, QMovie, QKeySequence
-from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QShortcut
+from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QShortcut, QProgressBar, QHBoxLayout
 
 ROOT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 MASTER_DIRECTORY = os.path.join(os.environ.get("HOME"), "CluemasterDisplay")
 
 
 class AuthenticationBackend(QThread):
+    authentication_complete = pyqtSignal()
+    authentication_details = pyqtSignal(dict)
+    downloading_media = pyqtSignal()
+    media_file_downloaded = pyqtSignal()
+    downloading_configurations = pyqtSignal()
     proceed = pyqtSignal(bool)
     complete_reset = pyqtSignal()
 
@@ -77,9 +82,13 @@ class AuthenticationBackend(QThread):
                         continue
 
                     else:
+                        self.authentication_complete.emit()
+                        time.sleep(3)
+
                         # if DeviceRequestid is 6 then download the new files
                         room_info_api = requests.get(room_info_api_url, headers=headers)
                         room_info_api.raise_for_status()
+
                         if room_info_api.content.decode("utf-8") != "No Configurations Files Found":
 
                             main_folder = "assets/room data"
@@ -110,15 +119,20 @@ class AuthenticationBackend(QThread):
                             response_of_room_info_api = requests.get(room_info_api_url, headers=headers)
                             response_of_room_info_api.raise_for_status()
                             json_response_of_room_info_api = response_of_room_info_api.json()
-                            
 
-                            # music_file_url = json_response_of_room_info_api["MusicPath"] if json_response_of_room_info_api["IsMusic"] is not None else None
+                            # emit authentication details
+                            self.authentication_details.emit(
+                                {"media_files": len(response_of_room_info_api.json()["ClueMediaFiles"]) + 6})
+
                             music_file_url = json_response_of_room_info_api["MusicPath"]
                             picture_file_url = json_response_of_room_info_api["PhotoPath"]
                             video_file_url = json_response_of_room_info_api["VideoPath"]
                             intro_video_file_url = json_response_of_room_info_api["IntroVideoPath"]
                             end_success_file_url = json_response_of_room_info_api["SuccessVideoPath"]
                             end_fail_file_url = json_response_of_room_info_api["FailVideoPath"]
+
+                            # emit downloading media slot
+                            self.downloading_media.emit()
 
                             # music directory
                             try:
@@ -128,6 +142,8 @@ class AuthenticationBackend(QThread):
                                     file_name = music_file_url.split("/")[5].partition("?X")[0]
                                     with open(os.path.join(room_data_music_subfolder, file_name), "wb") as file:
                                         file.write(music_file.content)
+
+                                    self.media_file_downloaded.emit()
 
                             except IndexError:
                                 pass
@@ -147,6 +163,8 @@ class AuthenticationBackend(QThread):
                                     with open(os.path.join(room_data_picture_subfolder, file_name), "wb") as file:
                                         file.write(picture_file.content)
 
+                                    self.media_file_downloaded.emit()
+
                             except IndexError:
                                 pass
 
@@ -164,6 +182,8 @@ class AuthenticationBackend(QThread):
                                     file_name = video_file_url.split("/")[5].partition("?X")[0]
                                     with open(os.path.join(room_data_video_subfolder, file_name), "wb") as file:
                                         file.write(video_file.content)
+
+                                    self.media_file_downloaded.emit()
 
                             except IndexError:
                                 pass
@@ -183,6 +203,8 @@ class AuthenticationBackend(QThread):
                                     with open(os.path.join(room_data_intro_media_subfolder, file_name), "wb") as file:
                                         file.write(intro_video_file.content)
 
+                                    self.media_file_downloaded.emit()
+
                             except IndexError:
                                 pass
 
@@ -201,6 +223,8 @@ class AuthenticationBackend(QThread):
                                     with open(os.path.join(room_data_success_end_media_subfolder, file_name), "wb") as file:
                                         file.write(end_success_file.content)
 
+                                    self.media_file_downloaded.emit()
+
                             except IndexError:
                                 pass
 
@@ -218,6 +242,8 @@ class AuthenticationBackend(QThread):
                                     file_name = end_fail_file_url.split("/")[5].partition("?X")[0]
                                     with open(os.path.join(room_data_fail_end_media_subfolder, file_name), "wb") as file:
                                         file.write(end_fail_file.content)
+
+                                    self.media_file_downloaded.emit()
 
                             except IndexError:
                                 pass
@@ -246,6 +272,7 @@ class AuthenticationBackend(QThread):
                                         with open(os.path.join(main_clue_media_file_directory, file_name), "wb") as file:
                                             file.write(clue_media_content.content)
 
+                                        self.media_file_downloaded.emit()
                                         index += int(1)
                                         continue
                                 else:
@@ -260,6 +287,9 @@ class AuthenticationBackend(QThread):
                             requests.post(identify_device_url, headers=headers).raise_for_status()
                             continue
                 else:
+                    self.downloading_configurations.emit()
+                    time.sleep(3)
+
                     room_info_api = requests.get(room_info_api_url, headers=headers)
                     room_info_api.raise_for_status()
                     if room_info_api.content.decode("utf-8") != "No Configurations Files Found":
@@ -327,6 +357,7 @@ class AuthenticationWindow(QWidget):
         # default variables
         self.screen_width = QApplication.desktop().width()
         self.screen_height = QApplication.desktop().height()
+        self.auth_details = None
 
         # widgets
         self.font = QFont("Ubuntu", 20)
@@ -384,33 +415,51 @@ class AuthenticationWindow(QWidget):
         """ this method contains all the codes for the labels and the animations in the authentications window"""
 
         self.main_layout = QVBoxLayout()
+        self.footer_layout = QHBoxLayout()
 
         alpha_label = QLabel(self)
         alpha_label.setText("ClueMaster TV Display Timer")
         alpha_label.setAlignment(Qt.AlignHCenter)
-        alpha_label.setFont(QFont("Ubuntu", 30))
-        alpha_label.setStyleSheet("color: #ffffff; font-weight:bold;")
+        alpha_label.setFont(QFont("assets/inter_font.ttf", 30))
+        alpha_label.setStyleSheet("color: #ffffff; font-weight:600;")
 
         device_key_label = QLabel(self)
-        device_key_label.setFont(QFont("Ubuntu", 50))
+        device_key_label.setFont(QFont("assets/inter_font.ttf", 45))
         device_key_label.setAlignment(Qt.AlignHCenter)
         device_key_label.setText("DEVICE KEY")
-        device_key_label.setStyleSheet("color: #ffffff; font-weight:bold;")
+        device_key_label.setStyleSheet("color: #ffffff; font-weight:600;")
 
         device_code = QLabel(self)
         device_code.setText(self.get_mac)
         device_code.setAlignment(Qt.AlignHCenter)
-        device_code.setFont(QFont("Ubuntu", 60))
+        device_code.setFont(QFont("assets/inter_font.ttf", 60))
         device_code.setStyleSheet("color: #4e71cf; font-weight:bold;")
 
         loading_gif = QMovie(os.path.join(ROOT_DIRECTORY, "assets/icons/security_loading.gif"))
         loading_gif.start()
 
-        loading_label = QLabel(self)
-        loading_label.setAlignment(Qt.AlignHCenter)
-        loading_label.setMovie(loading_gif)
-        loading_label.setStyleSheet("background-color: #191F26;")
-        loading_label.show()
+        self.loading_label = QLabel(self)
+        self.loading_label.setAlignment(Qt.AlignHCenter)
+        self.loading_label.setText("waiting for authentication ...")
+        self.loading_label.setFont(QFont("assets/inter_font.ttf", 25))
+        self.loading_label.setStyleSheet("color: white; font-weight:500; margin-bottom : 50px;")
+        self.loading_label.show()
+
+        self.download_media_files_progressbar = QProgressBar(self)
+        self.download_media_files_progressbar.setAlignment(Qt.AlignHCenter)
+        self.download_media_files_progressbar.setTextVisible(False)
+        self.download_media_files_progressbar.setFixedWidth(int(30/100 * self.screen_width))
+        self.download_media_files_progressbar.setFixedHeight(int(4/100 * self.screen_height))
+
+        stylesheet = """QProgressBar{background-color: transparent; border: 3px solid #4e71cf; border-radius: 5px;}
+        QProgressBar::chunk{background-color: #4e71cf;}"""
+
+        self.download_media_files_progressbar.setStyleSheet(stylesheet)
+        self.download_media_files_progressbar.hide()
+
+        self.footer_layout.addStretch(1)
+        self.footer_layout.addWidget(self.download_media_files_progressbar, alignment=Qt.AlignHCenter)
+        self.footer_layout.addStretch(1)
 
         self.main_layout.addStretch()
         self.main_layout.addWidget(alpha_label)
@@ -419,7 +468,8 @@ class AuthenticationWindow(QWidget):
         self.main_layout.addSpacing(90)
         self.main_layout.addWidget(device_code)
         self.main_layout.addStretch()
-        self.main_layout.addWidget(loading_label)
+        self.main_layout.addWidget(self.loading_label)
+        self.main_layout.addLayout(self.footer_layout)
         self.setLayout(self.main_layout)
 
         self.connect_backend_thread()
@@ -429,8 +479,49 @@ class AuthenticationWindow(QWidget):
 
         self.authentication_thread = AuthenticationBackend()
         self.authentication_thread.start()
+        self.authentication_thread.authentication_complete.connect(self.authentication_complete)
+        self.authentication_thread.authentication_details.connect(self.authentication_details)
+        self.authentication_thread.downloading_media.connect(self.downloading_media)
+        self.authentication_thread.media_file_downloaded.connect(self.update_media_files_downloader_progressbar)
+        self.authentication_thread.downloading_configurations.connect(self.downloading_configurations)
         self.authentication_thread.proceed.connect(self.switch_window)
         self.authentication_thread.complete_reset.connect(self.reset_game)
+
+    def authentication_complete(self):
+        """updating the self.loading_label and setting its text as authentication complete"""
+
+        self.loading_label.setText("authentication complete ...")
+
+    def authentication_details(self, details):
+        """updating the self.auth_details variable with latest authentication details from backend
+        details = {"media_files": "media+clue"}
+        """
+
+        self.auth_details = details
+
+    def downloading_media(self):
+        """hiding the self.loading_label and replacing it with the self.download_media_files_progressbar"""
+
+        self.loading_label.hide()
+
+        self.download_media_files_progressbar.setMaximum(self.auth_details["media_files"])
+        self.main_layout.insertSpacing(-1, 30)
+        self.download_media_files_progressbar.show()
+
+    def update_media_files_downloader_progressbar(self):
+        """check the latest files_downloaded field from self.auth_details and updates the progressbar"""
+
+        files_downloaded = self.download_media_files_progressbar.value()
+        files_downloaded += 1
+
+        self.download_media_files_progressbar.setValue(files_downloaded)
+
+    def downloading_configurations(self):
+        """hide the progressbar and show the self.loading_label and update its text to downloading configurations ..."""
+        self.download_media_files_progressbar.hide()
+
+        self.loading_label.setText("downloading configurations ...")
+        self.loading_label.show()
 
     def reset_game(self):
         import splash_screen
