@@ -321,6 +321,10 @@ class MasterOverlay(QWidget):
     def window_configurations(self):
         """ this method contains the codes for the configurations of the window """
 
+        self.setStyleSheet("""
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+        """)
+
         self.resize(self.screen_width, self.screen_height)
         self.setAttribute(Qt.WA_NoSystemBackground)
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -394,7 +398,7 @@ class MasterOverlay(QWidget):
 
         self.is_countdown_timer_active = True
 
-        self.countdown_label.setFont(QFont("Ubuntu", int(self.screen_height / 5.25)))
+        self.countdown_label.setFont(QFont("IBM Plex Mono", int(self.screen_height / 5.25)))
         self.countdown_label.setStyleSheet("""QLabel{color:white; font-weight:bold;}""")
         self.master_layout.addWidget(self.countdown_label, alignment=Qt.AlignCenter)
         self.countdown_label.show()
@@ -424,7 +428,7 @@ class MasterOverlay(QWidget):
         self.is_countup_timer_active = True
         self.timer_value_from_api = self.fetch_cloud_timer()
 
-        self.countup_label.setFont(QFont("Ubuntu", int(self.screen_height / 5.25)))
+        self.countup_label.setFont(QFont("IBM Plex Mono", int(self.screen_height / 5.25)))
         self.countup_label.setStyleSheet("""QLabel{color:white; font-weight:bold;}""")
         self.master_layout.addWidget(self.countup_label, alignment=Qt.AlignCenter)
         self.countup_label.show()

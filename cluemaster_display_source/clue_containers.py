@@ -47,6 +47,10 @@ class TextClueContainer(QWidget):
     def window_configurations(self):
         """ this method contains code for the configurations of the window """
 
+        self.setStyleSheet("""
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+        """)
+
         self.move(0, self.screen_height - self.preferred_height)
         self.setStyleSheet("background-color: black;")
         self.setAttribute(Qt.WA_TranslucentBackground)
@@ -57,7 +61,7 @@ class TextClueContainer(QWidget):
         """ this method contains the codes for showing the text clue labels"""
 
         self.text_clue_container.setFixedSize(self.screen_width, int(self.preferred_height))
-        self.text_clue_container.setFont(QFont("Ubuntu", int(self.screen_height / 24.41)))
+        self.text_clue_container.setFont(QFont("IBM Plex Mono", int(self.screen_height / 24.41)))
         self.text_clue_container.setText(self.text)
         self.text_clue_container.setWordWrap(True)
         self.text_clue_container.setAlignment(Qt.AlignCenter | Qt.AlignHCenter)
