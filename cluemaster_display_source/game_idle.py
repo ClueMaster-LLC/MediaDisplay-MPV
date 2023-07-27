@@ -83,11 +83,6 @@ class GameIdle(QMainWindow):
         self.update_room_info_thread.start()
         self.update_room_info_thread.update_detected.connect(self.restart_device)
 
-        # widgets
-        self.font = QFont("Ubuntu")
-        self.font.setWordSpacing(2)
-        self.font.setLetterSpacing(QFont.AbsoluteSpacing, 1)
-
         self.master_background = QLabel(self)
 
         # variables
@@ -97,8 +92,6 @@ class GameIdle(QMainWindow):
         self.mpv_player_triggered = False
         self.app_root = os.path.abspath(os.path.dirname(sys.argv[0]))
 
-        self.font.setWordSpacing(2)
-        self.font.setLetterSpacing(QFont.AbsoluteSpacing, 1)
         self.setStyleSheet("background-color: #191F26;")
 
         # apis
