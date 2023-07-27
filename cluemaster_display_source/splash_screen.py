@@ -173,7 +173,7 @@ class SplashWindow(QWidget):
         self.screen_height = QApplication.desktop().height()
 
         # widgets
-        self.font = QFont("Ubuntu", 19)
+        self.font = QFont("IBM Plex Mono", 19)
 
         # instance methods
         self.window_config()
@@ -195,6 +195,10 @@ class SplashWindow(QWidget):
         self.setFixedWidth(int(self.screen_width // 2.75))
         self.setWindowIcon(QIcon("assets/icons/app_icon.png"))
         self.setWindowFlag(Qt.FramelessWindowHint)
+
+        self.setStyleSheet("""
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+        """)
         self.setStyleSheet("background-color:#191F26; color:white;")
 
     def update_thread_info_file(self):
@@ -226,7 +230,7 @@ class SplashWindow(QWidget):
         application_name = QLabel(self)
         application_name.setFont(self.font)
         application_name.setText("ClueMaster TV Display Timer")
-        application_name.setStyleSheet("color: white; font-weight:bold;")
+        application_name.setStyleSheet("color: white; font-weight: 700;")
 
         version = QLabel(self)
         version.setText(f"Version : {snap_version}")

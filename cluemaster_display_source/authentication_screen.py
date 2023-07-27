@@ -359,9 +359,10 @@ class AuthenticationWindow(QWidget):
         self.screen_height = QApplication.desktop().height()
         self.auth_details = None
 
-        # widgets
-        self.font = QFont("Ubuntu", 20)
-        self.custom_font_for_unique_code = QFont("Ubuntu", 40)
+        self.setStyleSheet("""
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        """)
 
         # instance methods
         self.load_unique_id()
@@ -386,12 +387,6 @@ class AuthenticationWindow(QWidget):
 
         fullScreen_shortCut = QShortcut(QKeySequence("F11"), self)
         fullScreen_shortCut.activated.connect(self.go_fullScreen)
-
-        self.font.setWordSpacing(2)
-        self.font.setLetterSpacing(QFont.AbsoluteSpacing, 1)
-
-        self.custom_font_for_unique_code.setWordSpacing(110)
-        self.custom_font_for_unique_code.setLetterSpacing(QFont.AbsoluteSpacing, 4)
 
         self.setStyleSheet("background-color: #191F26;")
         self.setCursor(Qt.BlankCursor)
@@ -420,20 +415,21 @@ class AuthenticationWindow(QWidget):
         alpha_label = QLabel(self)
         alpha_label.setText("ClueMaster TV Display Timer")
         alpha_label.setAlignment(Qt.AlignHCenter)
-        alpha_label.setFont(QFont("assets/inter_font.ttf", 30))
-        alpha_label.setStyleSheet("color: #ffffff; font-weight:600;")
+        alpha_label.setFont(QFont("IBM Plex Mono", 30))
+        alpha_label.font().setWeight(500)
+        alpha_label.setStyleSheet("color: #ffffff;")
 
         device_key_label = QLabel(self)
-        device_key_label.setFont(QFont("assets/inter_font.ttf", 45))
+        device_key_label.setFont(QFont("IBM Plex Mono", 45))
         device_key_label.setAlignment(Qt.AlignHCenter)
         device_key_label.setText("DEVICE KEY")
-        device_key_label.setStyleSheet("color: #ffffff; font-weight:600;")
+        device_key_label.setStyleSheet("color: #ffffff;")
 
         device_code = QLabel(self)
         device_code.setText(self.get_mac)
         device_code.setAlignment(Qt.AlignHCenter)
-        device_code.setFont(QFont("assets/inter_font.ttf", 60))
-        device_code.setStyleSheet("color: #4e71cf; font-weight:bold;")
+        device_code.setFont(QFont("IBM Plex Mono", 60))
+        device_code.setStyleSheet("color: #4e71cf;")
 
         loading_gif = QMovie(os.path.join(ROOT_DIRECTORY, "assets/icons/security_loading.gif"))
         loading_gif.start()
@@ -441,8 +437,8 @@ class AuthenticationWindow(QWidget):
         self.loading_label = QLabel(self)
         self.loading_label.setAlignment(Qt.AlignHCenter)
         self.loading_label.setText("waiting for authentication ...")
-        self.loading_label.setFont(QFont("assets/inter_font.ttf", 25))
-        self.loading_label.setStyleSheet("color: white; font-weight:500; margin-bottom : 50px;")
+        self.loading_label.setFont(QFont("IBM Plex Mono", 25))
+        self.loading_label.setStyleSheet("color: white; margin-bottom : 50px;")
         self.loading_label.show()
 
         self.download_media_files_progressbar = QProgressBar(self)
