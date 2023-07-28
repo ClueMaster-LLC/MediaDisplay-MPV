@@ -61,7 +61,7 @@ class TextClueContainer(QWidget):
         """ this method contains the codes for showing the text clue labels"""
 
         self.text_clue_container.setFixedSize(self.screen_width, int(self.preferred_height))
-        self.text_clue_container.setFont(QFont("IBM Plex Mono", int(self.screen_height / 29)))
+        self.text_clue_container.setFont(QFont("IBM Plex Mono", int(self.screen_height / 35)))
         self.text_clue_container.setText(self.text)
         self.text_clue_container.setWordWrap(True)
         self.text_clue_container.setAlignment(Qt.AlignCenter | Qt.AlignHCenter)
