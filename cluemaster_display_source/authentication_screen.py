@@ -445,7 +445,7 @@ class AuthenticationWindow(QWidget):
         self.loading_label = QLabel(self)
         self.loading_label.setAlignment(Qt.AlignHCenter)
         self.loading_label.setText("waiting for authentication ...")
-        self.loading_label.setFont(QFont("IBM Plex Mono", 25))
+        self.loading_label.setFont(QFont("IBM Plex Mono", 20))
         self.loading_label.setStyleSheet("color: white; margin-bottom : 50px;")
         self.loading_label.show()
 
