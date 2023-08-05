@@ -710,10 +710,10 @@ class NormalWindow(QMainWindow):
     def trigger_update_clues_used_method(self, response):
         """ this method triggers the update_clues_method in the ClueIconContainer window to update the number of
             clues used"""
-
-        if self.is_game_in_progress:
-            self.external_clue_icon_container_window.update_clues_used(used=response)
-        else:
+        try:
+            if self.is_game_in_progress:
+                self.external_clue_icon_container_window.update_clues_used(used=response)
+        except AttributeError:
             pass
 
     def restart_device(self):
