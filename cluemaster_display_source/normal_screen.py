@@ -563,7 +563,11 @@ class NormalWindow(QMainWindow):
 
                     time.sleep(10)
 
-                    self.external_clue_icon_container_window.close()
+                    try:
+                        self.external_clue_icon_container_window.close()
+                    except AttributeError:
+                        pass
+
                     self.external_master_overlay_window.close()
                     self.close()
 
