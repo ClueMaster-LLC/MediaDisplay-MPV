@@ -495,7 +495,6 @@ class GetTimerRequest(QThread):
                 print(">>> Console output - Timer response")
                 response = requests.get(get_timer_request_api, headers=headers)
                 response.raise_for_status()
-                print(">>> Console output - Timer response ", response.json())
 
                 request_id = response.json()["DeviceRequestid"]
                 device_key = response.json()["DeviceKey"]
