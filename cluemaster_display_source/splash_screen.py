@@ -227,6 +227,9 @@ class SplashWindow(QWidget):
 
         self.main_layout = QVBoxLayout()
 
+        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_file:
+            unique_code_json_response = json.load(unique_code_file)
+
         application_name = QLabel(self)
         application_name.setFont(self.font)
         application_name.setText("ClueMaster TV Display Timer")
@@ -236,6 +239,11 @@ class SplashWindow(QWidget):
         version.setText(f"Version : {snap_version}")
         version.setFont(self.font)
         version.setStyleSheet("color: white; font-size: 19px; font-weight:bold;")
+
+        local_ipv4_address = QLabel(self)
+        local_ipv4_address.setFont(self.font)
+        local_ipv4_address.setStyleSheet("color: white; font-size: 19px; font-weight:bold;")
+        local_ipv4_address.setText("Local IP : " + unique_code_json_response["IPv4 Address"].split(" ")[0])
 
         gif = QMovie(os.path.join(ROOT_DIRECTORY, "assets/icons/security_loading.gif"))
         gif.start()
@@ -248,6 +256,8 @@ class SplashWindow(QWidget):
         self.main_layout.addWidget(application_name, alignment=Qt.AlignCenter)
         self.main_layout.addSpacing(10)
         self.main_layout.addWidget(version, alignment=Qt.AlignCenter)
+        self.main_layout.addSpacing(10)
+        self.main_layout.addWidget(local_ipv4_address, alignment=Qt.AlignCenter)
         self.main_layout.addStretch(1)
         self.main_layout.addWidget(loading_gif, alignment=Qt.AlignCenter)
 
