@@ -467,8 +467,17 @@ class NormalWindow(QMainWindow):
                 pass
 
         elif game_status == 2:
-            # if status is 2 then the game has finished or stopped in the webapp, do nothing
-            pass
+            # if status is 2 then stop game
+
+            if self.is_game_in_progress is True:
+                if self.stop_game_response_received is False:
+                    self.stop_game_response_received = True
+                    self.is_game_in_progress = False
+                    self.stop_game()
+                else:
+                    pass
+            else:
+                pass
 
         elif game_status == 3:
             # if status is 3 then reset game
@@ -583,6 +592,9 @@ class NormalWindow(QMainWindow):
             else:
                 pass
 
+        else:
+            pass
+
     def complete_game_shutdown(self):
         # trying to stop the ongoing game
         print(">>> Console output - Stopping game initiated")
@@ -684,7 +696,11 @@ class NormalWindow(QMainWindow):
 
                 time.sleep(10)
 
-                self.external_clue_icon_container_window.close()
+                try:
+                    self.external_clue_icon_container_window.close()
+                except AttributeError:
+                    pass
+
                 self.external_master_overlay_window.close()
                 self.close()
 
@@ -1167,6 +1183,7 @@ class NormalWindow(QMainWindow):
             this method stops the whole game and prepares to reset the it and start a new one"""
 
         # stop threads
+        print(">>> Console output - Stop game")
 
         self.external_master_overlay_window.timer_request_thread.stop()
         self.external_clue_containers_window.get_game_clue_thread.stop()
@@ -1195,9 +1212,11 @@ class NormalWindow(QMainWindow):
         # stop/pause application countdown timers
         if self.external_master_overlay_window.is_countup_timer_active is True:
             self.external_master_overlay_window.countup_timer.stop()
+            print(">>> Console output - Should stop countup timer")
 
         elif self.external_master_overlay_window.is_countdown_timer_active is True:
             self.external_master_overlay_window.countdown_timer.stop()
+            print(">>> Console output - Should stop countdown timer")
 
         self.is_application_timer_stopped = True
 
