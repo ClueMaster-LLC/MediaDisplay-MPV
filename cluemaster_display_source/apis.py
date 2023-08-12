@@ -1,5 +1,6 @@
 
 api_initial = "https://deviceapi.cluemaster.io"
+devapi_initial = "https://devapi.cluemaster.io"
 
 # master apis
 DEVICES_FILES_API = api_initial + "/api/Device/GetDeviceFiles/{device_unique_code}"
@@ -8,6 +9,7 @@ ROOM_INFO_API = api_initial + "/api/Device/GetRoomInfo/{device_unique_code}"
 DEVICE_REQUEST_API = api_initial + "/api/Device/GetDeviceRequest/{device_unique_code}"
 POST_DEVICE_API = api_initial + "/api/Device/{device_unique_code}/{deviceRequestId}"
 GET_TIMER_REQUEST = api_initial + "/api/Device/GetTimerRequest/{}"
+GET_GAME_START_END_TIME = devapi_initial + "/api/Device/GetGameTimerStartEndTime/{}"
 GAME_DETAILS_API = api_initial + "/api/Device/GetGameDetails/{}"
 GAME_INTRO_REQUEST = api_initial + "/api/Device/GetGameIntroRequest/{}"
 GET_GAME_TIMER = api_initial + "/api/Device/GetGameTimer/{}"
