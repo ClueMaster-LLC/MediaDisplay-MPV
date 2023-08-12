@@ -7,6 +7,7 @@ import threads
 import time
 import json
 from apis import *
+from datetime import datetime
 from requests.structures import CaseInsensitiveDict
 
 ROOT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
@@ -335,7 +336,7 @@ class MasterOverlay(QWidget):
         """ this method is triggered as soon as the update_timer signal is emitted by the timer request thread, this
             method updates the application timer with the new value from the GetGameTimer api"""
 
-        self.timer_value_from_api = self.fetch_cloud_timer()
+        self.end_timer_value_from_api = self.fetch_cloud_timer()
 
     def restart_device(self):
         """ this method is triggered as soon as the restart signal is emitted by the shutdown restart thread"""
@@ -351,6 +352,8 @@ class MasterOverlay(QWidget):
         """ this method is triggered as soon as the MasterOverlay window is initialized, this method determines if the
             timer is a countdown timer or a countup timer and calls the respective method"""
 
+        print("Console Output - Load application timer")
+
         try:
             with open(os.path.join(MASTER_DIRECTORY, "assets/application data/device configurations.json")) as device_configurations_json_file:
                 initial_dictionary = json.load(device_configurations_json_file)
@@ -359,7 +362,7 @@ class MasterOverlay(QWidget):
             timer_parameter = room_info_response["Time Limit"]
 
             if timer_parameter >= 1:
-                self.timer_value_from_api = self.fetch_cloud_timer()
+                self.end_timer_value_from_api = self.fetch_cloud_timer()
                 self.application_countdown_timer()
             else:
                 self.application_countup_timer()
@@ -370,14 +373,17 @@ class MasterOverlay(QWidget):
 
     def fetch_cloud_timer(self):
         """ this method when called fetches the latest timer value from the GetGameTimer api and returns it"""
-        self.get_game_timer_api = GET_GAME_TIMER.format(self.game_id)
+        print("Console Output - Fetch Cloud Timer")
+        self.get_game_start_end_timer_api = GET_GAME_START_END_TIME.format(self.game_id)
 
         try:
-            # getting the timer value from the api
-            get_game_timer_response = requests.get(self.get_game_timer_api, headers=self.headers)
+            # getting the end timer value from the api
+            get_game_timer_response = requests.get(self.get_game_start_end_timer_api, headers=self.headers)
             get_game_timer_response.raise_for_status()
-            timer_value_from_api = int(get_game_timer_response.json()["timer"]) + 1
-            return timer_value_from_api
+            end_timer_value_from_api = get_game_timer_response.json()["tGameEndDateTime"]
+            cleaned_end_time = datetime.strptime(end_timer_value_from_api, "%Y-%m-%dT%H:%M:%S")
+
+            return cleaned_end_time
 
         except requests.exceptions.ConnectionError:
             # if the application faces connection error while making the api call then pass or do nothing
@@ -393,6 +399,10 @@ class MasterOverlay(QWidget):
             else:
                 print(">> Console output - Not a 401 error")
 
+        except Exception as error:
+            print("Console Output - Error ", error)
+
+
     def application_countdown_timer(self):
         """ this method is fully dedicated to the countdown timer"""
 
@@ -403,33 +413,33 @@ class MasterOverlay(QWidget):
         self.master_layout.addWidget(self.countdown_label, alignment=Qt.AlignCenter)
         self.countdown_label.show()
 
-        if self.timer_value_from_api < 0:
-            self.countdown_label.setText("00:00:00")
-            self.game_ended.emit()
-
-        else:
-            self.countdown_timer.start()
+        self.update_countdown_timer()
+        self.countdown_timer.start()
 
     def update_countdown_timer(self):
         """ this method is triggered every 1 second to update the countdown timer"""
 
-        if self.timer_value_from_api >= 1:
-            self.timer_value_from_api -= 1
-            hours_minutes_seconds_format = time.strftime("%H:%M:%S", time.gmtime(self.timer_value_from_api))
-            self.countdown_label.setText(hours_minutes_seconds_format)
+        current_time = datetime.now()
+        time_remaining = self.end_timer_value_from_api - current_time
+        time_remaining_in_seconds = time_remaining.seconds
 
-        else:
+        if time_remaining_in_seconds <= 0:
+            self.countdown_label.setText("00:00:00")
             self.countdown_timer.stop()
             self.game_ended.emit()
+        else:
+            hours_minutes_seconds_format = time.strftime("%H:%M:%S", time.gmtime(time_remaining_in_seconds))
+            self.countdown_label.setText(hours_minutes_seconds_format)
 
     def application_countup_timer(self):
         """ this method is fully dedicated to the countup timer"""
 
         self.is_countup_timer_active = True
-        self.timer_value_from_api = self.fetch_cloud_timer()
+        self.countup_timer_count = 0
 
         self.countup_label.setFont(QFont("IBM Plex Mono", int(self.screen_height / 5.25)))
         self.countup_label.setStyleSheet("""QLabel{color:white; font-weight:bold;}""")
+        self.countup_label.setText("00:00:01")
         self.master_layout.addWidget(self.countup_label, alignment=Qt.AlignCenter)
         self.countup_label.show()
 
@@ -438,7 +448,7 @@ class MasterOverlay(QWidget):
     def update_countup_timer(self):
         """ this method is triggered every 1 second to update the countup timer"""
 
-        self.timer_value_from_api += 1
-        hours_minutes_seconds_format = time.strftime("%H:%M:%S", time.gmtime(self.timer_value_from_api))
+        self.countup_timer_count += 1
+        hours_minutes_seconds_format = time.strftime("%H:%M:%S", time.gmtime(self.countup_timer_count))
         self.countup_label.setText(hours_minutes_seconds_format)
 
