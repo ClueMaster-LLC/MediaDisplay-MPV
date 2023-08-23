@@ -5,6 +5,7 @@ import json
 import requests
 import simplejson.errors
 from apis import *
+import socket
 from requests.structures import CaseInsensitiveDict
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtGui import QFont, QMovie, QKeySequence
@@ -366,6 +367,7 @@ class AuthenticationWindow(QWidget):
         # default variables
         self.screen_width = QApplication.desktop().width()
         self.screen_height = QApplication.desktop().height()
+        self.ipv4_address = self.fetch_device_ipv4_address()
         self.auth_details = None
 
         self.setStyleSheet("""
@@ -386,6 +388,20 @@ class AuthenticationWindow(QWidget):
 
         device_unique_code = json_object["Device Unique Code"]
         self.get_mac = device_unique_code
+
+    @staticmethod
+    def fetch_device_ipv4_address():
+        i_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+        try:
+            i_socket.connect(('10.255.255.255', 1))
+            ip_address = i_socket.getsockname()[0]
+        except Exception:
+            ip_address = "127.0.0.1"
+        finally:
+            i_socket.close()
+            print(">>> Console output - Gateway IP Address: " + ip_address)
+        return ip_address
 
     def window_config(self):
         """ this method contains the codes for the configurations of the window """
@@ -461,6 +477,12 @@ class AuthenticationWindow(QWidget):
         self.download_media_files_progressbar.setStyleSheet(stylesheet)
         self.download_media_files_progressbar.hide()
 
+        device_ipv4_address = QLabel(self)
+        device_ipv4_address.setText("Local IP : " + self.ipv4_address)
+        device_ipv4_address.setAlignment(Qt.AlignHCenter)
+        device_ipv4_address.setFont(QFont("IBM Plex Mono", 15))
+        device_ipv4_address.setStyleSheet("color: white; margin-bottom : 30px;")
+
         self.footer_layout.addStretch(1)
         self.footer_layout.addWidget(self.download_media_files_progressbar, alignment=Qt.AlignHCenter)
         self.footer_layout.addStretch(1)
@@ -474,6 +496,7 @@ class AuthenticationWindow(QWidget):
         self.main_layout.addStretch()
         self.main_layout.addWidget(self.loading_label)
         self.main_layout.addLayout(self.footer_layout)
+        self.main_layout.addWidget(device_ipv4_address)
         self.setLayout(self.main_layout)
 
         self.connect_backend_thread()
