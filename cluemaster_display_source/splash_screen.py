@@ -6,6 +6,7 @@ import random
 import time
 import subprocess
 import requests
+import socket
 from apis import *
 from string import Template
 from requests.structures import CaseInsensitiveDict
@@ -28,6 +29,7 @@ class SplashBackend(QThread):
 
         # default variables
         self.is_killed = False
+        self.unique_code_file = os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")
 
     def run(self):
         """ this is an autorun method which is triggered as soon as the thread is started, this method holds all the
@@ -42,11 +44,11 @@ class SplashBackend(QThread):
             # if the directory already exists then pass
             pass
 
-        if os.path.isfile(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")):
+        if os.path.isfile(self.unique_code_file):
             # checking if unique code.json file exists in the application data directory, if yes then get the unique
             # device id and check if there are any device files for it
 
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
+            with open(self.unique_code_file) as unique_code_json_file:
                 json_object_of_unique_code_file = json.load(unique_code_json_file)
 
             device_unique_code = json_object_of_unique_code_file["Device Unique Code"]
@@ -59,7 +61,7 @@ class SplashBackend(QThread):
                     headers = CaseInsensitiveDict()
                     headers["Authorization"] = f"Basic {device_unique_code}:{api_key}"
 
-                    if requests.get(device_files_url, headers=headers).status_code != 200:
+                    if requests.get(device_files_url, headers=headers).status_code == 401:
                         # if response is 401 from the GetDeviceFiles api then, register the device
                         api_key = self.generate_secure_api_key(device_id=device_unique_code)
                         json_object_of_unique_code_file["apiKey"] = api_key
@@ -69,10 +71,10 @@ class SplashBackend(QThread):
                         # else jump to loading screen
                         self.skip_authentication.emit(True)
 
-                    ipv4_address = self.fetch_ipv4_device_address()
+                    ipv4_address = self.fetch_device_ipv4_address()
                     json_object_of_unique_code_file["IPv4 Address"] = ipv4_address
 
-                    with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json"), "w") as unique_code_json_file:
+                    with open(self.unique_code_file, "w") as unique_code_json_file:
                         json.dump(json_object_of_unique_code_file, unique_code_json_file)
 
                 except requests.exceptions.ConnectionError:
@@ -119,10 +121,10 @@ class SplashBackend(QThread):
 
             full_unique_code = first_pair + "-" + second_pair + "-" + third_pair + "-" + fourth_pair
             api_key = self.generate_secure_api_key(device_id=full_unique_code)
-            ipv4_address = self.fetch_ipv4_device_address()
+            ipv4_address = self.fetch_device_ipv4_address()
 
             json_object = {"Device Unique Code": full_unique_code, "apiKey": api_key, "IPv4 Address": ipv4_address}
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json"), "w") as file:
+            with open(self.unique_code_file, "w") as file:
                 json.dump(json_object, file)
 
             self.skip_authentication.emit(False)
@@ -138,23 +140,57 @@ class SplashBackend(QThread):
                 headers = CaseInsensitiveDict()
                 headers["Content-Type"] = "application/json"
 
-                initial_template = Template("""{"DeviceKey": "${device_key}", "Username": "ClueMasterAPI", "Password": "8BGIJh27uBtqBTb2%t*zho!z0nS62tq2pGN%24&5PS3D"}""")
+                initial_template = Template(
+                    """
+                    {
+                    "DeviceKey": "${device_key}",
+                    "Username": "ClueMasterAPI",
+                    "Password": "8BGIJh27uBtqBTb2%t*zho!z0nS62tq2pGN%24&5PS3D"
+                    }
+                    """)
                 data = initial_template.substitute(device_key=device_id)
 
-                response = requests.post(url=authentication_api_url, headers=headers, data=data).json()
-                print(response)
-                print(">>> Console output - API Auth status - ", response["status"])
-                return response["apiKey"]
+                response = requests.post(url=authentication_api_url, headers=headers, data=data)
+                if response.status_code != 200:
+                    print(f">>> Error trying to create bearer key with status {response.status_code} - {response.content}")
+                    time.sleep(3)
+                else:
+                    print(">>> Console output - API Auth status - ", response.json()["status"])
+                    print(">>> Console output - Verifying new bearer key ")
+
+                    api_key = response.json()["apiKey"]
+                    device_files_url = DEVICES_FILES_API.format(device_unique_code=device_id)
+
+                    headers = CaseInsensitiveDict()
+                    headers["Authorization"] = f"Basic {device_id}:{api_key}"
+
+                    response = requests.get(device_files_url, headers=headers)
+                    if response.status_code == 200:
+                        return api_key
+                    else:
+                        time.sleep(3)
+
+            except KeyError:
+                time.sleep(3)
+                pass
 
             except requests.exceptions.ConnectionError:
                 time.sleep(3)
                 pass
 
-    def fetch_ipv4_device_address(self):
-        """ this method fetches the device ipv4 address"""
+    @staticmethod
+    def fetch_device_ipv4_address():
+        i_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-        initial_output = subprocess.getoutput("hostname -I")
-        return initial_output
+        try:
+            i_socket.connect(('10.255.255.255', 1))
+            ip_address = i_socket.getsockname()[0]
+        except Exception:
+            ip_address = "127.0.0.1"
+        finally:
+            i_socket.close()
+            print(">>> Console output - Gateway IP Address: " + ip_address)
+        return ip_address
 
     def stop(self):
         """ this method stops the thread by setting the is_killed attribute to False and then calling the run() methods
@@ -171,6 +207,7 @@ class SplashWindow(QWidget):
         # default variables
         self.screen_width = QApplication.desktop().width()
         self.screen_height = QApplication.desktop().height()
+        self.ipv4_address = self.fetch_device_ipv4_address()
 
         # widgets
         self.font = QFont("IBM Plex Mono", 19)
@@ -179,6 +216,20 @@ class SplashWindow(QWidget):
         self.window_config()
         self.update_thread_info_file()
         self.frontend()
+
+    @staticmethod
+    def fetch_device_ipv4_address():
+        i_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+        try:
+            i_socket.connect(('10.255.255.255', 1))
+            ip_address = i_socket.getsockname()[0]
+        except Exception:
+            ip_address = "127.0.0.1"
+        finally:
+            i_socket.close()
+            print(">>> Console output - Gateway IP Address: " + ip_address)
+        return ip_address
 
     def window_config(self):
         """ this method contains code for the configurations of the window"""
@@ -227,9 +278,6 @@ class SplashWindow(QWidget):
 
         self.main_layout = QVBoxLayout()
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_file:
-            unique_code_json_response = json.load(unique_code_file)
-
         application_name = QLabel(self)
         application_name.setFont(self.font)
         application_name.setText("ClueMaster TV Display Timer")
@@ -243,7 +291,7 @@ class SplashWindow(QWidget):
         local_ipv4_address = QLabel(self)
         local_ipv4_address.setFont(self.font)
         local_ipv4_address.setStyleSheet("color: white; font-size: 19px; font-weight:bold;")
-        local_ipv4_address.setText("Local IP : " + unique_code_json_response["IPv4 Address"].split(" ")[0])
+        local_ipv4_address.setText("Local IP : " + self.ipv4_address)
 
         gif = QMovie(os.path.join(ROOT_DIRECTORY, "assets/icons/security_loading.gif"))
         gif.start()
