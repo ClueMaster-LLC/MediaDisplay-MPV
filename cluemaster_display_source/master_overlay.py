@@ -421,14 +421,14 @@ class MasterOverlay(QWidget):
 
         current_time = datetime.now()
         time_remaining = self.end_timer_value_from_api - current_time
-        time_remaining_in_seconds = time_remaining.seconds
+        self.time_remaining_in_seconds = time_remaining.seconds
 
-        if time_remaining_in_seconds <= 0:
+        if self.time_remaining_in_seconds <= 0:
             self.countdown_label.setText("00:00:00")
             self.countdown_timer.stop()
             self.game_ended.emit()
         else:
-            hours_minutes_seconds_format = time.strftime("%H:%M:%S", time.gmtime(time_remaining_in_seconds))
+            hours_minutes_seconds_format = time.strftime("%H:%M:%S", time.gmtime(self.time_remaining_in_seconds))
             self.countdown_label.setText(hours_minutes_seconds_format)
 
     def application_countup_timer(self):
