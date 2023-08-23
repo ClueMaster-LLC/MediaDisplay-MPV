@@ -1228,17 +1228,11 @@ class NormalWindow(QMainWindow):
             if win_loss_text == "won":
                 self.master_end_media_container(status="won")
 
-            elif win_loss_text == "lost":
-                self.master_end_media_container(status="lost")
-
-            elif self.external_master_overlay_window.is_countup_timer_active is True:
-                self.master_end_media_container(status="won")
-
-            elif self.external_master_overlay_window.is_countdown_timer_active is True:
+            elif self.external_master_overlay_window.time_remaining_in_seconds <= 0:
                 self.master_end_media_container(status="lost")
 
             else:
-                self.master_end_media_container(status="lost")
+                pass
 
         except requests.exceptions.ConnectionError:
             # if the method faces connection error, then pass
