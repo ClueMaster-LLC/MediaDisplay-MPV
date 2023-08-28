@@ -136,6 +136,7 @@ class AuthenticationBackend(QThread):
                             self.downloading_media.emit()
 
                             # music directory
+                            print(">>> Verifying music")
                             try:
                                 if music_file_url is not None:
                                     music_file = requests.get(music_file_url, headers=headers)
@@ -157,6 +158,7 @@ class AuthenticationBackend(QThread):
                                     print(">> Console output - Not a 401 error")
 
                             # picture directory
+                            print(">>> Verifying picture")
                             try:
                                 if picture_file_url is not None:
                                     picture_file = requests.get(picture_file_url, headers=headers)
@@ -178,6 +180,7 @@ class AuthenticationBackend(QThread):
                                     print(">> Console output - Not a 401 error")
 
                             # video directory
+                            print(">>> Verifying video")
                             try:
                                 if video_file_url is not None:
                                     video_file = requests.get(video_file_url, headers=headers)
@@ -199,6 +202,7 @@ class AuthenticationBackend(QThread):
                                     print(">> Console output - Not a 401 error")
 
                             # intro media directory
+                            print(">>> Verifying  intro")
                             try:
                                 if intro_video_file_url is not None:
                                     intro_video_file = requests.get(intro_video_file_url, headers=headers)
@@ -220,6 +224,7 @@ class AuthenticationBackend(QThread):
                                     print(">> Console output - Not a 401 error")
 
                             # end media directory
+                            print(">>> Verifying end media - win")
                             try:
                                 if end_success_file_url is not None:
                                     end_success_file = requests.get(end_success_file_url, headers=headers)
@@ -241,6 +246,7 @@ class AuthenticationBackend(QThread):
                                     print(">> Console output - Not a 401 error")
 
                             # end media directory
+                            print(">>> Verifying end media - loss")
                             try:
                                 if end_fail_file_url is not None:
                                     end_fail_file = requests.get(end_fail_file_url, headers=headers)
@@ -262,6 +268,7 @@ class AuthenticationBackend(QThread):
                                     print(">> Console output - Not a 401 error")
 
                             # clue medias
+                            print(">>> Verifying clue medias")
                             index = 0
 
                             while index <= len(response_of_room_info_api.json()["ClueMediaFiles"]) - 1:
@@ -481,7 +488,7 @@ class AuthenticationWindow(QWidget):
         device_ipv4_address.setText("Local IP : " + self.ipv4_address)
         device_ipv4_address.setAlignment(Qt.AlignHCenter)
         device_ipv4_address.setFont(QFont("IBM Plex Mono", 17))
-        device_ipv4_address.setStyleSheet("color: white; margin-bottom : 30px; margin-top: 30px;")
+        device_ipv4_address.setStyleSheet("color: white; margin-bottom : 30px; margin-top: 10px;")
 
         self.footer_layout.addStretch(1)
         self.footer_layout.addWidget(self.download_media_files_progressbar, alignment=Qt.AlignHCenter)

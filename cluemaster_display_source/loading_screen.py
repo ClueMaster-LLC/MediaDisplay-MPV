@@ -115,6 +115,7 @@ class LoadingBackend(QThread):
                         os.mkdir(room_data_fail_end_media_subfolder)
 
                     # music directory
+                    print(">>> Verifying music")
                     try:
                         if music_file_url is not None:
                             file_name = music_file_url.split("/")[5].partition("?X")[0]
@@ -145,6 +146,7 @@ class LoadingBackend(QThread):
                             print(">> Console output - Not a 401 error")
 
                     # picture directory
+                    print(">>> Verifying picture")
                     try:
                         if picture_file_url is not None:
                             file_name = picture_file_url.split("/")[5].partition("?X")[0]
@@ -175,6 +177,7 @@ class LoadingBackend(QThread):
                             print(">> Console output - Not a 401 error")
 
                     # video directory
+                    print(">>> Verifying video")
                     try:
                         if video_file_url is not None:
                             file_name = video_file_url.split("/")[5].partition("?X")[0]
@@ -205,6 +208,7 @@ class LoadingBackend(QThread):
                             print(">> Console output - Not a 401 error")
 
                     # intro media directory
+                    print(">>> Verifying intro")
                     try:
                         if intro_video_file_url is not None:
                             file_name = intro_video_file_url.split("/")[5].partition("?X")[0]
@@ -235,6 +239,7 @@ class LoadingBackend(QThread):
                             print(">> Console output - Not a 401 error")
 
                     # end media directory
+                    print(">>> Verifying end media - win")
                     try:
                         if end_success_file_url is not None:
                             file_name = end_success_file_url.split("/")[5].partition("?X")[0]
@@ -265,6 +270,7 @@ class LoadingBackend(QThread):
                             print(">> Console output - Not a 401 error")
 
                     # end media directory
+                    print(">>> Verifying end media - loss")
                     try:
                         if end_fail_file_url is not None:
                             file_name = end_fail_file_url.split("/")[5].partition("?X")[0]
@@ -295,6 +301,7 @@ class LoadingBackend(QThread):
                             print(">> Console output - Not a 401 error")
 
                     # downloading clue medias
+                    print(">>> Verifying clue medias")
                     index = 0
 
                     while index <= len(response_of_room_info_api.json()["ClueMediaFiles"]) - 1:
