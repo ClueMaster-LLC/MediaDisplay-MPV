@@ -480,8 +480,8 @@ class AuthenticationWindow(QWidget):
         device_ipv4_address = QLabel(self)
         device_ipv4_address.setText("Local IP : " + self.ipv4_address)
         device_ipv4_address.setAlignment(Qt.AlignHCenter)
-        device_ipv4_address.setFont(QFont("IBM Plex Mono", 15))
-        device_ipv4_address.setStyleSheet("color: white; margin-bottom : 30px;")
+        device_ipv4_address.setFont(QFont("IBM Plex Mono", 17))
+        device_ipv4_address.setStyleSheet("color: white; margin-bottom : 30px; margin-top: 30px;")
 
         self.footer_layout.addStretch(1)
         self.footer_layout.addWidget(self.download_media_files_progressbar, alignment=Qt.AlignHCenter)
