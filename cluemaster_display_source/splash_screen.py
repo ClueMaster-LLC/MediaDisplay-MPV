@@ -61,8 +61,12 @@ class SplashBackend(QThread):
                     headers = CaseInsensitiveDict()
                     headers["Authorization"] = f"Basic {device_unique_code}:{api_key}"
 
-                    if requests.get(device_files_url, headers=headers).status_code == 401:
+                    api_check_response = requests.get(device_files_url, headers=headers)
+                    if api_check_response.status_code == 401:
                         # if response is 401 from the GetDeviceFiles api then, register the device
+                        # GetDeviceFiles api is being used in this case to also check if the device exists or not
+                        # along with the authenticity of the api bearer key
+
                         api_key = self.generate_secure_api_key(device_id=device_unique_code)
                         json_object_of_unique_code_file["apiKey"] = api_key
                         self.skip_authentication.emit(False)
@@ -156,19 +160,19 @@ class SplashBackend(QThread):
                     time.sleep(3)
                 else:
                     print(">>> Console output - API Auth status - ", response.json()["status"])
-                    print(">>> Console output - Verifying new bearer key ")
+                    return response.json()["apiKey"]
 
-                    api_key = response.json()["apiKey"]
-                    device_files_url = DEVICES_FILES_API.format(device_unique_code=device_id)
-
-                    headers = CaseInsensitiveDict()
-                    headers["Authorization"] = f"Basic {device_id}:{api_key}"
-
-                    response = requests.get(device_files_url, headers=headers)
-                    if response.status_code == 200:
-                        return api_key
-                    else:
-                        time.sleep(3)
+                    # print(">>> Console output - Verifying new bearer key ")
+                    #
+                    # api_key = response.json()["apiKey"]
+                    # headers = CaseInsensitiveDict()
+                    # headers["Authorization"] = f"Basic {device_id}:{api_key}"
+                    #
+                    # response = requests.get(GENERAL_REQUEST_API, headers=headers)
+                    # if response.status_code == 200:
+                    #     pass
+                    # else:
+                    #     time.sleep(3)
 
             except KeyError:
                 time.sleep(3)
