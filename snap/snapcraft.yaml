@@ -1,10 +1,11 @@
 name: cluemaster-mediadisplay-core
 base: core20 
-version: '2023.09.20'
-summary: Clumaster.io Video Player for Escape Rooms
+version: '2023.09.25'
+summary: Clumaster.io TV Timer Display for Escape Rooms
 description: |
-  ClueMaster Video Player is a Dynamic TV Display software for escape rooms.
-  It loops through videos and playes them. To be used in small kiosk devices.
+  ClueMaster Media Display is a Dynamic TV Display software for escape rooms.
+  It shows escape room countdown timers, visual text messages, video, audio,
+  and photo clues. It also has the ability to remotely reboot and shutdown.
 grade: stable 
 confinement: strict
 
