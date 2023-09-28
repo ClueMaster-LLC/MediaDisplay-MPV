@@ -6,11 +6,9 @@ description: |
   ClueMaster Media Display is a Dynamic TV Display software for escape rooms.
   It shows escape room countdown timers, visual text messages, video, audio,
   and photo clues. It also has the ability to remotely reboot and shutdown.
+
 grade: stable 
 confinement: strict
-
-architectures:
-  - amd64
 
 apps:
   cluemaster-mediadisplay-core:
