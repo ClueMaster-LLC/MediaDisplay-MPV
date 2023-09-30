@@ -375,10 +375,12 @@ class MasterOverlay(QWidget):
         """ this method when called fetches the latest timer value from the GetGameTimer api and returns it"""
         print("Console Output - Fetch Cloud Timer")
         self.get_game_start_end_timer_api = GET_GAME_START_END_TIME.format(self.game_id)
+        print(f"master_overlay - GET_GAME_START_END_TIME + GAMEID: {self.get_game_start_end_timer_api}")
 
         try:
             # getting the end timer value from the api
             get_game_timer_response = requests.get(self.get_game_start_end_timer_api, headers=self.headers)
+            print(f"master_overlay - GET_GAME_START_END_TIME: {get_game_timer_response}")
             get_game_timer_response.raise_for_status()
             end_timer_value_from_api = get_game_timer_response.json()["tGameEndDateTime"]
             cleaned_end_time = datetime.strptime(end_timer_value_from_api, "%Y-%m-%dT%H:%M:%S")
