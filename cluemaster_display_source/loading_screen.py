@@ -344,10 +344,7 @@ class LoadingBackend(QThread):
 
                     # downloading clue medias
                     print(">>> Verifying clue medias")
-                    files_in_clue_media_sub_folder = os.listdir(main_clue_media_file_directory)
-                    new_clue_medias = []
                     index = 0
-
                     while index <= len(response_of_room_info_api.json()["ClueMediaFiles"]) - 1:
                         url = response_of_room_info_api.json()["ClueMediaFiles"][index]["FilePath"]
 
@@ -357,8 +354,6 @@ class LoadingBackend(QThread):
                             except IndexError:
                                 index += int(1)
                                 continue
-                            else:
-                                new_clue_medias.append(file_name)
 
                             file_location = os.path.join(main_clue_media_file_directory, file_name)
 
@@ -379,10 +374,6 @@ class LoadingBackend(QThread):
 
                         else:
                             index += int(1)
-
-                        for existing_files in files_in_clue_media_sub_folder:
-                            if existing_files not in new_clue_medias:
-                                os.remove(os.path.join(main_clue_media_file_directory, existing_files))
 
                     try:
                         # making post response for DeviceRequestid 6
