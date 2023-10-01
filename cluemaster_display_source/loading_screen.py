@@ -134,6 +134,13 @@ class LoadingBackend(QThread):
                                 self.media_file_downloaded.emit()
                             else:
                                 # emit file downloaded signal
+                                files_in_music_sub_folder = os.listdir(room_data_music_subfolder)
+                                for existing_file in files_in_music_sub_folder:
+                                    if existing_file != file_name:
+                                        os.remove(os.path.join(room_data_music_subfolder, existing_file))
+                                    else:
+                                        pass
+
                                 self.media_file_downloaded.emit()
 
                     except IndexError:
@@ -164,6 +171,13 @@ class LoadingBackend(QThread):
                                 # emit file downloaded signal
                                 self.media_file_downloaded.emit()
                             else:
+                                files_in_picture_sub_folder = os.listdir(room_data_picture_subfolder)
+                                for existing_file in files_in_picture_sub_folder:
+                                    if existing_file != file_name:
+                                        os.remove(os.path.join(room_data_picture_subfolder, existing_file))
+                                    else:
+                                        pass
+
                                 # emit file downloaded signal
                                 self.media_file_downloaded.emit()
 
@@ -195,6 +209,13 @@ class LoadingBackend(QThread):
                                 # emit file downloaded signal
                                 self.media_file_downloaded.emit()
                             else:
+                                files_in_video_sub_folder = os.listdir(room_data_video_subfolder)
+                                for existing_file in files_in_video_sub_folder:
+                                    if existing_file != file_name:
+                                        os.remove(os.path.join(room_data_video_subfolder, existing_file))
+                                    else:
+                                        pass
+
                                 # emit file downloaded signal
                                 self.media_file_downloaded.emit()
 
@@ -226,6 +247,13 @@ class LoadingBackend(QThread):
                                 # emit file downloaded signal
                                 self.media_file_downloaded.emit()
                             else:
+                                files_in_intro_sub_folder = os.listdir(room_data_intro_media_subfolder)
+                                for existing_file in files_in_intro_sub_folder:
+                                    if existing_file != file_name:
+                                        os.remove(os.path.join(room_data_intro_media_subfolder, existing_file))
+                                    else:
+                                        pass
+
                                 # emit file downloaded signal
                                 self.media_file_downloaded.emit()
 
@@ -257,6 +285,13 @@ class LoadingBackend(QThread):
                                 # emit file downloaded signal
                                 self.media_file_downloaded.emit()
                             else:
+                                files_in_success_end_media_sub_folder = os.listdir(room_data_success_end_media_subfolder)
+                                for existing_file in files_in_success_end_media_sub_folder:
+                                    if existing_file != file_name:
+                                        os.remove(os.path.join(room_data_success_end_media_subfolder, existing_file))
+                                    else:
+                                        pass
+
                                 # emit file downloaded signal
                                 self.media_file_downloaded.emit()
 
@@ -288,6 +323,13 @@ class LoadingBackend(QThread):
                                 # emit file downloaded signal
                                 self.media_file_downloaded.emit()
                             else:
+                                files_in_fail_end_media_sub_folder = os.listdir(room_data_fail_end_media_subfolder)
+                                for existing_file in files_in_fail_end_media_sub_folder:
+                                    if existing_file != file_name:
+                                        os.remove(os.path.join(room_data_fail_end_media_subfolder, existing_file))
+                                    else:
+                                        pass
+
                                 # emit file downloaded signal
                                 self.media_file_downloaded.emit()
 
@@ -302,6 +344,8 @@ class LoadingBackend(QThread):
 
                     # downloading clue medias
                     print(">>> Verifying clue medias")
+                    files_in_clue_media_sub_folder = os.listdir(main_clue_media_file_directory)
+                    new_clue_medias = []
                     index = 0
 
                     while index <= len(response_of_room_info_api.json()["ClueMediaFiles"]) - 1:
@@ -314,24 +358,31 @@ class LoadingBackend(QThread):
                                 index += int(1)
                                 continue
                             else:
-                                file_location = os.path.join(main_clue_media_file_directory, file_name)
+                                new_clue_medias.append(file_name)
 
-                                if os.path.isfile(file_location) is False:
-                                    clue_media_content = requests.get(url, headers=headers)
-                                    clue_media_content.raise_for_status()
-                                    with open(os.path.join(main_clue_media_file_directory, file_name), "wb") as file:
-                                        file.write(clue_media_content.content)
+                            file_location = os.path.join(main_clue_media_file_directory, file_name)
 
-                                    # emit file downloaded signal
-                                    self.media_file_downloaded.emit()
-                                else:
-                                    # emit file downloaded signal
-                                    self.media_file_downloaded.emit()
+                            if os.path.isfile(file_location) is False:
+                                clue_media_content = requests.get(url, headers=headers)
+                                clue_media_content.raise_for_status()
+                                with open(os.path.join(main_clue_media_file_directory, file_name), "wb") as file:
+                                    file.write(clue_media_content.content)
 
-                                index += int(1)
-                                continue
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+                            else:
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+
+                            index += int(1)
+                            continue
+
                         else:
                             index += int(1)
+
+                        for existing_files in files_in_clue_media_sub_folder:
+                            if existing_files not in new_clue_medias:
+                                os.remove(os.path.join(main_clue_media_file_directory, existing_files))
 
                     try:
                         # making post response for DeviceRequestid 6

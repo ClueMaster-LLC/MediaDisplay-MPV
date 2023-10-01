@@ -137,6 +137,10 @@ class AuthenticationBackend(QThread):
 
                             # music directory
                             print(">>> Verifying music")
+                            files_in_music_sub_folder = os.listdir(room_data_music_subfolder)
+                            for existing_file in files_in_music_sub_folder:
+                                os.remove(os.path.join(room_data_music_subfolder, existing_file))
+
                             try:
                                 if music_file_url is not None:
                                     music_file = requests.get(music_file_url, headers=headers)
@@ -159,6 +163,10 @@ class AuthenticationBackend(QThread):
 
                             # picture directory
                             print(">>> Verifying picture")
+                            files_in_picture_sub_folder = os.listdir(room_data_picture_subfolder)
+                            for existing_file in files_in_picture_sub_folder:
+                                os.remove(os.path.join(room_data_picture_subfolder, existing_file))
+
                             try:
                                 if picture_file_url is not None:
                                     picture_file = requests.get(picture_file_url, headers=headers)
@@ -181,6 +189,9 @@ class AuthenticationBackend(QThread):
 
                             # video directory
                             print(">>> Verifying video")
+                            files_in_video_sub_folder = os.listdir(room_data_video_subfolder)
+                            for existing_file in files_in_video_sub_folder:
+                                os.remove(os.path.join(room_data_video_subfolder, existing_file))
                             try:
                                 if video_file_url is not None:
                                     video_file = requests.get(video_file_url, headers=headers)
@@ -203,6 +214,9 @@ class AuthenticationBackend(QThread):
 
                             # intro media directory
                             print(">>> Verifying  intro")
+                            files_in_intro_sub_folder = os.listdir(room_data_intro_media_subfolder)
+                            for existing_file in files_in_intro_sub_folder:
+                                os.remove(os.path.join(room_data_intro_media_subfolder, existing_file))
                             try:
                                 if intro_video_file_url is not None:
                                     intro_video_file = requests.get(intro_video_file_url, headers=headers)
@@ -225,6 +239,9 @@ class AuthenticationBackend(QThread):
 
                             # end media directory
                             print(">>> Verifying end media - win")
+                            files_in_success_end_media_sub_folder = os.listdir(room_data_success_end_media_subfolder)
+                            for existing_file in files_in_success_end_media_sub_folder:
+                                os.remove(os.path.join(room_data_success_end_media_subfolder, existing_file))
                             try:
                                 if end_success_file_url is not None:
                                     end_success_file = requests.get(end_success_file_url, headers=headers)
@@ -247,6 +264,9 @@ class AuthenticationBackend(QThread):
 
                             # end media directory
                             print(">>> Verifying end media - loss")
+                            files_in_fail_end_media_sub_folder = os.listdir(room_data_fail_end_media_subfolder)
+                            for existing_file in files_in_fail_end_media_sub_folder:
+                                os.remove(os.path.join(room_data_fail_end_media_subfolder, existing_file))
                             try:
                                 if end_fail_file_url is not None:
                                     end_fail_file = requests.get(end_fail_file_url, headers=headers)
@@ -269,6 +289,9 @@ class AuthenticationBackend(QThread):
 
                             # clue medias
                             print(">>> Verifying clue medias")
+                            files_in_clue_media_sub_folder = os.listdir(main_clue_media_file_directory)
+                            for existing_file in files_in_clue_media_sub_folder:
+                                os.remove(os.path.join(main_clue_media_file_directory, existing_file))
                             index = 0
 
                             while index <= len(response_of_room_info_api.json()["ClueMediaFiles"]) - 1:
