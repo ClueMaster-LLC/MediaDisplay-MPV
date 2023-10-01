@@ -344,7 +344,9 @@ class LoadingBackend(QThread):
 
                     # downloading clue medias
                     print(">>> Verifying clue medias")
+                    latest_clue_medias = []
                     index = 0
+
                     while index <= len(response_of_room_info_api.json()["ClueMediaFiles"]) - 1:
                         url = response_of_room_info_api.json()["ClueMediaFiles"][index]["FilePath"]
 
@@ -354,6 +356,8 @@ class LoadingBackend(QThread):
                             except IndexError:
                                 index += int(1)
                                 continue
+                            else:
+                                latest_clue_medias.append(file_name)
 
                             file_location = os.path.join(main_clue_media_file_directory, file_name)
 
@@ -374,6 +378,15 @@ class LoadingBackend(QThread):
 
                         else:
                             index += int(1)
+
+                    for file in os.listdir(main_clue_media_file_directory):
+                        if file not in latest_clue_medias:
+                            try:
+                                os.remove(os.path.join(main_clue_media_file_directory, file))
+                            except OSError:
+                                print(">>> Console Output - Couldn't remove old clue {} ", format(file))
+                            else:
+                                pass
 
                     try:
                         # making post response for DeviceRequestid 6
