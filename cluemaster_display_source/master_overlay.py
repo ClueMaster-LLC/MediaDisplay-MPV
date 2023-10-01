@@ -375,34 +375,39 @@ class MasterOverlay(QWidget):
         """ this method when called fetches the latest timer value from the GetGameTimer api and returns it"""
         print("Console Output - Fetch Cloud Timer")
         self.get_game_start_end_timer_api = GET_GAME_START_END_TIME.format(self.game_id)
-        print(f"master_overlay - GET_GAME_START_END_TIME + GAMEID: {self.get_game_start_end_timer_api}")
 
-        try:
-            # getting the end timer value from the api
-            get_game_timer_response = requests.get(self.get_game_start_end_timer_api, headers=self.headers)
-            print(f"master_overlay - GET_GAME_START_END_TIME: {get_game_timer_response}")
-            get_game_timer_response.raise_for_status()
-            end_timer_value_from_api = get_game_timer_response.json()["tGameEndDateTime"]
-            cleaned_end_time = datetime.strptime(end_timer_value_from_api, "%Y-%m-%dT%H:%M:%S")
+        while True:
+            try:
+                # getting the end timer value from the api
+                get_game_timer_response = requests.get(self.get_game_start_end_timer_api, headers=self.headers)
+                get_game_timer_response.raise_for_status()
 
-            return cleaned_end_time
+                if get_game_timer_response.status_code == 200:
+                    end_timer_value_from_api = get_game_timer_response.json()["tGameEndDateTime"]
+                    cleaned_end_time = datetime.strptime(end_timer_value_from_api, "%Y-%m-%dT%H:%M:%S")
+                    return cleaned_end_time
+                else:
+                    print(">>> Console Output - Error fetching timer")
+                    print(">>> Console Output - GetGameTimer ", get_game_timer_response.status_code)
+                    time.sleep(3)
+                    continue
 
-        except requests.exceptions.ConnectionError:
-            # if the application faces connection error while making the api call then pass or do nothing
-            pass
+            except requests.exceptions.ConnectionError:
+                # if the application faces connection error while making the api call then pass or do nothing
+                pass
 
-        except json.decoder.JSONDecodeError:
-            # if the application faces json decode error anyhow then do nothing / pass
-            pass
+            except json.decoder.JSONDecodeError:
+                # if the application faces json decode error anyhow then do nothing / pass
+                pass
 
-        except requests.exceptions.HTTPError as request_error:
-            if "401 Client Error" in str(request_error):
-                print("401 Client Error - Device Removed or Not Registered")
-            else:
-                print(">> Console output - Not a 401 error")
+            except requests.exceptions.HTTPError as request_error:
+                if "401 Client Error" in str(request_error):
+                    print("401 Client Error - Device Removed or Not Registered")
+                else:
+                    print(">> Console output - Not a 401 error ", request_error)
 
-        except Exception as error:
-            print("Console Output - Error ", error)
+            except Exception as error:
+                print("Console Output - Error ", error)
 
 
     def application_countdown_timer(self):
