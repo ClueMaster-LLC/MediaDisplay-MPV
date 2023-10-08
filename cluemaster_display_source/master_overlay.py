@@ -383,7 +383,7 @@ class MasterOverlay(QWidget):
                 get_game_timer_response.raise_for_status()
 
                 if get_game_timer_response.status_code == 200:
-                    end_timer_value_from_api = get_game_timer_response.json()["gameEndDateTime"]
+                    end_timer_value_from_api = get_game_timer_response.json()["tGameEndDateTime"]
                     cleaned_end_time = datetime.strptime(end_timer_value_from_api, "%Y-%m-%dT%H:%M:%S")
                     return cleaned_end_time
                 else:
