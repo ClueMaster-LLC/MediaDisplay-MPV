@@ -155,7 +155,24 @@ class SplashBackend(QThread):
                 data = initial_template.substitute(device_key=device_id)
 
                 response = requests.post(url=authentication_api_url, headers=headers, data=data)
-                return response.json()["apiKey"]
+                if response.status_code != 200:
+                    print(f">>> Error trying to create bearer key with status {response.status_code} - {response.content}")
+                    time.sleep(3)
+                else:
+                    print(">>> Console output - API Auth status - ", response.json()["status"])
+                    return response.json()["apiKey"]
+
+                    # print(">>> Console output - Verifying new bearer key ")
+                    #
+                    # api_key = response.json()["apiKey"]
+                    # headers = CaseInsensitiveDict()
+                    # headers["Authorization"] = f"Basic {device_id}:{api_key}"
+                    #
+                    # response = requests.get(GENERAL_REQUEST_API, headers=headers)
+                    # if response.status_code == 200:
+                    #     pass
+                    # else:
+                    #     time.sleep(3)
 
             except KeyError:
                 time.sleep(3)
