@@ -95,10 +95,10 @@ class GameIdle(QMainWindow):
         self.setStyleSheet("background-color: #191F26;")
 
         # apis
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
-            initial_dictionary = json.load(unique_code_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
+        #     initial_dictionary = json.load(unique_code_json_file)
 
-        unique_code_responses = initial_dictionary
+        unique_code_responses = threads.UNIQUE_CODE
 
         self.device_unique_code = unique_code_responses["Device Unique Code"]
         self.api_key = unique_code_responses["apiKey"]

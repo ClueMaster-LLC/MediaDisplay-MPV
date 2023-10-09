@@ -300,13 +300,15 @@ class MasterOverlay(QWidget):
         self.is_countup_timer_active = False
 
         # apis
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameDetails.json")) as game_details_json_file:
-            initial_dictionary = json.load(game_details_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameDetails.json")) as game_details_json_file:
+        #     initial_dictionary = json.load(game_details_json_file)
 
-        self.game_id = initial_dictionary["gameId"]
+        self.game_id = threads.GAME_DETAILS["gameId"]
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
-            initial_dictionary = json.load(unique_code_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
+        #     initial_dictionary = json.load(unique_code_json_file)
+
+        initial_dictionary = threads.UNIQUE_CODE
 
         self.device_id = initial_dictionary["Device Unique Code"]
         self.api_key = initial_dictionary["apiKey"]

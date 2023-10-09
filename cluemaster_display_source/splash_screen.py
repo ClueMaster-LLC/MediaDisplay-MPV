@@ -7,6 +7,7 @@ import time
 import subprocess
 import requests
 import socket
+import threads
 from apis import *
 from string import Template
 from requests.structures import CaseInsensitiveDict
@@ -51,6 +52,9 @@ class SplashBackend(QThread):
             with open(self.unique_code_file) as unique_code_json_file:
                 json_object_of_unique_code_file = json.load(unique_code_json_file)
 
+            # Load file to in memory variable to be used and not hit the HDD every few seconds.
+            threads.UNIQUE_CODE = json_object_of_unique_code_file
+
             device_unique_code = json_object_of_unique_code_file["Device Unique Code"]
             api_key = json_object_of_unique_code_file["apiKey"]
             device_files_url = DEVICES_FILES_API.format(device_unique_code=device_unique_code)
@@ -81,6 +85,8 @@ class SplashBackend(QThread):
                     with open(self.unique_code_file, "w") as unique_code_json_file:
                         json.dump(json_object_of_unique_code_file, unique_code_json_file)
 
+                    threads.UNIQUE_CODE = json_object_of_unique_code_file
+
                 except requests.exceptions.ConnectionError:
                     # if api call is facing connection error, wait for 2 seconds and then retry
                     time.sleep(2)
@@ -108,6 +114,8 @@ class SplashBackend(QThread):
                 with open(os.path.join(MASTER_DIRECTORY, "assets/application data/platform_specs.json"), "w") as specs_file:
                     json.dump(dictionary, specs_file)
 
+                threads.UNIQUE_CODE = dictionary
+
             numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
             alphabets = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
                          "T", "U", "V", "W", "X", "Y", "Z"]
@@ -130,6 +138,8 @@ class SplashBackend(QThread):
             json_object = {"Device Unique Code": full_unique_code, "apiKey": api_key, "IPv4 Address": ipv4_address}
             with open(self.unique_code_file, "w") as file:
                 json.dump(json_object, file)
+
+            threads.UNIQUE_CODE = json_object
 
             self.skip_authentication.emit(False)
 
@@ -264,8 +274,11 @@ class SplashWindow(QWidget):
                                       "IsDownloadConfigsThreadRunning": False, "IsUpdateRoomInfoThreadRunning": False,
                                       "IsShutdownRestartRequestThreadRunning": False, "ResettingGame": False}
 
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
-                json.dump(thread_info_dictionary, thread_file)
+            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
+            #     json.dump(thread_info_dictionary, thread_file)
+
+            threads.THREAD_INFO = thread_info_dictionary
+
         else:
             print("Creating Configuration Directories")
             os.makedirs(os.path.join(MASTER_DIRECTORY, "assets/application data"))
@@ -274,8 +287,10 @@ class SplashWindow(QWidget):
                                       "IsDownloadConfigsThreadRunning": False, "IsUpdateRoomInfoThreadRunning": False,
                                       "IsShutdownRestartRequestThreadRunning": False, "ResettingGame": False}
 
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
-                json.dump(thread_info_dictionary, thread_file)
+            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
+            #     json.dump(thread_info_dictionary, thread_file)
+
+            threads.THREAD_INFO = thread_info_dictionary
 
     def frontend(self):
         """ this methods holds the codes for the different labels and animations"""

@@ -2,6 +2,7 @@ import time
 import os
 import json
 import requests
+import threads
 from string import Template
 from apis import *
 from requests.structures import CaseInsensitiveDict
@@ -21,20 +22,27 @@ class GenerateNewToken:
     def master_method(self):
         # fetch existing device id from unique_code.json file. ** DO NOT DELETE DEVICE ID or the file itself
         # update status of CreatingNewAPIToken
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
-            thread_file_response = json.load(initial_thread_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
+        #     thread_file_response = json.load(initial_thread_file)
+
+        thread_file_response = threads.THREAD_INFO
 
         thread_file_response["CreatingNewAPIToken"] = True
 
         try:
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
-                json.dump(thread_file_response, thread_file)
+            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
+            #     json.dump(thread_file_response, thread_file)
+
+            threads.THREAD_INFO = thread_file_response
+
         except:
             print("Error while updating thread info file from create_new_api_token.py")
 
         # reading device unique code
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json"), "r") as unique_code_json_file:
-            self.json_raw_data = json.load(unique_code_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json"), "r") as unique_code_json_file:
+            # self.json_raw_data = json.load(unique_code_json_file)
+
+            self.json_raw_data = threads.UNIQUE_CODE
             self.master_device_id = self.json_raw_data["Device Unique Code"]
 
         self.generate_new_api_token()
@@ -57,6 +65,8 @@ class GenerateNewToken:
 
                 with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json"), "w") as unique_code_json_file:
                     json.dump(self.json_raw_data, unique_code_json_file)
+
+                threads.UNIQUE_CODE = self.json_raw_data
 
                 return
 

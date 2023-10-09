@@ -5,6 +5,7 @@ import requests
 import json
 import simplejson
 import shutil
+import threads
 import platform_facts
 from apis import *
 from requests.structures import CaseInsensitiveDict
@@ -38,11 +39,11 @@ class LoadingBackend(QThread):
         time.sleep(15)
 
         try:
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
-                json_object = json.load(unique_code_json_file)
+            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
+            #     json_object = json.load(unique_code_json_file)
 
-            device_unique_code = json_object["Device Unique Code"]
-            api_key = json_object["apiKey"]
+            device_unique_code = threads.UNIQUE_CODE["Device Unique Code"]
+            api_key = threads.UNIQUE_CODE["apiKey"]
 
             room_info_api_url = ROOM_INFO_API.format(device_unique_code=device_unique_code)
             download_files_request_api = DOWNLOAD_FILES_REQUEST.format(unique_code=device_unique_code)

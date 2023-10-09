@@ -6,10 +6,14 @@ from apis import *
 from requests.structures import CaseInsensitiveDict
 from PyQt5.QtCore import QThread, pyqtSignal
 import os
+import threads
 
 ROOT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 MASTER_DIRECTORY = os.path.join(os.environ.get("HOME"), "CluemasterDisplay")
 
+THREAD_INFO = None
+GAME_DETAILS = None
+UNIQUE_CODE = None
 
 class GameDetails(QThread):
 
@@ -26,8 +30,10 @@ class GameDetails(QThread):
             codes for every work, the thread does"""
         self.app_is_idle = True
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
-            initial_dictionary = json.load(unique_code_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
+        #     initial_dictionary = json.load(unique_code_json_file)
+
+        initial_dictionary = UNIQUE_CODE
 
         unique_code_response = initial_dictionary
         device_unique_code = unique_code_response["Device Unique Code"]
@@ -40,8 +46,12 @@ class GameDetails(QThread):
 
         while True:
             try:
-                with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                    thread_file_response = json.load(thread_file)
+                # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                #     thread_file_response = json.load(thread_file)
+
+                # print(f'UNIQUE FILE CONTENTS: {threads.UNIQUE_CODE}')
+
+                thread_file_response = threads.THREAD_INFO
 
                 if thread_file_response["IsGameDetailsThreadRunning"] is True:
                     pass
@@ -70,8 +80,10 @@ class GameDetails(QThread):
                     else:
                         self.updateCluesUsed.emit(clue_used)
 
-                    with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameDetails.json"), "w") as game_details_json_file:
-                        json.dump(response, game_details_json_file)
+                    # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameDetails.json"), "w") as game_details_json_file:
+                    #     json.dump(response, game_details_json_file)
+
+                    threads.GAME_DETAILS = response
 
                     self.statusUpdated.emit(game_status)
 
@@ -90,19 +102,24 @@ class GameDetails(QThread):
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
                     print("401 Client Error - Device Removed or Not Registered ( From GameDetails API)")
-                    with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                        thread_file_response = json.load(thread_file)
+                    # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                    #     thread_file_response = json.load(thread_file)
+
+                    thread_file_response = threads.THREAD_INFO
 
                     if thread_file_response["ResettingGame"] is True:
                         pass
                     else:
                         # setting ResettingGame to True
-                        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                            thread_file_response = json.load(thread_file)
-                            thread_file_response["ResettingGame"] = True
+                        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                        #     thread_file_response = json.load(thread_file)
 
-                        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file_x:
-                            json.dump(thread_file_response, thread_file_x)
+                        threads.THREAD_INFO["ResettingGame"] = True
+
+                        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file_x:
+                        #     json.dump(thread_file_response, thread_file_x)
+
+                        threads.THREAD_INFO = thread_file_response
 
                         self.custom_game_status.emit()
                 else:
@@ -124,14 +141,18 @@ class GameDetails(QThread):
         """this method when called updates the thread running status to False and in the next loop when the condition
            checks the status, the condition turns False and breaks the thread"""
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
-            thread_file_response = json.load(initial_thread_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
+        #     thread_file_response = json.load(initial_thread_file)
+
+        thread_file_response = threads.THREAD_INFO
 
         thread_file_response["IsGameDetailsThreadRunning"] = False
 
         try:
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
-                json.dump(thread_file_response, thread_file)
+            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
+            #     json.dump(thread_file_response, thread_file)
+
+            threads.THREAD_INFO = thread_file_response
 
         except PermissionError:
             self.update_detected.emit()
@@ -147,8 +168,10 @@ class ShutdownRestartRequest(QThread):
         """ this is an autorun method which is triggered as soon as the thread is started, this method holds all the
             codes for every work, the thread does"""
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
-            initial_dictionary = json.load(unique_code_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
+        #     initial_dictionary = json.load(unique_code_json_file)
+
+        initial_dictionary = threads.UNIQUE_CODE
 
         unique_code_response = initial_dictionary
         unique_code = unique_code_response["Device Unique Code"]
@@ -161,8 +184,10 @@ class ShutdownRestartRequest(QThread):
 
         while True:
             try:
-                with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                    thread_file_response = json.load(thread_file)
+                # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                #     thread_file_response = json.load(thread_file)
+
+                thread_file_response = threads.THREAD_INFO
 
                 if thread_file_response["IsShutdownRestartRequestThreadRunning"] is True:
                     pass
@@ -208,8 +233,10 @@ class ShutdownRestartRequest(QThread):
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
                     print("401 Client Error - Device Removed or Not Registered ( From ShutdownRestart API )")
-                    with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                        thread_file_response = json.load(thread_file)
+                    # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                    #     thread_file_response = json.load(thread_file)
+
+                    thread_file_response = threads.THREAD_INFO
 
                     if thread_file_response["ResettingGame"] is True:
                         pass
@@ -230,14 +257,18 @@ class ShutdownRestartRequest(QThread):
         """this method when called updates the thread running status to False and in the next loop when the condition
            checks the status, the condition turns False and breaks the thread"""
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
-            thread_file_response = json.load(initial_thread_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
+        #     thread_file_response = json.load(initial_thread_file)
+
+        thread_file_response = threads.THREAD_INFO
 
         thread_file_response["IsShutdownRestartRequestThreadRunning"] = False
 
         try:
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
-                json.dump(thread_file_response, thread_file)
+            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
+            #     json.dump(thread_file_response, thread_file)
+
+            threads.THREAD_INFO = thread_file_response
 
         except PermissionError:
             self.restart.emit()
@@ -252,10 +283,12 @@ class UpdateRoomInfo(QThread):
         """ this is an autorun method which is triggered as soon as the thread is started, this method holds all the
             codes for every work, the thread does"""
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
-            initial_dictionary = json.load(unique_code_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
+        #     initial_dictionary = json.load(unique_code_json_file)
 
-        unique_code_response = initial_dictionary
+        # initial_dictionary = threads.UNIQUE_CODE
+
+        unique_code_response = threads.UNIQUE_CODE
         device_unique_code = unique_code_response["Device Unique Code"]
         api_key = unique_code_response["apiKey"]
 
@@ -266,8 +299,10 @@ class UpdateRoomInfo(QThread):
 
         while True:
             try:
-                with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                    thread_file_response = json.load(thread_file)
+                # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                #     thread_file_response = json.load(thread_file)
+
+                thread_file_response = threads.THREAD_INFO
 
                 if thread_file_response["IsUpdateRoomInfoThreadRunning"] is True:
                     pass
@@ -310,8 +345,10 @@ class UpdateRoomInfo(QThread):
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
                     print("401 Client Error - Device Removed or Not Registered ( From UpdateRoomInfo API )")
-                    with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                        thread_file_response = json.load(thread_file)
+                    # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                    #     thread_file_response = json.load(thread_file)
+
+                    thread_file_response = threads.THREAD_INFO
 
                     if thread_file_response["ResettingGame"] is True:
                         pass
@@ -336,14 +373,18 @@ class UpdateRoomInfo(QThread):
         """this method when called updates the thread running status to False and in the next loop when the condition
            checks the status, the condition turns False and breaks the thread"""
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
-            thread_file_response = json.load(initial_thread_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
+        #     thread_file_response = json.load(initial_thread_file)
+
+        thread_file_response = threads.THREAD_INFO
 
         thread_file_response["IsUpdateRoomInfoThreadRunning"] = False
 
         try:
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
-                json.dump(thread_file_response, thread_file)
+            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
+            #     json.dump(thread_file_response, thread_file)
+
+            threads.THREAD_INFO = thread_file_response
 
         except PermissionError:
             self.update_detected.emit()
@@ -359,14 +400,15 @@ class GetGameClue(QThread):
         """ this is an autorun method which is triggered as soon as the thread is started, this method holds all the
             codes for every work, the thread does"""
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameDetails.json")) as game_details_json_file:
-            initial_dictionary = json.load(game_details_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameDetails.json")) as game_details_json_file:
+        #     initial_dictionary = json.load(game_details_json_file)
 
-        game_details_response = initial_dictionary
-        initial_gameId = game_details_response["gameId"]
+        initial_gameId = threads.GAME_DETAILS["gameId"]
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
-            initial_dictionary = json.load(unique_code_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
+        #     initial_dictionary = json.load(unique_code_json_file)
+
+        initial_dictionary = threads.UNIQUE_CODE
 
         unique_code_response = initial_dictionary
         device_unique_code = unique_code_response["Device Unique Code"]
@@ -379,8 +421,10 @@ class GetGameClue(QThread):
 
         while True:
             try:
-                with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                    thread_file_response = json.load(thread_file)
+                # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                #     thread_file_response = json.load(thread_file)
+
+                thread_file_response = threads.THREAD_INFO
 
                 if thread_file_response["IsGameClueThreadRunning"] is True:
                     pass
@@ -416,8 +460,10 @@ class GetGameClue(QThread):
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
                     print("401 Client Error - Device Removed or Not Registered ( From GetGameClue API )")
-                    with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                        thread_file_response = json.load(thread_file)
+                    # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                    #     thread_file_response = json.load(thread_file)
+
+                    thread_file_response = threads.THREAD_INFO
 
                     if thread_file_response["ResettingGame"] is True:
                         pass
@@ -446,14 +492,18 @@ class GetGameClue(QThread):
         """this method when called updates the thread running status to False and in the next loop when the condition
            checks the status, the condition turns False and breaks the thread"""
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
-            thread_file_response = json.load(initial_thread_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
+        #     thread_file_response = json.load(initial_thread_file)
+
+        thread_file_response = threads.THREAD_INFO
 
         thread_file_response["IsGameClueThreadRunning"] = False
 
         try:
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
-                json.dump(thread_file_response, thread_file)
+            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
+            #     json.dump(thread_file_response, thread_file)
+
+            threads.THREAD_INFO = thread_file_response
 
         except PermissionError:
             self.update_detected.emit()
@@ -469,8 +519,10 @@ class GetTimerRequest(QThread):
         """ this is an autorun method which is triggered as soon as the thread is started, this method holds all the
             codes for every work, the thread does"""
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
-            initial_dictionary = json.load(unique_code_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
+        #     initial_dictionary = json.load(unique_code_json_file)
+
+        initial_dictionary = threads.UNIQUE_CODE
 
         unique_code_response = initial_dictionary
         device_unique_code = unique_code_response["Device Unique Code"]
@@ -483,8 +535,10 @@ class GetTimerRequest(QThread):
 
         while True:
             try:
-                with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                    thread_file_response = json.load(thread_file)
+                # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                #     thread_file_response = json.load(thread_file)
+
+                thread_file_response = threads.THREAD_INFO
 
                 if thread_file_response["IsTimerRequestThreadRunning"] is True:
                     pass
@@ -517,8 +571,10 @@ class GetTimerRequest(QThread):
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
                     print("401 Client Error - Device Removed or Not Registered ( From GetTimerRequest API )")
-                    with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                        thread_file_response = json.load(thread_file)
+                    # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                    #     thread_file_response = json.load(thread_file)
+
+                    thread_file_response = threads.THREAD_INFO
 
                     if thread_file_response["ResettingGame"] is True:
                         pass
@@ -539,14 +595,18 @@ class GetTimerRequest(QThread):
         """this method when called updates the thread running status to False and in the next loop when the condition
            checks the status, the condition turns False and breaks the thread"""
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
-            thread_file_response = json.load(initial_thread_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
+        #     thread_file_response = json.load(initial_thread_file)
+
+        thread_file_response = threads.THREAD_INFO
 
         thread_file_response["IsTimerRequestThreadRunning"] = False
 
         try:
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
-                json.dump(thread_file_response, thread_file)
+            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
+            #     json.dump(thread_file_response, thread_file)
+
+            threads.THREAD_INFO = thread_file_response
 
         except PermissionError:
             self.update_detected.emit()
@@ -562,8 +622,10 @@ class DownloadConfigs(QThread):
         """ this is an autorun method which is triggered as soon as the thread is started, this method holds all the
             codes for every work, the thread does"""
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
-            initial_dictionary = json.load(unique_code_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
+        #     initial_dictionary = json.load(unique_code_json_file)
+
+        initial_dictionary = UNIQUE_CODE
 
         unique_code_response = initial_dictionary
         unique_code = unique_code_response["Device Unique Code"]
@@ -576,8 +638,10 @@ class DownloadConfigs(QThread):
 
         while True:
             try:
-                with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                    thread_file_response = json.load(thread_file)
+                # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                #     thread_file_response = json.load(thread_file)
+
+                thread_file_response = threads.THREAD_INFO
 
                 if thread_file_response["IsDownloadConfigsThreadRunning"] is True:
                     pass
@@ -609,8 +673,10 @@ class DownloadConfigs(QThread):
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
                     print("401 Client Error - Device Removed or Not Registered ( From DownloadConfigs API )")
-                    with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
-                        thread_file_response = json.load(thread_file)
+                    # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
+                    #     thread_file_response = json.load(thread_file)
+
+                    thread_file_response = threads.THREAD_INFO
 
                     if thread_file_response["ResettingGame"] is True:
                         pass
@@ -631,14 +697,18 @@ class DownloadConfigs(QThread):
         """this method when called updates the thread running status to False and in the next loop when the condition
            checks the status, the condition turns False and breaks the thread"""
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
-            thread_file_response = json.load(initial_thread_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as initial_thread_file:
+        #     thread_file_response = json.load(initial_thread_file)
+
+        thread_file_response = threads.THREAD_INFO
 
         thread_file_response["IsDownloadConfigsThreadRunning"] = False
 
         try:
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
-                json.dump(thread_file_response, thread_file)
+            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json"), "w") as thread_file:
+            #     json.dump(thread_file_response, thread_file)
+
+            threads.THREAD_INFO = thread_file_response
 
         except PermissionError:
             self.update_detected.emit()

@@ -315,10 +315,10 @@ class ClueWindow(QWidget):
 
         # headers
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
-            initial_dictionary = json.load(unique_code_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as unique_code_json_file:
+        #     initial_dictionary = json.load(unique_code_json_file)
 
-        unique_code_response = initial_dictionary
+        unique_code_response = threads.UNIQUE_CODE
 
         self.device_id = unique_code_response["Device Unique Code"]
         self.api_key = unique_code_response["apiKey"]
