@@ -23,7 +23,8 @@ snap_version = os.environ.get("SNAP_VERSION")
 
 
 class SplashBackend(QThread):
-    skip_authentication = pyqtSignal(bool)
+    skip_authentication = pyqtSignal()
+    register_device = pyqtSignal(str)
 
     def __init__(self):
         super(SplashBackend, self).__init__()
@@ -37,6 +38,7 @@ class SplashBackend(QThread):
             codes for every work, the thread does"""
 
         time.sleep(2)
+        print(">>> Console output - Splash Screen Backend")
 
         if os.path.isdir(os.path.join(MASTER_DIRECTORY, "assets/application data")) is False:
             # if there is no directory named application data inside the assets directory then create one
@@ -55,37 +57,31 @@ class SplashBackend(QThread):
             # Load file to in memory variable to be used and not hit the HDD every few seconds.
             threads.UNIQUE_CODE = json_object_of_unique_code_file
 
-            device_unique_code = json_object_of_unique_code_file["Device Unique Code"]
-            api_key = json_object_of_unique_code_file["apiKey"]
+            device_unique_code = threads.UNIQUE_CODE["Device Unique Code"]
+            api_key = threads.UNIQUE_CODE["apiKey"]
             device_files_url = DEVICES_FILES_API.format(device_unique_code=device_unique_code)
 
+            ipv4_address = self.fetch_device_ipv4_address()
+            threads.UNIQUE_CODE["IPv4 Address"] = ipv4_address
+
             while self.is_killed is False:
-                print(">>> Console output - Splash Screen Backend")
                 try:
                     headers = CaseInsensitiveDict()
                     headers["Authorization"] = f"Basic {device_unique_code}:{api_key}"
 
                     api_check_response = requests.get(device_files_url, headers=headers)
+                    new_api_key = None
                     if api_check_response.status_code == 401:
                         # if response is 401 from the GetDeviceFiles api then, register the device
                         # GetDeviceFiles api is being used in this case to also check if the device exists or not
                         # along with the authenticity of the api bearer key
 
-                        api_key = self.generate_secure_api_key(device_id=device_unique_code)
-                        json_object_of_unique_code_file["apiKey"] = api_key
-                        self.skip_authentication.emit(False)
+                        print("401 Error. Getting New Token")
+                        new_api_key = self.generate_secure_api_key(device_id=device_unique_code)
+                        self.register_device.emit(new_api_key)
 
                     else:
-                        # else jump to loading screen
-                        self.skip_authentication.emit(True)
-
-                    ipv4_address = self.fetch_device_ipv4_address()
-                    json_object_of_unique_code_file["IPv4 Address"] = ipv4_address
-
-                    with open(self.unique_code_file, "w") as unique_code_json_file:
-                        json.dump(json_object_of_unique_code_file, unique_code_json_file)
-
-                    threads.UNIQUE_CODE = json_object_of_unique_code_file
+                        self.skip_authentication.emit()
 
                 except requests.exceptions.ConnectionError:
                     # if api call is facing connection error, wait for 2 seconds and then retry
@@ -337,24 +333,22 @@ class SplashWindow(QWidget):
         self.splash_thread = SplashBackend()
         self.splash_thread.start()
         self.splash_thread.skip_authentication.connect(self.switch_window)
+        self.splash_thread.register_device.connect(self.register_device)
 
-    def switch_window(self, skip):
-        """ this method is triggered as soon as the skip_authentication signal is emitted by the backend thread"""
-
+    def register_device(self, api_token):
         self.splash_thread.stop()
 
-        if skip is True:
-            # if True is emitted by the skip_authentication signal then, jump to loading screen
-            import loading_screen
-            self.i_window = loading_screen.LoadingScreen()
-            self.i_window.show()
-            self.deleteLater()
+        import authentication_screen
+        self.i_window = authentication_screen.AuthenticationWindow(api_token=api_token)
+        self.i_window.show()
+        self.deleteLater()
 
-        else:
-            if skip is False:
-                # if False if emitted by the skip_authentication signal then, have the device authenticated
-                import authentication_screen
-                self.i_window = authentication_screen.AuthenticationWindow()
-                self.i_window.show()
-                self.deleteLater()
+    def switch_window(self):
+        """ this method is triggered as soon as the skip_authentication signal is emitted by the backend thread"""
+        self.splash_thread.stop()
+
+        import loading_screen
+        self.i_window = loading_screen.LoadingScreen()
+        self.i_window.show()
+        self.deleteLater()
 

@@ -25,25 +25,24 @@ class AuthenticationBackend(QThread):
     proceed = pyqtSignal(bool)
     complete_reset = pyqtSignal()
 
-    def __init__(self):
+    def __init__(self, api_token):
         super(AuthenticationBackend, self).__init__()
 
         # default variables
         self.is_killed = False
         self.resetting_game = False
+        self.unverified_api_token = api_token
+        self.unique_code_file = os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")
 
     def run(self):
         """ this is an autorun method which is triggered as soon as the thread is started, this method holds all the
             codes for every work, the thread does """
 
         try:
-            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")) as file:
-            #     json_object = json.load(file)
-
             json_object = threads.UNIQUE_CODE
 
             device_unique_code = json_object["Device Unique Code"]
-            api_key = json_object["apiKey"]
+            api_key = self.unverified_api_token
 
             room_info_api_url = ROOM_INFO_API.format(device_unique_code=device_unique_code)
             device_request_url = DEVICE_REQUEST_API.format(device_unique_code=device_unique_code)
@@ -55,9 +54,6 @@ class AuthenticationBackend(QThread):
                 print(">>> Console output - Authentication Screen Backend")
                 while True:
                     device_request_api = requests.get(device_request_url, headers=headers)
-                    # print("here")
-                    # device_request_api.raise_for_status()  # raise error if status code of request is not 200
-                    # print("raise_for_status_passed")
                     if device_request_api.status_code != 200:
                         print("Device Registration - Device Request API status not 200")
                         time.sleep(3)
@@ -65,6 +61,13 @@ class AuthenticationBackend(QThread):
 
                     else:
                         print("Got Request")
+                        threads.UNIQUE_CODE["apiKey"] = self.unverified_api_token
+                        print("New UNIQUE_CODE data : ", threads.UNIQUE_CODE)
+
+                        updated_unique_code_file_data = threads.UNIQUE_CODE
+                        with open(self.unique_code_file, "w") as file:
+                            json.dump(updated_unique_code_file_data, file)
+
                         break
 
                 while not requests.get(device_request_url, headers=headers).content.decode("utf-8") == "No record found":
@@ -394,12 +397,13 @@ class AuthenticationBackend(QThread):
 
 class AuthenticationWindow(QWidget):
 
-    def __init__(self):
+    def __init__(self, api_token):
         super().__init__()
 
         # default variables
         self.screen_width = QApplication.desktop().width()
         self.screen_height = QApplication.desktop().height()
+        self.unverified_api_token = api_token
         self.ipv4_address = self.fetch_device_ipv4_address()
         self.auth_details = None
 
@@ -539,7 +543,7 @@ class AuthenticationWindow(QWidget):
     def connect_backend_thread(self):
         """ this method starts the backend authentication thread"""
 
-        self.authentication_thread = AuthenticationBackend()
+        self.authentication_thread = AuthenticationBackend(api_token=self.unverified_api_token)
         self.authentication_thread.start()
         self.authentication_thread.authentication_complete.connect(self.authentication_complete)
         self.authentication_thread.authentication_details.connect(self.authentication_details)
