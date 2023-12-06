@@ -1,6 +1,6 @@
 
 api_initial = "https://deviceapi.cluemaster.io"
-devapi_initial = "https://devapi.cluemaster.io"
+devapi_initial = "https://dev-deviceapi.cluemaster.io"
 
 # master apis
 GENERAL_REQUEST_API = api_initial + "/api/Device/GetGeneralRequest"
