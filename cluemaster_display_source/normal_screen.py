@@ -433,6 +433,8 @@ class NormalWindow(QMainWindow):
         self.game_details_thread.statusUpdated.connect(self.verify_game_status)
         self.game_details_thread.custom_game_status.connect(self.complete_game_shutdown)
 
+        print("Game Details : ", threads.GAME_DETAILS)
+
         self.download_files_request.start()
         self.download_files_request.downloadFiles.connect(self.download_files)
         self.download_files_request.update_detected.connect(self.restart_device)
@@ -1220,11 +1222,9 @@ class NormalWindow(QMainWindow):
         # stop/pause application countdown timers
         if self.external_master_overlay_window.is_countup_timer_active is True:
             self.external_master_overlay_window.countup_timer.stop()
-            print(">>> Console output - Should stop countup timer")
 
         elif self.external_master_overlay_window.is_countdown_timer_active is True:
             self.external_master_overlay_window.countdown_timer.stop()
-            print(">>> Console output - Should stop countdown timer")
 
         self.is_application_timer_stopped = True
 
@@ -1236,8 +1236,11 @@ class NormalWindow(QMainWindow):
             if win_loss_text == "won":
                 self.master_end_media_container(status="won")
 
-            elif self.external_master_overlay_window.time_remaining_in_seconds <= 0:
-                self.master_end_media_container(status="lost")
+            elif self.external_master_overlay_window.is_countdown_timer_active:
+                if self.external_master_overlay_window.time_remaining_in_seconds <= 0:
+                    self.master_end_media_container(status="lost")
+                else:
+                    pass
 
             else:
                 pass
