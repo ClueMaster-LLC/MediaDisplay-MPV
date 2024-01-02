@@ -136,8 +136,7 @@ class SplashBackend(QThread):
                 json.dump(json_object, file)
 
             threads.UNIQUE_CODE = json_object
-
-            self.skip_authentication.emit(False)
+            self.register_device.emit(api_key)
 
     def generate_secure_api_key(self, device_id):
         """ this method takes the device_id and then generates a secure api key for it"""

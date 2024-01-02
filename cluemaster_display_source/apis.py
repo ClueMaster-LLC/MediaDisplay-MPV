@@ -1,8 +1,8 @@
 
 api_initial = "https://deviceapi.cluemaster.io"
-devapi_initial = "https://deviceapi.cluemaster.io"
+devapi_initial = "https://devapi.cluemaster.io"
 
-# master apiss
+# master apis
 GENERAL_REQUEST_API = api_initial + "/api/Device/GetGeneralRequest"
 DEVICES_FILES_API = api_initial + "/api/Device/GetDeviceFiles/{device_unique_code}"
 GENERATE_API_TOKEN_API = api_initial + "/api/Auth/PostGenerateApiKey"
