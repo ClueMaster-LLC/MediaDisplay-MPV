@@ -65,7 +65,7 @@ class TextClueContainer(QWidget):
         self.text_clue_container.setText(self.text)
         self.text_clue_container.setWordWrap(True)
         self.text_clue_container.setAlignment(Qt.AlignCenter | Qt.AlignHCenter)
-        self.text_clue_container.setStyleSheet("color:white; font-weight:bold; background-color:rgba(17, 17, 17, 0.7);")
+        self.text_clue_container.setStyleSheet("color:white; font-weight:bold; background-color:rgba(17, 17, 17, 0.7); padding:20px 20px;")
 
         self.regional_box_layout = QVBoxLayout(self)
         self.regional_box_layout.addWidget(self.text_clue_container, alignment=Qt.AlignCenter | Qt.AlignBottom)
