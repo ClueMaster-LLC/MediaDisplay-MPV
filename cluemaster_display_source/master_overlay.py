@@ -93,7 +93,6 @@ class ClueContainer(QWidget):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setAttribute(Qt.WA_NoSystemBackground)
         self.setCursor(Qt.BlankCursor)
-        self.raise_()
 
     def update_clues_used(self, used):
         """ this method is triggered after every 7 seconds and it checks if the number of clues used has changed in
@@ -333,8 +332,7 @@ class MasterOverlay(QWidget):
         self.setAttribute(Qt.WA_NoSystemBackground)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setCursor(Qt.BlankCursor)
-        self.raise_()
-        # self.showFullScreen()
+        self.showFullScreen()
 
     def update_application_timer(self):
         """ this method is triggered as soon as the update_timer signal is emitted by the timer request thread, this
