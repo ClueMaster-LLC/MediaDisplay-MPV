@@ -33,6 +33,9 @@ class TextClueContainer(QWidget):
         self.screen_width = QApplication.desktop().width()
         self.screen_height = QApplication.desktop().height()
         self.preferred_height = preferred_height
+        self.custom_width = int(0.987 * self.screen_width)
+        self.custom_padding = int(self.screen_width - self.custom_width)
+        print(self.custom_width)
 
         # widgets
         self.text_clue_container = QLabel(self)
@@ -51,7 +54,7 @@ class TextClueContainer(QWidget):
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
         """)
 
-        self.move(0, self.screen_height - self.preferred_height)
+        self.move(int(self.screen_width - self.custom_width / 2), int(self.screen_height - self.preferred_height))
         self.setStyleSheet("background-color: black;")
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setAttribute(Qt.WA_NoSystemBackground)
@@ -60,12 +63,12 @@ class TextClueContainer(QWidget):
     def frontend(self):
         """ this method contains the codes for showing the text clue labels"""
 
-        self.text_clue_container.setFixedSize(self.screen_width, int(self.preferred_height))
+        self.text_clue_container.setFixedSize(self.custom_width, int(self.preferred_height))
         self.text_clue_container.setFont(QFont("IBM Plex Mono", int(self.screen_height / 35)))
         self.text_clue_container.setText(self.text)
         self.text_clue_container.setWordWrap(True)
         self.text_clue_container.setAlignment(Qt.AlignCenter | Qt.AlignHCenter)
-        self.text_clue_container.setStyleSheet("color:white; font-weight:bold; background-color:rgba(17, 17, 17, 0.7); padding:20px 20px;")
+        self.text_clue_container.setStyleSheet(f"color:white; font-weight:bold; background-color:rgba(17, 17, 17, 0.7); padding:{self.custom_padding}px {self.custom_padding}px;")
 
         self.regional_box_layout = QVBoxLayout(self)
         self.regional_box_layout.addWidget(self.text_clue_container, alignment=Qt.AlignCenter | Qt.AlignBottom)
