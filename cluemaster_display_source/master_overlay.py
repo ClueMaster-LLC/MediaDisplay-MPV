@@ -90,6 +90,7 @@ class ClueContainer(QWidget):
         """ this method contains code for the configurations of the window"""
 
         self.resize(self.screen_width, self.screen_height)
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setAttribute(Qt.WA_NoSystemBackground)
         self.setCursor(Qt.BlankCursor)
@@ -331,6 +332,7 @@ class MasterOverlay(QWidget):
         self.resize(self.screen_width, self.screen_height)
         self.setAttribute(Qt.WA_NoSystemBackground)
         self.setAttribute(Qt.WA_TranslucentBackground)
+        self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.setCursor(Qt.BlankCursor)
         self.showFullScreen()
 
