@@ -383,6 +383,7 @@ class NormalWindow(QMainWindow):
         """ this method contains the codes for the configuration of the window"""
 
         self.setFixedSize(self.screen_width, self.screen_height)
+        self.setWindowFlag(Qt.WindowStaysOnBottomHint)
         self.setCursor(Qt.BlankCursor)
 
         self.full_screen_shortcut = QShortcut(QKeySequence(Qt.Key_F11), self)
@@ -876,10 +877,12 @@ class NormalWindow(QMainWindow):
 
         # classes
         self.external_master_overlay_window = master_overlay.MasterOverlay()
+        self.external_master_overlay_window.raise_()
         self.external_master_overlay_window.game_ended.connect(self.processing_stop_game_request_from_timers)
 
         if room_info_response["Clues Allowed"] is True:
             self.external_clue_icon_container_window = master_overlay.ClueContainer()
+            self.external_clue_icon_container_window.raise_()
             self.external_clue_icon_container_window.showFullScreen()
 
         else:
@@ -888,6 +891,11 @@ class NormalWindow(QMainWindow):
         self.external_clue_containers_window = clue_containers.ClueWindow()
         self.external_clue_containers_window.mute_game.connect(self.mute_game)
         self.external_clue_containers_window.unmute_game.connect(self.unmute_game)
+
+        # using raise again just for certainty
+        self.external_master_overlay_window.raise_()
+        self.external_clue_icon_container_window.raise_()
+
 
     def master_intro_video_container(self):
         """ this method is triggered as soon as the game starts, this method checks if the intro video is already
