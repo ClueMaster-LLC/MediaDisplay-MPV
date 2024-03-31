@@ -328,6 +328,7 @@ class NormalWindow(QMainWindow):
         self.master_audio_player = mpv.MPV()
 
         # variables
+        self.master_video_started = False
         self.is_game_in_progress = False
         self.master_api_status = False
         self.is_master_video_playing = False
@@ -875,6 +876,13 @@ class NormalWindow(QMainWindow):
             # if the method faces simplejson DecodeError, then pass
             pass
 
+        while self.master_video_started is False:
+            print(">>> Console Output - Master video hasn't started")
+            time.sleep(1)
+            continue
+
+        print(">>> Console Output - Master video started")
+
         # classes
         self.external_master_overlay_window = master_overlay.MasterOverlay()
         self.external_master_overlay_window.raise_()
@@ -891,10 +899,6 @@ class NormalWindow(QMainWindow):
         self.external_clue_containers_window = clue_containers.ClueWindow()
         self.external_clue_containers_window.mute_game.connect(self.mute_game)
         self.external_clue_containers_window.unmute_game.connect(self.unmute_game)
-
-        # using raise again just for certainty
-        self.external_master_overlay_window.raise_()
-        self.external_clue_icon_container_window.raise_()
 
 
     def master_intro_video_container(self):
@@ -1022,9 +1026,21 @@ class NormalWindow(QMainWindow):
             if os.path.isfile(default):
                 self.master_video_player.loop = True
                 self.master_video_player.play(default)
+                self.master_video_player.register_event_callback(self.track_master_video_player)
                 self.is_master_video_playing = True
             else:
                 pass
+
+    def track_master_video_player(self, event):
+        """this method tracks the master video player, so that the other windows are called only after the master
+            video player has ended"""
+
+        event_id = event["event_id"]
+        if self.master_video_started is False:
+            if event_id == 6:
+                self.master_video_started = True
+        else:
+            pass
 
     def master_background_image_container(self):
         """ this method holds the location of the master or background photo and loads it into a QLabel and
