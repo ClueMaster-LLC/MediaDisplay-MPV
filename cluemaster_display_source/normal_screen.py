@@ -1036,7 +1036,7 @@ class NormalWindow(QMainWindow):
                 self.master_video_player.loop = True
                 self.master_video_player.play(default)
                 self.master_video_player.register_event_callback(self.track_master_video_player)
-                self.is_master_video_playing = True
+
             else:
                 pass
 
@@ -1047,8 +1047,9 @@ class NormalWindow(QMainWindow):
 
         event_id = event["event_id"]
         if self.master_video_started is False:
-            if event_id == 7:
+            if event_id == 9:
                 # time.sleep(2)
+                self.is_master_video_playing = True
                 self.master_video_started = True
         else:
             pass
