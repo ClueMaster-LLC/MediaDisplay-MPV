@@ -1047,8 +1047,8 @@ class NormalWindow(QMainWindow):
 
         event_id = event["event_id"]
         if self.master_video_started is False:
-            if event_id == 6:
-                time.sleep(2)
+            if event_id == 7:
+                # time.sleep(2)
                 self.master_video_started = True
         else:
             pass
