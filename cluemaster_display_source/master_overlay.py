@@ -32,6 +32,7 @@ class CustomIconLabel(QLabel):
 
 
 class ClueContainer(QWidget):
+    raiseMe = pyqtSignal()
 
     def __init__(self):
         super(ClueContainer, self).__init__()
@@ -261,11 +262,13 @@ class ClueContainer(QWidget):
                     break
 
         self.setLayout(self.master_clue_icon_container_layout)
+        self.raiseMe.emit()
 
 
 class MasterOverlay(QWidget):
 
     game_ended = pyqtSignal()
+    raiseMe = pyqtSignal()
 
     def __init__(self):
         super(MasterOverlay, self).__init__()
@@ -425,6 +428,7 @@ class MasterOverlay(QWidget):
 
         self.update_countdown_timer()
         self.countdown_timer.start()
+        self.raiseMe.emit()
 
     def update_countdown_timer(self):
         """ this method is triggered every 1 second to update the countdown timer"""
@@ -454,6 +458,7 @@ class MasterOverlay(QWidget):
         self.countup_label.show()
 
         self.countup_timer.start()
+        self.raiseMe.emit()
 
     def update_countup_timer(self):
         """ this method is triggered every 1 second to update the countup timer"""
