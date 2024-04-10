@@ -1,6 +1,6 @@
 name: cluemaster-mediadisplay-core
 base: core20 
-version: '2024.03.31'
+version: '2024.04.03~DEVELOPMENT'
 summary: Clumaster.io TV Timer Display for Escape Rooms
 description: |
   ClueMaster Media Display is a Dynamic TV Display software for escape rooms.
