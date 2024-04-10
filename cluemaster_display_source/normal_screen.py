@@ -876,12 +876,12 @@ class NormalWindow(QMainWindow):
             # if the method faces simplejson DecodeError, then pass
             pass
 
-        while self.master_video_started is False:
+        while self.master_video_started is False and game_details_response["isVideo"] is True:
             print(">>> Console Output - Master video hasn't started")
             time.sleep(1)
             continue
 
-        print(">>> Console Output - Master video started")
+        print(">>> Console Output - Master video started/Skipped")
 
         # classes
         self.external_master_overlay_window = master_overlay.MasterOverlay()
