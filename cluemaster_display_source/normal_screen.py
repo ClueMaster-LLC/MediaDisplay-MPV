@@ -441,6 +441,7 @@ class NormalWindow(QMainWindow):
         self.download_files_request.downloadFiles.connect(self.download_files)
         self.download_files_request.update_detected.connect(self.restart_device)
 
+
     def download_files(self):
         """ this method is triggered as soon as the application receives the request to download new or updated files"""
 
@@ -1026,6 +1027,7 @@ class NormalWindow(QMainWindow):
             if os.path.isfile(default):
                 self.master_video_player.loop = True
                 self.master_video_player.play(default)
+                time.sleep(1)
                 self.master_video_player.register_event_callback(self.track_master_video_player)
                 self.is_master_video_playing = True
             else:
