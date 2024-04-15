@@ -1073,7 +1073,7 @@ class NormalWindow(QMainWindow):
                     self.master_video_player.loop = True
                     self.master_video_player.play(default)
 
-                if (default.endswith(".m4v") or default.endswith(".mp4") or default.endswith(".mkv") or
+                elif (default.endswith(".m4v") or default.endswith(".mp4") or default.endswith(".mkv") or
                         default.endswith(".avi") or default.endswith(".mov") or default.endswith(".mpg") or
                         default.endswith(".mpeg")):
                     self.master_video_player.loop = True
