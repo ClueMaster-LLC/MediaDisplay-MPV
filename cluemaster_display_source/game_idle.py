@@ -157,6 +157,10 @@ class GameIdle(QMainWindow):
             # if the code inside the try block faces simplejson decode error then pass
             pass
 
+        except Exception as error:
+            # something else happend like a photo was missing from the file storage or glcoud file error
+            pass
+
     def restart_device(self):
         """ this method is triggered as soon as the restart signal is emitted by the shutdown restart thread"""
 

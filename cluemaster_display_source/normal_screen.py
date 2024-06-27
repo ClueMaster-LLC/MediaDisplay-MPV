@@ -486,6 +486,16 @@ class NormalWindow(QMainWindow):
             else:
                 pass
 
+        ## TODO SAVE THiS CODE for = 3 and only stop the game if the timer is > 0
+        # elif self.external_master_overlay_window.is_countdown_timer_active:
+        #     if self.external_master_overlay_window.time_remaining_in_seconds <= 0:
+        #         self.master_end_media_container(status="lost")
+        #     else:
+        #         pass
+        #
+        # else:
+        #     pass
+
         elif game_status == 3:
             # if status is 3 then reset game
 
