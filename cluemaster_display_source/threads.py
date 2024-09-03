@@ -14,6 +14,7 @@ MASTER_DIRECTORY = os.path.join(os.environ.get("HOME"), "CluemasterDisplay")
 THREAD_INFO = None
 GAME_DETAILS = None
 UNIQUE_CODE = None
+CLUE_RESPONSE = None
 
 class GameDetails(QThread):
 
@@ -438,23 +439,33 @@ class GetGameClue(QThread):
                 gameClueId = json_response.json()["gameClueId"]
                 gameId = json_response.json()["gameId"]
 
+                time.sleep(1)
+
                 requests.post(POST_GAME_CLUE.format(gameId=gameId, gameClueId=gameClueId), headers=headers).raise_for_status()
 
-                with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json"), "w") as game_clue_json_file:
-                    json.dump(json_response.json(), game_clue_json_file)
+                # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json"), "w") as game_clue_json_file:
+                #     json.dump(json_response.json(), game_clue_json_file)
+
+                threads.CLUE_RESPONSE = json_response.json()
 
                 self.statusChanged.emit()
 
-            except requests.exceptions.ConnectionError:
+            except requests.exceptions.ConnectionError as e:
                 # if the code inside the try block faces connection error while making api calls, then pass
-                pass
+                print(f">>> Console output - Clue ERROR: {e}")
+                time.sleep(1)
+                # pass
 
-            except json.decoder.JSONDecodeError:
+            except json.decoder.JSONDecodeError as e:
                 # if the code inside the try is facing json decode error then pass
+                print(f">>> Console output - Clue ERROR: {e}")
+                time.sleep(1)
                 pass
 
-            except simplejson.errors.JSONDecodeError:
+            except simplejson.errors.JSONDecodeError as e:
                 # if the code inside the try is facing simplejson decode error then pass
+                print(f">>> Console output - Clue ERROR: {e}")
+                time.sleep(1)
                 pass
 
             except requests.exceptions.HTTPError as request_error:
@@ -472,8 +483,9 @@ class GetGameClue(QThread):
                 else:
                     print(">> Console output - Not a 401 error")
 
-            except KeyError:
+            except KeyError as e:
                 # if the code inside the try block faces KeyError, then pass
+                print(f">>> Console output - Clue ERROR: {e}")
                 pass
 
             except PermissionError:
@@ -486,7 +498,7 @@ class GetGameClue(QThread):
 
             finally:
                 # and finally
-                time.sleep(3)
+                time.sleep(2)
 
     def stop(self):
         """this method when called updates the thread running status to False and in the next loop when the condition

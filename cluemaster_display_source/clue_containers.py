@@ -347,10 +347,10 @@ class ClueWindow(QWidget):
         """ this method contains the codes for determining the type of clue and calling the respective method"""
 
         try:
-            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json")) as game_clue_json_file:
-                initial_dictionary = json.load(game_clue_json_file)
+            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json")) as game_clue_json_file:
+            #     initial_dictionary = json.load(game_clue_json_file)
 
-            game_clue_response = initial_dictionary
+            game_clue_response = threads.CLUE_RESPONSE
 
             if game_clue_response["clueStatus"] is True:
 
@@ -523,10 +523,10 @@ class ClueWindow(QWidget):
         """ this method sends a post response, when the video or audio clue finishes playing, to notify the webapp to
             restore the clue status"""
 
-        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json")) as game_clue_json_file:
-            initial_dictionary = json.load(game_clue_json_file)
+        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json")) as game_clue_json_file:
+        #     initial_dictionary = json.load(game_clue_json_file)
 
-        game_clue_response = initial_dictionary
+        game_clue_response = threads.CLUE_RESPONSE
         game_id = game_clue_response["gameId"]
         clue_id = game_clue_response["gameClueId"]
 
@@ -534,7 +534,9 @@ class ClueWindow(QWidget):
 
         while True:
             try:
+                time.sleep(1)
                 requests.post(post_game_status_api.format(game_ids=game_id, clue_ids=clue_id), headers=self.headers).raise_for_status()
+                time.sleep(1)
 
             except requests.exceptions.ConnectionError:
                 # if the post response inside the try block faces connection error while making the response then
