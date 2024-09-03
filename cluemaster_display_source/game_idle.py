@@ -158,7 +158,8 @@ class GameIdle(QMainWindow):
             pass
 
         except Exception as error:
-            # something else happend like a photo was missing from the file storage or glcoud file error
+            # something else happened like a photo was missing from the file storage or glcoud file error
+            print(f">>> game_idle - Error Loading FrontEnd: {error}")
             pass
 
     def restart_device(self):
