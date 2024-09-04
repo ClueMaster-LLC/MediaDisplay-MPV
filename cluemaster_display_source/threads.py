@@ -433,38 +433,47 @@ class GetGameClue(QThread):
                 else:
                     return
 
-                print(">>> Console output - Clue response")
+                print(">>> threads - Send Clue ACK response")
                 json_response = requests.get(game_clue_url, headers=headers)
                 json_response.raise_for_status()
-                gameClueId = json_response.json()["gameClueId"]
-                gameId = json_response.json()["gameId"]
 
-                time.sleep(1)
+                if 'status' in json_response.json():
+                    if json_response.json()['status'] == 'No clues Found':
+                        # print(f">>> threads - Clue json_RESP: {json_response.json()}")
+                        pass
+                else:
+                    print(f">>> threads - Clue json_RESP: {json_response.json()}")
+                    gameClueId = json_response.json()["gameClueId"]
+                    gameId = json_response.json()["gameId"]
 
-                requests.post(POST_GAME_CLUE.format(gameId=gameId, gameClueId=gameClueId), headers=headers).raise_for_status()
+                    print(f">>> threads - GAMECLUEID: {gameClueId}")
+                    print(f">>> threads - GAMECLUEID: {gameId}")
+
+
+                    requests.post(POST_GAME_CLUE.format(gameId=gameId, gameClueId=gameClueId), headers=headers).raise_for_status()
 
                 # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json"), "w") as game_clue_json_file:
                 #     json.dump(json_response.json(), game_clue_json_file)
 
-                threads.CLUE_RESPONSE = json_response.json()
+                    threads.CLUE_RESPONSE = json_response.json()
 
-                self.statusChanged.emit()
+                    self.statusChanged.emit()
 
             except requests.exceptions.ConnectionError as e:
                 # if the code inside the try block faces connection error while making api calls, then pass
-                print(f">>> Console output - Clue ERROR: {e}")
+                print(f">>> threads - Clue POST requests.exceptions.ConnectionError ERROR: {e}")
                 time.sleep(1)
                 # pass
 
             except json.decoder.JSONDecodeError as e:
                 # if the code inside the try is facing json decode error then pass
-                print(f">>> Console output - Clue ERROR: {e}")
+                print(f">>> threads - Clue POST json.decoder.JSONDecodeError ERROR: {e}")
                 time.sleep(1)
                 pass
 
             except simplejson.errors.JSONDecodeError as e:
                 # if the code inside the try is facing simplejson decode error then pass
-                print(f">>> Console output - Clue ERROR: {e}")
+                print(f">>> threads - Clue POST simplejson.errors.JSONDecodeError ERROR: {e}")
                 time.sleep(1)
                 pass
 
@@ -479,13 +488,13 @@ class GetGameClue(QThread):
                     if thread_file_response["ResettingGame"] is True:
                         pass
                     else:
-                        print(">>> Console output - API Token Expired (GetGameClue)")
+                        print(">>> threads - API Token Expired (GetGameClue)")
                 else:
-                    print(">> Console output - Not a 401 error")
+                    print(">> threads - Not a 401 error")
 
             except KeyError as e:
                 # if the code inside the try block faces KeyError, then pass
-                print(f">>> Console output - Clue ERROR: {e}")
+                print(f">>> threads - Clue POST KeyError ERROR: {e}")
                 pass
 
             except PermissionError:
