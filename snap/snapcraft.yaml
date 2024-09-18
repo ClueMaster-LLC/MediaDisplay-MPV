@@ -73,7 +73,7 @@ parts:
       - locales
       - libvdpau1
       - i965-va-driver
-      - libmpv2
+      - libmpv1
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
