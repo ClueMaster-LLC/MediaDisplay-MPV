@@ -169,6 +169,7 @@ parts:
       - libglvnd0
       - libglx0
       - fcitx-frontend-qt5
+      - libmpv1
 
     stage:
       - -usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2
