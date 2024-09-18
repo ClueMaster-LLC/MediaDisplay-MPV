@@ -127,6 +127,7 @@ parts:
       - libpq-dev
     stage-packages:
       - libpq5
+      - libmpv1
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
@@ -169,7 +170,6 @@ parts:
       - libglvnd0
       - libglx0
       - fcitx-frontend-qt5
-      - libmpv1
 
     stage:
       - -usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2
