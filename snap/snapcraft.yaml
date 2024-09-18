@@ -130,9 +130,10 @@ parts:
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
-      - git+https://github.com/ClueMaster-LLC/python-mpv/tree/146bf711de77f9e22c7b3e98bb3bcd229b3c5dbc
+      #- git+https://github.com/ClueMaster-LLC/python-mpv
       - simplejson
       - psutil
+      - python-mpv
     organize:
       usr/lib/*/samba/*: usr/lib/
 
