@@ -1,5 +1,5 @@
 name: cluemaster-mediadisplay-core
-base: core22
+base: core24
 version: '2024.09.24-DEVELOPMENT'
 summary: Clumaster.io TV Timer Display for Escape Rooms
 description: |
@@ -157,7 +157,7 @@ parts:
       - libqt5gui5
       - libgdk-pixbuf2.0-0
       - libqt5svg5 
-      - try: [appmenu-qt5]
+      #- try: [appmenu-qt5]
       - locales-all
       - xdg-user-dirs
       - libdrm2
