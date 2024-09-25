@@ -1,5 +1,5 @@
 name: cluemaster-mediadisplay-core
-base: core24
+base: core22
 version: '2024.09.24-DEVELOPMENT'
 summary: Clumaster.io TV Timer Display for Escape Rooms
 description: |
