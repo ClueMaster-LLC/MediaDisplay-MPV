@@ -230,7 +230,6 @@ parts:
       - libflac8
       - libglib2.0-0
       - libgomp1
-      - libjson-c4
       - libltdl7
       - libogg0
       - libsbc1
