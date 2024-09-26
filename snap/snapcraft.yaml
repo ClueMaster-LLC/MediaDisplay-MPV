@@ -201,10 +201,11 @@ parts:
   pulseaudio:
     plugin: meson
     source: https://github.com/pulseaudio/pulseaudio.git
-    #source-tag: v15.0
+    source-tag: v15.0
     source-depth: 1
     after: [ alsa-lib ]
     build-packages:
+      - meson
       - check
       - doxygen
       - intltool
@@ -263,12 +264,12 @@ parts:
       - -Dsystem_group="root"
       - -Daccess_group="root"
     override-build: |
-      snapcraftctl build
-      VER=$(cd $SNAPCRAFT_PART_SRC; git tag|sed 's/^v//')
-      snapcraftctl set-version $VER
-      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/applications
+      craftctl default
+      VER=$(cd $CRAFT_PART_SRC; git tag|sed 's/^v//')
+      craftctl set version=$VER
+      mkdir -p $CRAFT_PART_INSTALL/usr/share/applications
     override-prime: |
-      snapcraftctl prime
+      craftctl default
       find usr/share/doc/ -type f,l ! -name copyright | xargs rm -rf
     prime:
       - -usr/include
@@ -296,7 +297,7 @@ parts:
     prime:
       - -usr/lib/alsa-lib/*.la
     override-prime: |
-      snapcraftctl prime
+      craftctl default
       # make links relative
       cd etc/alsa/conf.d
       for link in $(find . -type l); do
