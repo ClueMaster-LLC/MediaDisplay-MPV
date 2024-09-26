@@ -1,5 +1,5 @@
 name: cluemaster-mediadisplay-core
-base: core24
+base: core22
 version: '2024.09.25-DEVELOPMENT'
 summary: Clumaster.io TV Timer Display for Escape Rooms
 description: |
@@ -195,7 +195,7 @@ parts:
       - -usr/lib/pkgconfig
 
   pulseaudio:
-    plugin: meson-deps
+    plugin: meson
     source: https://github.com/pulseaudio/pulseaudio.git
     source-tag: v15.0
     source-depth: 1
