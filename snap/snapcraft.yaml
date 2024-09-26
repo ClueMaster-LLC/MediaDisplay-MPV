@@ -195,7 +195,7 @@ parts:
       - -usr/lib/pkgconfig
 
   pulseaudio:
-    plugin: meson
+    plugin: meson-deps
     source: https://github.com/pulseaudio/pulseaudio.git
     source-tag: v15.0
     source-depth: 1
