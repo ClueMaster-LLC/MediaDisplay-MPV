@@ -74,7 +74,6 @@ parts:
       - libvdpau1
       - i965-va-driver
       - libmpv1
-      - mpv-dev
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
@@ -134,7 +133,7 @@ parts:
       #- git+https://github.com/ClueMaster-LLC/python-mpv
       - simplejson
       - psutil
-      - python-mpv
+      - python-mpv == 1.0.5
     organize:
       usr/lib/*/samba/*: usr/lib/
 
