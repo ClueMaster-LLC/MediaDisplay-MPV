@@ -1,6 +1,6 @@
 name: cluemaster-mediadisplay-core
 base: core20
-version: '2024.09.25-DEVELOPMENT'
+version: '2024.10.17-DEVELOPMENT'
 summary: Clumaster.io TV Timer Display for Escape Rooms
 description: |
   ClueMaster Media Display is a Dynamic TV Display software for escape rooms.
@@ -12,6 +12,15 @@ confinement: strict
 
 architectures:
   - amd64
+
+# platforms:
+  # amd64:
+    # build-on: [amd64]
+    # build-for: [amd64]
+
+# architectures:
+  # - build-on: [amd64]
+    # build-for: [amd64]
 
 apps:
   cluemaster-mediadisplay-core:
@@ -130,7 +139,7 @@ parts:
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
-      - git+https://github.com/ClueMaster-LLC/python-mpv-v2
+      - git+https://github.com/ClueMaster-LLC/python-mpv
       - simplejson
       - psutil
       #- python-mpv
@@ -148,7 +157,7 @@ parts:
       - dpkg-dev
     stage-packages:
       - libxkbcommon0
-      - ttf-ubuntu-font-family
+      #- ttf-ubuntu-font-family
       - dmz-cursor-theme
       - light-themes
       - adwaita-icon-theme
@@ -156,8 +165,7 @@ parts:
       - shared-mime-info
       - libqt5gui5
       - libgdk-pixbuf2.0-0
-      - libqt5svg5 
-      - try: [appmenu-qt5]
+      - libqt5svg5
       - locales-all
       - xdg-user-dirs
       - libdrm2
@@ -200,6 +208,7 @@ parts:
     source-depth: 1
     after: [ alsa-lib ]
     build-packages:
+      - meson
       - check
       - doxygen
       - intltool
@@ -224,7 +233,6 @@ parts:
       - libflac8
       - libglib2.0-0
       - libgomp1
-      - libjson-c4
       - libltdl7
       - libogg0
       - libsbc1
@@ -258,12 +266,12 @@ parts:
       - -Dsystem_group="root"
       - -Daccess_group="root"
     override-build: |
-      snapcraftctl build
-      VER=$(cd $SNAPCRAFT_PART_SRC; git tag|sed 's/^v//')
-      snapcraftctl set-version $VER
-      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/applications
+      craftctl default
+      VER=$(cd $CRAFT_PART_SRC; git tag|sed 's/^v//')
+      craftctl set version=$VER
+      mkdir -p $CRAFT_PART_INSTALL/usr/share/applications
     override-prime: |
-      snapcraftctl prime
+      craftctl default
       find usr/share/doc/ -type f,l ! -name copyright | xargs rm -rf
     prime:
       - -usr/include
@@ -291,7 +299,7 @@ parts:
     prime:
       - -usr/lib/alsa-lib/*.la
     override-prime: |
-      snapcraftctl prime
+      craftctl default
       # make links relative
       cd etc/alsa/conf.d
       for link in $(find . -type l); do
