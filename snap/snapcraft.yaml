@@ -68,7 +68,7 @@ parts:
       - bash
       - ffmpeg
       - libass9
-      #- mpv
+      - mpv-devel
       - alsa-base
       - locales
       - libvdpau1
