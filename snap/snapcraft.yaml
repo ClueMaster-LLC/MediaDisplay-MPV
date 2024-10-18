@@ -74,7 +74,6 @@ parts:
       - libvdpau1
       - i965-va-driver
       - libmpv1
-      - libmpv2
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
@@ -131,10 +130,10 @@ parts:
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
-      - git+https://github.com/ClueMaster-LLC/python-mpv
+      #- git+https://github.com/ClueMaster-LLC/python-mpv
       - simplejson
       - psutil
-      #- python-mpv
+      - python-mpv <= 0.5.2
     organize:
       usr/lib/*/samba/*: usr/lib/
 
