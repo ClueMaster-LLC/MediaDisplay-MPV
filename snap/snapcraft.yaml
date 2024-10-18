@@ -74,7 +74,7 @@ parts:
       - libvdpau1
       - i965-va-driver
       - libmpv1
-      - mpv-libs
+      - mpv-dev
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
