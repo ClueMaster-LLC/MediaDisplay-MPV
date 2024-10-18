@@ -73,7 +73,8 @@ parts:
       - locales
       - libvdpau1
       - i965-va-driver
-      #- libmpv1
+      - libmpv1
+      - mpv-libs
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
@@ -125,8 +126,6 @@ parts:
       - build-essential
       - python3-wheel
       - libpq-dev
-      - mpv-libs
-      #- mpv-devel
     stage-packages:
       - libpq5
     python-packages:
