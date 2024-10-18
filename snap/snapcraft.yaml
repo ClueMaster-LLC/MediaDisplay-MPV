@@ -73,7 +73,8 @@ parts:
       - locales
       - libvdpau1
       - i965-va-driver
-      - libmpv1
+      - libmpv1 >=0.33
+      #- libmpv2
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
@@ -130,7 +131,7 @@ parts:
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
-      - git+https://github.com/ClueMaster-LLC/python-mpv-v2
+      - git+https://github.com/ClueMaster-LLC/python-mpv
       - simplejson
       - psutil
       #- python-mpv
