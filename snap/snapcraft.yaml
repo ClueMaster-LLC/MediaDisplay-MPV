@@ -127,7 +127,6 @@ parts:
       - libpq-dev
     stage-packages:
       - libpq5
-      - mpv-libs
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
@@ -135,6 +134,8 @@ parts:
       - simplejson
       - psutil
       - python-mpv
+      - mpv-libs
+      #- mpv-devel
     organize:
       usr/lib/*/samba/*: usr/lib/
 
