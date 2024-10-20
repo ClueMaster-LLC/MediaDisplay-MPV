@@ -68,12 +68,12 @@ parts:
       - bash
       - ffmpeg
       - libass9
-      - mpv ~= 0.32
+      #- mpv
       - alsa-base
       - locales
       - libvdpau1
       - i965-va-driver
-      - libmpv1 ~= 0.32
+      #- libmpv1
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
