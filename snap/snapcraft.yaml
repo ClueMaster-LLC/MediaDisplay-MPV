@@ -68,12 +68,12 @@ parts:
       - bash
       - ffmpeg
       - libass9
-      - mpv-devel
+      - mpv <=0.32
       - alsa-base
       - locales
       - libvdpau1
       - i965-va-driver
-      - libmpv1
+      - libmpv1 <=0.32
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
@@ -130,10 +130,9 @@ parts:
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
-      #- git+https://github.com/ClueMaster-LLC/python-mpv
+      - git+https://github.com/ClueMaster-LLC/python-mpv
       - simplejson
       - psutil
-      - python-mpv == 1.0.5
     organize:
       usr/lib/*/samba/*: usr/lib/
 
