@@ -70,9 +70,6 @@ parts:
     after: [desktop-qt5]
     plugin: dump
     source: cluemaster_display_source/
-    override-build: |
-      apt --yes install mpv=0.32*
-      mpv --version
     stage-packages:
       - python3
       - bash
