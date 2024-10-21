@@ -147,11 +147,11 @@ parts:
       usr/lib/*/samba/*: usr/lib/
     
   python-mpv:
-    source: https://github.com/jaseg/python-mpv.git
+    source: https://github.com/ClueMaster-LLC/python-mpv.git
     source-tag: v1.0.4
     plugin: python
     stage-packages:
-      - git+https://github.com/jaseg/python-mpv
+      - git+https://github.com/ClueMaster-LLC/python-mpv
 
   desktop-qt5:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
