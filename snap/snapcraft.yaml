@@ -115,15 +115,6 @@ parts:
       - -README.md
     stage-snaps: [mir-kiosk-x11]
     
-  # mpv:
-    # plugin: nil
-    # after: [alsa-lib]
-    # override-build: |
-      # apt --yes install mpv=0.32*
-      # mpv --version
-    # stage-packages:
-      # - mpv
-
   python-packages:
     after: [copy-source-code]
     plugin: python
@@ -146,12 +137,66 @@ parts:
     organize:
       usr/lib/*/samba/*: usr/lib/
     
-  python-mpv:
-    source: https://github.com/ClueMaster-LLC/python-mpv.git
-    #source-tag: v1.0.4
-    plugin: python
-    stage-packages:
-      - git+https://github.com/ClueMaster-LLC/python-mpv
+  # python-mpv:
+    # source: https://github.com/ClueMaster-LLC/python-mpv.git
+    # #source-tag: v1.0.4
+    # plugin: python
+    # stage-packages:
+      # - git+https://github.com/ClueMaster-LLC/python-mpv
+    
+  mpv:
+    source: https://github.com/mpv-player/mpv.git
+    source-tag: 'v0.39.0'
+    after: [ffmpeg]
+    parse-info: [usr/share/metainfo/mpv.metainfo.xml]
+    plugin: meson
+    override-pull: |
+      craftctl default
+      craftctl set version=$(git describe --tags --abbrev=0 | cut -c 2-)
+      sed -e 's|Icon=mpv|Icon=${SNAP}/usr/share/icons/hicolor/scalable/apps/mpv.svg|' -i etc/mpv.desktop
+      patch -p1 < $CRAFT_PROJECT_DIR/local/patches/hwdec.patch
+    meson-parameters:
+      - -Dprefix=/usr
+      - -Dsysconfdir=/usr/share
+      - -Dbuildtype=release
+      - -Ddrm=enabled
+      - -Dwayland=enabled
+      - -Dx11=enabled
+      - -Dpipewire=disabled
+      - -Dalsa=disabled
+      - -Djack=disabled
+      - -Dsndio=disabled
+      - -Dlibmpv=true
+      - -Dshaderc=disabled
+      - -Dmanpage-build=disabled
+    build-packages:
+      - cmake
+      - libarchive-dev
+      - libcaca-dev
+      - liblua5.2-dev
+      - libmujs-dev
+      - librubberband-dev
+      - libsdl2-dev
+      - libsixel-dev
+      - libspirv-cross-c-shared-dev
+      - libuchardet-dev
+      - libvdpau-dev
+      - libxpresent-dev
+      - libxss-dev
+      - libxv-dev
+      - libzimg-dev
+      - spirv-cross
+      - libopenal-dev
+      - libjpeg-turbo8-dev
+      - libplacebo-dev
+    prime:
+      - -usr/include
+      - -usr/lib/*/libmpv*
+      - -usr/lib/*/pkgconfig
+      - -usr/share/metainfo
+      - -usr/share/doc
+    #organize:
+      #snap/mpv/current: .
 
   desktop-qt5:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
