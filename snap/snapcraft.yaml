@@ -64,7 +64,7 @@ parts:
     plugin: dump
     source: cluemaster_display_source/
     override-build: |
-      apt --yes install mpv=2:0*
+      apt --yes install mpv=0.34*
       mpv --version
     stage-packages:
       - python3

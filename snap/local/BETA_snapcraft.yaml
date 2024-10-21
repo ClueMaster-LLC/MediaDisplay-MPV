@@ -1,5 +1,5 @@
 name: cluemaster-mediadisplay-core
-base: core20
+base: core24
 version: '2024.10.17-DEVELOPMENT'
 summary: Clumaster.io TV Timer Display for Escape Rooms
 description: |
@@ -10,13 +10,13 @@ description: |
 grade: stable 
 confinement: strict
 
-architectures:
-  - amd64
+# architectures:
+  # - amd64
 
-# platforms:
-  # amd64:
-    # build-on: [amd64]
-    # build-for: [amd64]
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
 
 # architectures:
   # - build-on: [amd64]
@@ -82,7 +82,7 @@ parts:
       - locales
       - libvdpau1
       - i965-va-driver
-      - libmpv1
+      - libmpv2
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
@@ -158,6 +158,7 @@ parts:
     stage-packages:
       - libxkbcommon0
       #- ttf-ubuntu-font-family
+      - ubuntu-font-family
       - dmz-cursor-theme
       - light-themes
       - adwaita-icon-theme
