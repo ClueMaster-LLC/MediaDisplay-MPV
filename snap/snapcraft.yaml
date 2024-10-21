@@ -183,7 +183,7 @@ parts:
       - libass-dev
       - libaom-dev
       - libfdk-aac-dev
-      - libdav1d-dev
+      #- libdav1d-dev
       #- libffmpeg-nvenc-dev
       #- nvidia-cuda-toolkit-gcc
     prime:
