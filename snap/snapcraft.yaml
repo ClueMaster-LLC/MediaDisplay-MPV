@@ -59,14 +59,14 @@ slots:
   audio-playback:
 
 parts:
-  mpv:
-    plugin: nil
-    after: [copy-source-code]
-    override-build: |
-      apt --yes install mpv=0.32*
-      mpv --version
-    stage-packages:
-      - mpv
+  # mpv:
+    # plugin: nil
+    # after: [copy-source-code]
+    # override-build: |
+      # apt --yes install mpv=0.32*
+      # mpv --version
+    # stage-packages:
+      # - mpv
   copy-source-code:
     after: [desktop-qt5]
     plugin: dump
@@ -97,30 +97,30 @@ parts:
       - libqt5multimedia5-plugins
       - python3-pyqt5.qtsvg
       - libwebp6
-    # stage:
-      # - -usr/share/alsa/alsa.conf
-      # - -usr/share/alsa/cards/HDA-Intel.conf
-      # - -usr/share/alsa/cards/USB-Audio.conf
-      # - -usr/share/alsa/cards/aliases.conf
-      # - -usr/share/alsa/pcm/center_lfe.conf
-      # - -usr/share/alsa/pcm/default.conf
-      # - -usr/share/alsa/pcm/dmix.conf
-      # - -usr/share/alsa/pcm/dsnoop.conf
-      # - -usr/share/alsa/pcm/front.conf
-      # - -usr/share/alsa/pcm/hdmi.conf
-      # - -usr/share/alsa/pcm/iec958.conf
-      # - -usr/share/alsa/pcm/modem.conf
-      # - -usr/share/alsa/pcm/rear.conf
-      # - -usr/share/alsa/pcm/side.conf
-      # - -usr/share/alsa/pcm/surround21.conf
-      # - -usr/share/alsa/pcm/surround40.conf
-      # - -usr/share/alsa/pcm/surround41.conf
-      # - -usr/share/alsa/pcm/surround50.conf
-      # - -usr/share/alsa/pcm/surround51.conf
-      # - -usr/share/alsa/pcm/surround71.conf
-      # - -usr/lib/x86_64-linux-gnu/libFLAC.so.8.3.0
-      # - -usr/share/doc/libflac8/changelog.Debian.gz
-      # - -README.md
+    stage:
+      - -usr/share/alsa/alsa.conf
+      - -usr/share/alsa/cards/HDA-Intel.conf
+      - -usr/share/alsa/cards/USB-Audio.conf
+      - -usr/share/alsa/cards/aliases.conf
+      - -usr/share/alsa/pcm/center_lfe.conf
+      - -usr/share/alsa/pcm/default.conf
+      - -usr/share/alsa/pcm/dmix.conf
+      - -usr/share/alsa/pcm/dsnoop.conf
+      - -usr/share/alsa/pcm/front.conf
+      - -usr/share/alsa/pcm/hdmi.conf
+      - -usr/share/alsa/pcm/iec958.conf
+      - -usr/share/alsa/pcm/modem.conf
+      - -usr/share/alsa/pcm/rear.conf
+      - -usr/share/alsa/pcm/side.conf
+      - -usr/share/alsa/pcm/surround21.conf
+      - -usr/share/alsa/pcm/surround40.conf
+      - -usr/share/alsa/pcm/surround41.conf
+      - -usr/share/alsa/pcm/surround50.conf
+      - -usr/share/alsa/pcm/surround51.conf
+      - -usr/share/alsa/pcm/surround71.conf
+      - -usr/lib/x86_64-linux-gnu/libFLAC.so.8.3.0
+      - -usr/share/doc/libflac8/changelog.Debian.gz
+      - -README.md
     stage-snaps: [mir-kiosk-x11]
 
   python-packages:
