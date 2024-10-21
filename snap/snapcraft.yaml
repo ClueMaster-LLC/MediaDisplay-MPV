@@ -143,6 +143,54 @@ parts:
     # plugin: python
     # stage-packages:
       # - git+https://github.com/ClueMaster-LLC/python-mpv
+  
+  ffmpeg:
+    plugin: autotools
+    source: https://ffmpeg.org/releases/ffmpeg-7.1.tar.gz
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --libdir=/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR
+      - --disable-debug
+      - --disable-doc
+      - --disable-static
+      - --enable-gpl
+      - --enable-shared
+      - --disable-ffplay
+      - --disable-devices
+      - --enable-gnutls
+      - --enable-libmp3lame
+      - --enable-libvorbis
+      - --enable-libdav1d
+      - --enable-libopus
+      - --enable-libx264
+      - --enable-libx265
+      - --enable-libvpx
+      - --enable-libass
+      - --enable-libaom
+      - --enable-libfdk-aac
+      - --enable-nonfree
+      #- --enable-cuda-nvcc
+      #- --enable-libnpp
+    build-packages:
+      - nasm
+      - libmp3lame-dev
+      - libvorbis-dev
+      - libopus-dev
+      - libx264-dev
+      - libx265-dev
+      - libnuma-dev
+      - libvpx-dev
+      - libass-dev
+      - libaom-dev
+      - libfdk-aac-dev
+      - libdav1d-dev
+      #- libffmpeg-nvenc-dev
+      #- nvidia-cuda-toolkit-gcc
+    prime:
+      - -usr/include
+      - -usr/share/ffmpeg/examples
+      - -usr/share/man
+      - -usr/lib/*/pkgconfig
     
   mpv:
     source: https://github.com/mpv-player/mpv.git
