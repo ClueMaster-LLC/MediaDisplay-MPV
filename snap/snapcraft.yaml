@@ -233,7 +233,7 @@ parts:
       - libxss-dev
       - libxv-dev
       - libzimg-dev
-      - spirv-cross
+      #- spirv-cross
       - libopenal-dev
       - libjpeg-turbo8-dev
       - libplacebo-dev
