@@ -1,6 +1,6 @@
 name: cluemaster-mediadisplay-core
 base: core20
-version: '2024.10.17-DEVELOPMENT'
+version: '2024.10.20-DEVELOPMENT'
 summary: Clumaster.io TV Timer Display for Escape Rooms
 description: |
   ClueMaster Media Display is a Dynamic TV Display software for escape rooms.
@@ -76,7 +76,7 @@ parts:
       - locales
       - libvdpau1
       - i965-va-driver
-      #- libmpv1
+      - libmpv1
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
@@ -91,6 +91,7 @@ parts:
       - python3-pyqt5.qtmultimedia
       - libqt5multimedia5-plugins
       - python3-pyqt5.qtsvg
+      - libwebp6
     stage:
       - -usr/share/alsa/alsa.conf
       - -usr/share/alsa/cards/HDA-Intel.conf
