@@ -68,7 +68,7 @@ parts:
       - bash
       - ffmpeg
       - libass9
-      #- mpv
+      - mpv
       - alsa-base
       - locales
       - libvdpau1
@@ -136,34 +136,6 @@ parts:
       - psutil
     organize:
       usr/lib/*/samba/*: usr/lib/
-    
-  # python-mpv:
-    # source: https://github.com/ClueMaster-LLC/python-mpv.git
-    # #source-tag: v1.0.4
-    # plugin: python
-    # stage-packages:
-      # - git+https://github.com/ClueMaster-LLC/python-mpv
-  
-  mpv:
-    plugin: autotools
-    source: https://github.com/mpv-player/mpv.git
-    build-packages:
-      - libavcodec-dev
-      - libavformat-dev
-      - libswscale-dev
-      - libass-dev
-      - libjpeg-dev
-      - liblcms2-dev
-      - libfreetype6-dev
-      - libfribidi-dev
-      - libharfbuzz-dev
-      - libdrm-dev
-      - python3-dev
-      - meson
-      - ninja-build
-    stage-packages:
-      - mpv  # Include MPV runtime
-      - python3  # Ensure Python 3 is staged
 
   python-mpv:
     plugin: python
@@ -173,7 +145,7 @@ parts:
     build-packages:
       - python3-pip
     after:
-      - mpv  # Build python-mpv after MPV is built
+      - [copy-source-code]  # Build python-mpv after MPV is built
 
   desktop-qt5:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
