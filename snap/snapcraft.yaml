@@ -232,7 +232,7 @@ parts:
       - libxpresent-dev
       - libxss-dev
       - libxv-dev
-      - libzimg-dev
+      #- libzimg-dev
       #- spirv-cross
       - libopenal-dev
       - libjpeg-turbo8-dev
