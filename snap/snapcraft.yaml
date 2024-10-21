@@ -59,19 +59,19 @@ slots:
   audio-playback:
 
 parts:
-    ppa:
-      plugin: nil
-      prepare: |
-        sudo apt-key ...
-        sudo apt-get update
-      override-build: |
-        apt --yes install mpv=2:0*
-        mpv --version
-      override-pull: |
-        apt --yes install software-properties-common apt-utils
-        add-apt-repository -yu ppa:mc3man/mpv-tests
-      stage-packages:
-        - mpv
+  ppa:
+    plugin: nil
+    prepare: |
+      sudo apt-key ...
+      sudo apt-get update
+    override-build: |
+      apt --yes install mpv=2:0*
+      mpv --version
+    override-pull: |
+      apt --yes install software-properties-common apt-utils
+      add-apt-repository -yu ppa:mc3man/mpv-tests
+    stage-packages:
+      - mpv
 
 
   copy-source-code:
