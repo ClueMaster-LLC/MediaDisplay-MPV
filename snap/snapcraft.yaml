@@ -61,6 +61,7 @@ slots:
 parts:
   mpv:
     plugin: nil
+    after: [copy-source-code]
     override-build: |
       apt --yes install mpv=0.32*
       mpv --version
