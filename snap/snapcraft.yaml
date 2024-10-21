@@ -59,6 +59,13 @@ slots:
   audio-playback:
 
 parts:
+  mpv:
+    plugin: mpv
+    override-build: |
+      apt --yes install mpv=0.32*
+      mpv --version
+    stage-packages:
+      - mpv
   copy-source-code:
     after: [desktop-qt5]
     plugin: dump
@@ -71,7 +78,7 @@ parts:
       - bash
       - ffmpeg
       - libass9
-      - mpv
+      #- mpv
       - alsa-base
       - locales
       - libvdpau1
@@ -122,8 +129,6 @@ parts:
     after: [copy-source-code]
     plugin: python
     source: .
-    #override-build: |
-      #pip install python-mpv==0.5.1
     build-packages:
       - python3-pip
       - python3-dev
