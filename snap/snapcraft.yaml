@@ -61,9 +61,9 @@ slots:
 parts:
   ppa:
     plugin: nil
-    prepare: |
-      sudo apt-key ...
-      sudo apt-get update
+    # prepare: |
+      # sudo apt-key ...
+      # sudo apt-get update
     override-build: |
       apt --yes install mpv=2:0*
       mpv --version
