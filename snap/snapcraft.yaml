@@ -59,14 +59,6 @@ slots:
   audio-playback:
 
 parts:
-  # mpv:
-    # plugin: nil
-    # after: [copy-source-code]
-    # override-build: |
-      # apt --yes install mpv=0.32*
-      # mpv --version
-    # stage-packages:
-      # - mpv
   copy-source-code:
     after: [desktop-qt5]
     plugin: dump
@@ -122,6 +114,15 @@ parts:
       - -usr/share/doc/libflac8/changelog.Debian.gz
       - -README.md
     stage-snaps: [mir-kiosk-x11]
+    
+  # mpv:
+    # plugin: nil
+    # after: [alsa-lib]
+    # override-build: |
+      # apt --yes install mpv=0.32*
+      # mpv --version
+    # stage-packages:
+      # - mpv
 
   python-packages:
     after: [copy-source-code]
@@ -139,11 +140,18 @@ parts:
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
-      - git+https://github.com/ClueMaster-LLC/python-mpv
+      #- git+https://github.com/ClueMaster-LLC/python-mpv
       - simplejson
       - psutil
     organize:
       usr/lib/*/samba/*: usr/lib/
+    
+  python-mpv:
+    source: https://github.com/ClueMaster-LLC/python-mpv.git
+    source-tag: v1.0.4
+    plugin: python
+    stage-packages:
+      - python-mpv
 
   desktop-qt5:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
