@@ -144,8 +144,7 @@ parts:
       - python-mpv  # Ensure the python-mpv package is included
     build-packages:
       - python3-pip
-    after:
-      - [copy-source-code]  # Build python-mpv after MPV is built
+    after: [copy-source-code]  # Build python-mpv after MPV is built
 
   desktop-qt5:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
