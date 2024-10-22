@@ -239,24 +239,24 @@ parts:
       - libsnapd-glib-dev
       - libsoxr-dev
     stage-packages:
-      - libapparmor1
-      - libasyncns0
-      - libbluetooth3
-      #- libflac8
-      - libglib2.0-0
-      - libgomp1
-      - libltdl7
-      - libogg0
-      - libsbc1
-      - libsnapd-glib1
-      - libsndfile1
-      - libsoxr0
-      - libsoxr-lsr0
-      - libspeexdsp1
-      - libtdb1
-      - libudev1
-      - libvorbis0a
-      - libvorbisenc2
+      # - libapparmor1
+      # - libasyncns0
+      # - libbluetooth3
+      # - libflac8
+      # - libglib2.0-0
+      # - libgomp1
+      # - libltdl7
+      # - libogg0
+      # - libsbc1
+      # - libsnapd-glib1
+      # - libsndfile1
+      # - libsoxr0
+      # - libsoxr-lsr0
+      # - libspeexdsp1
+      # - libtdb1
+      # - libudev1
+      # - libvorbis0a
+      # - libvorbisenc2
     meson-parameters:
       - --prefix="/usr"
       - --sysconfdir=/etc
