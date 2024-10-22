@@ -31,6 +31,17 @@ apps:
     command: usr/local/bin/x11_kiosk_launch $SNAP/bin/desktop-launch $SNAP/bin/prepare-launch $SNAP/bin/python3 $SNAP/main.py
     environment:
       DISABLE_WAYLAND: 1
+    plugs:
+      - network
+      - network-bind
+      - home
+      - opengl
+      - pulseaudio
+      - mount-observe
+      - optical-drive
+      - screen-inhibit-control
+      - x11
+      - audio-playback
 
   pulseaudio:
     command: bin/pulseaudio
@@ -231,7 +242,7 @@ parts:
       - libapparmor1
       - libasyncns0
       - libbluetooth3
-      - libflac8
+      #- libflac8
       - libglib2.0-0
       - libgomp1
       - libltdl7
