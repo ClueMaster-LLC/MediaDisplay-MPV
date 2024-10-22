@@ -1,6 +1,6 @@
 name: cluemaster-mediadisplay-core
-base: core24
-version: '2024.10.17-DEVELOPMENT'
+base: core22
+version: '2024.10.20-DEVELOPMENT'
 summary: Clumaster.io TV Timer Display for Escape Rooms
 description: |
   ClueMaster Media Display is a Dynamic TV Display software for escape rooms.
@@ -10,17 +10,8 @@ description: |
 grade: stable 
 confinement: strict
 
-# architectures:
-  # - amd64
-
-platforms:
-  amd64:
-    build-on: [amd64]
-    build-for: [amd64]
-
-# architectures:
-  # - build-on: [amd64]
-    # build-for: [amd64]
+architectures:
+  - amd64
 
 apps:
   cluemaster-mediadisplay-core:
@@ -31,12 +22,18 @@ apps:
     command: usr/local/bin/x11_kiosk_launch $SNAP/bin/desktop-launch $SNAP/bin/prepare-launch $SNAP/bin/python3 $SNAP/main.py
     environment:
       DISABLE_WAYLAND: 1
+    plugs:
+      - audio-playback
+      - network  # If you want to allow MPV to stream from the network
+      - home  # If you want access to files in the user's home directory
 
   pulseaudio:
     command: bin/pulseaudio
     daemon: simple
     restart-condition: always
     install-mode: enable
+    plugs:
+      - audio-playback
 
   pactl:
     command-chain: [bin/client-wrapper]
@@ -58,8 +55,10 @@ plugs:
     interface: audio-playback
   wayland:
   network:
+    interface: network
   opengl:
   network-bind:
+    interface: network
   shutdown:
   hardware-observe:
   alsa:
@@ -82,7 +81,7 @@ parts:
       - locales
       - libvdpau1
       - i965-va-driver
-      - libmpv2
+      - libmpv1
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
@@ -97,6 +96,7 @@ parts:
       - python3-pyqt5.qtmultimedia
       - libqt5multimedia5-plugins
       - python3-pyqt5.qtsvg
+      - libwebp6
     stage:
       - -usr/share/alsa/alsa.conf
       - -usr/share/alsa/cards/HDA-Intel.conf
@@ -122,7 +122,7 @@ parts:
       - -usr/share/doc/libflac8/changelog.Debian.gz
       - -README.md
     stage-snaps: [mir-kiosk-x11]
-
+    
   python-packages:
     after: [copy-source-code]
     plugin: python
@@ -139,12 +139,20 @@ parts:
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
-      - git+https://github.com/ClueMaster-LLC/python-mpv
+      #- git+https://github.com/ClueMaster-LLC/python-mpv
       - simplejson
       - psutil
-      #- python-mpv
     organize:
       usr/lib/*/samba/*: usr/lib/
+
+  python-mpv:
+    plugin: python
+    source: https://github.com/jaseg/python-mpv.git
+    python-packages:
+      - python-mpv  # Ensure the python-mpv package is included
+    build-packages:
+      - python3-pip
+    after: [copy-source-code]  # Build python-mpv after MPV is built
 
   desktop-qt5:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
@@ -157,8 +165,7 @@ parts:
       - dpkg-dev
     stage-packages:
       - libxkbcommon0
-      #- ttf-ubuntu-font-family
-      - ubuntu-font-family
+      - ttf-ubuntu-font-family
       - dmz-cursor-theme
       - light-themes
       - adwaita-icon-theme
@@ -166,7 +173,8 @@ parts:
       - shared-mime-info
       - libqt5gui5
       - libgdk-pixbuf2.0-0
-      - libqt5svg5
+      - libqt5svg5 
+      #- try: [appmenu-qt5]
       - locales-all
       - xdg-user-dirs
       - libdrm2
@@ -203,13 +211,12 @@ parts:
       - -usr/lib/pkgconfig
 
   pulseaudio:
-    plugin: meson
+    plugin: meson-deps
     source: https://github.com/pulseaudio/pulseaudio.git
     source-tag: v15.0
     source-depth: 1
     after: [ alsa-lib ]
     build-packages:
-      - meson
       - check
       - doxygen
       - intltool
@@ -234,6 +241,7 @@ parts:
       - libflac8
       - libglib2.0-0
       - libgomp1
+      - libjson-c4
       - libltdl7
       - libogg0
       - libsbc1
@@ -267,12 +275,12 @@ parts:
       - -Dsystem_group="root"
       - -Daccess_group="root"
     override-build: |
-      craftctl default
-      VER=$(cd $CRAFT_PART_SRC; git tag|sed 's/^v//')
-      craftctl set version=$VER
-      mkdir -p $CRAFT_PART_INSTALL/usr/share/applications
+      snapcraftctl build
+      VER=$(cd $SNAPCRAFT_PART_SRC; git tag|sed 's/^v//')
+      snapcraftctl set-version $VER
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/applications
     override-prime: |
-      craftctl default
+      snapcraftctl prime
       find usr/share/doc/ -type f,l ! -name copyright | xargs rm -rf
     prime:
       - -usr/include
@@ -300,7 +308,7 @@ parts:
     prime:
       - -usr/lib/alsa-lib/*.la
     override-prime: |
-      craftctl default
+      snapcraftctl prime
       # make links relative
       cd etc/alsa/conf.d
       for link in $(find . -type l); do
