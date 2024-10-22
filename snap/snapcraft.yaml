@@ -6,14 +6,14 @@ description: |
   It shows escape room countdown timers, visual text messages, video, audio,
   and photo clues. It also has the ability to remotely reboot and shutdown.
 
+base: core24  # For Ubuntu Core 24 compatibility
+grade: stable
+confinement: strict
+
 platforms:
   amd64:
     build-on: [amd64]
     build-for: [amd64]
-
-base: core24  # For Ubuntu Core 24 compatibility
-grade: stable
-confinement: strict
 
 apps:
   cluemaster:
