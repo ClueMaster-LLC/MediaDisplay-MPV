@@ -10,6 +10,11 @@ description: |
 grade: stable
 confinement: strict
 
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+
 apps:
   clue-master:
     command: bin/daemon-launch
@@ -32,10 +37,12 @@ apps:
       LANG: C.UTF-8
       PYTHONPATH: $SNAP/lib/python3.10/site-packages
       MPV_HOME: $SNAP_COMMON/.config/mpv
-    extensions:
-      - gnome-42  # Optional, in case the GUI needs GNOME libraries
 
 parts:
+  copy-source-code:
+    plugin: dump
+    source: cluemaster_display_source/
+    
   clue-master:
     plugin: python
     source: .
