@@ -70,7 +70,6 @@ parts:
       - libmpv-dev
       - libpulse-dev
       - libasound2
-      - ubuntu-frame
 
 plugs:
   pulseaudio:
@@ -95,5 +94,5 @@ plugs:
     interface: desktop-legacy
   unity7:
     interface: unity7
-  ubuntu-frame:
-    interface: ubuntu-frame
+  # ubuntu-frame:
+    # interface: ubuntu-frame
