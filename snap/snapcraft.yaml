@@ -239,7 +239,7 @@ parts:
       - libsnapd-glib-dev
       - libsoxr-dev
     stage-packages:
-      # - libapparmor1
+      - libapparmor1
       # - libasyncns0
       # - libbluetooth3
       # - libflac8
