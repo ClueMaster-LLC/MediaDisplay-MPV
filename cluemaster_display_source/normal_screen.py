@@ -2,6 +2,9 @@ import os
 import mpv
 import time
 import json
+
+from gevent.libev.corecext import callback
+
 import threads
 import requests
 import game_idle
@@ -272,10 +275,14 @@ class IntroVideoWindow(QWidget):
         """this method checks if the current event emitted by the media players is end of file event, if it is then
            close the media player and the window else pass"""
 
-        event_id = event["event_id"]
-        end_of_file_event_id = 7
+        print(f"MPV EVENT: {event}")
 
-        if event_id == end_of_file_event_id:
+        event_id = event["event_id"]
+        print(f"MPV EVENT ID: {event_id}")
+
+        mpv_end_of_file_event_id = 7
+
+        if event_id == mpv_end_of_file_event_id:
 
             # current event id matched with the end of file event id
             self.master_intro_video_player.quit()
@@ -320,6 +327,7 @@ class NormalWindow(QMainWindow):
 
         else:
             self.master_video_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
+            #, log_handler = print, loglevel = 'debug'
 
         self.master_image_viewer = QLabel(self)
         self.master_audio_player = mpv.MPV()

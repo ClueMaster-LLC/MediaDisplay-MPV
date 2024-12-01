@@ -32,6 +32,7 @@ class SplashBackend(QThread):
         # default variables
         self.is_killed = False
         self.unique_code_file = os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json")
+        self.platform_specs_file = os.path.join(MASTER_DIRECTORY, "assets/application data/platform_specs.json")
 
     def run(self):
         """ this is an autorun method which is triggered as soon as the thread is started, this method holds all the
@@ -46,6 +47,28 @@ class SplashBackend(QThread):
         else:
             # if the directory already exists then pass
             pass
+
+        if os.path.isfile(self.platform_specs_file):
+            pass
+        else:
+            try:
+                with open("/proc/cpuinfo") as master_cpu_info_file:
+                    file_data = master_cpu_info_file.read()
+
+                    if "hypervisor" in file_data:
+                        dictionary = {"platform": "VirtualMachine", "mpv_configurations": {"vo": "x11"}}
+                    elif "Intel" in file_data:
+                        dictionary = {"platform": "Intel", "mpv_configurations": {"hwdec": "auto", "vo": "gpu", "gpu_context": "auto"}}
+                    elif "AMD" in file_data:
+                        dictionary = {"platform": "AMD", "mpv_configurations": {"hwdec": "auto", "vo": "gpu", "gpu_context": "auto"}}
+                    else:
+                        dictionary = {"platform": "Unspecified"}
+
+                    with open(os.path.join(MASTER_DIRECTORY, "assets/application data/platform_specs.json"), "w") as specs_file:
+                        json.dump(dictionary, specs_file)
+                        print(f">>> Platform Spec File Created: {specs_file}")
+            except Exception as error:
+                print(f">>> Error trying to create platform info file: {error}")
 
         if os.path.isfile(self.unique_code_file):
             # checking if unique code.json file exists in the application data directory, if yes then get the unique
@@ -95,22 +118,24 @@ class SplashBackend(QThread):
             # if there is no unique code.json file then generate an unique device id and secure api key and then save
             # them to unique code.json file and register device
 
-            with open("/proc/cpuinfo") as master_cpu_info_file:
-                file_data = master_cpu_info_file.read()
-
-                if "hypervisor" in file_data:
-                    dictionary = {"platform": "VirtualMachine", "mpv_configurations": {"vo": "x11"}}
-                elif "Intel" in file_data:
-                    dictionary = {"platform": "Intel", "mpv_configurations": {"hwdec": "auto", "vo": "gpu", "gpu_context": "auto"}}
-                elif "AMD" in file_data:
-                    dictionary = {"platform": "AMD", "mpv_configurations": {"hwdec": "auto", "vo": "gpu", "gpu_context": "auto"}}
-                else:
-                    dictionary = {"platform": "Unspecified"}
-
-                with open(os.path.join(MASTER_DIRECTORY, "assets/application data/platform_specs.json"), "w") as specs_file:
-                    json.dump(dictionary, specs_file)
-
-                threads.UNIQUE_CODE = dictionary
+            ## This is not needed at all here. Moved above to look for file and create if missing.
+            # with open("/proc/cpuinfo") as master_cpu_info_file:
+            #     file_data = master_cpu_info_file.read()
+            #
+            #     if "hypervisor" in file_data:
+            #         dictionary = {"platform": "VirtualMachine", "mpv_configurations": {"vo": "x11"}}
+            #     elif "Intel" in file_data:
+            #         dictionary = {"platform": "Intel", "mpv_configurations": {"hwdec": "auto", "vo": "gpu", "gpu_context": "auto"}}
+            #     elif "AMD" in file_data:
+            #         dictionary = {"platform": "AMD", "mpv_configurations": {"hwdec": "auto", "vo": "gpu", "gpu_context": "auto"}}
+            #     else:
+            #         dictionary = {"platform": "Unspecified"}
+            #
+            #     with open(os.path.join(MASTER_DIRECTORY, "assets/application data/platform_specs.json"), "w") as specs_file:
+            #         json.dump(dictionary, specs_file)
+            #
+            ## this should not be here at all!
+            #     threads.UNIQUE_CODE = dictionary
 
             numbers = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
             alphabets = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",

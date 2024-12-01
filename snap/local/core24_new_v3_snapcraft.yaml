@@ -1,0 +1,72 @@
+name: cluemaster-mediadisplay-core
+version: '2024.10.22-DEVELOPMENT'
+summary: Clumaster.io TV Timer Display for Escape Rooms
+description: |
+  ClueMaster Media Display is a Dynamic TV Display software for escape rooms.
+  It shows escape room countdown timers, visual text messages, video, audio,
+  and photo clues. It also has the ability to remotely reboot and shutdown.
+
+base: core24  # For Ubuntu Core 24 compatibility
+grade: stable
+confinement: strict
+
+platforms:
+  amd64:
+    build-on: [amd64]
+    build-for: [amd64]
+
+apps:
+  cluemaster:
+    command: python3 $SNAP/main.py  # Launch the Python app directly from the root
+    daemon: simple
+    plugs:
+      - network  # For internet communication
+      - audio-playback  # To allow audio playback using PulseAudio
+      - pulseaudio  # For PulseAudio interaction
+      - opengl  # For graphics rendering with Ubuntu Frame
+      - wayland  # Wayland support for Ubuntu Frame
+      - ubuntu-frame  # Connect to Ubuntu Frame for video output
+    environment:
+      WAYLAND_DISPLAY: wayland-0  # Ensures Wayland is used for display
+      PULSE_SERVER: unix:/run/user/1000/pulse/native  # PulseAudio setup
+
+parts:
+  cluemaster:
+    plugin: dump  # Use dump plugin to include the Python files directly in the root of the Snap
+    source: cluemaster_display_source
+
+  python-dependencies:
+    plugin: nil  # This part pulls in the Python runtime
+    stage-packages:
+      - python3  # Include Python 3
+      - python3-pip  # Optional: Include pip if your app needs it
+      - python3-setuptools  # Ensures Python can handle packaging
+      - python3-mpv  # Python bindings for MPV
+
+  mpv-dependencies:
+    plugin: nil  # This part does not build anything but pulls stage-packages
+    stage-packages:
+      - mpv  # MPV for video playback
+      - libmpv2  # Updated for CORE 24, MPV library
+      - pulseaudio  # PulseAudio for audio
+      - libglu1-mesa  # OpenGL utility library
+      - freeglut3-dev # Add missing dependency for libglut.so.3.12
+
+plugs:
+  audio-playback:
+    interface: audio-playback
+
+  pulseaudio:
+    interface: pulseaudio
+
+  opengl:
+    interface: opengl
+
+  wayland:
+    interface: wayland
+
+  ubuntu-frame:
+    interface: content
+    target: ubuntu-frame
+    default-provider: ubuntu-frame
+    content: ubuntu-frame

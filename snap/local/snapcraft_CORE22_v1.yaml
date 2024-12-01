@@ -1,6 +1,6 @@
 name: cluemaster-mediadisplay-core
-base: core24
-version: '2024.10.17-DEVELOPMENT'
+base: core22
+version: '2024.10.24-DEVELOPMENT'
 summary: Clumaster.io TV Timer Display for Escape Rooms
 description: |
   ClueMaster Media Display is a Dynamic TV Display software for escape rooms.
@@ -10,10 +10,8 @@ description: |
 grade: stable 
 confinement: strict
 
-platforms:
-  amd64:
-    build-on: [amd64]
-    build-for: [amd64]
+architectures:
+  - amd64
 
 apps:
   cluemaster-mediadisplay-core:
@@ -24,17 +22,18 @@ apps:
     command: usr/local/bin/x11_kiosk_launch $SNAP/bin/desktop-launch $SNAP/bin/prepare-launch $SNAP/bin/python3 $SNAP/main.py
     environment:
       DISABLE_WAYLAND: 1
+      PYTHONPATH: $SNAP/usr/lib/python3/dist-packages:$PYTHONPATH
     plugs:
-      - network
-      - network-bind
-      - home
-      - opengl
-      - pulseaudio
-      - mount-observe
-      - optical-drive
-      - screen-inhibit-control
-      - x11
-      - audio-playback
+    - network  # For internet communication
+    - audio-playback  # To allow audio playback using PulseAudio
+    - pulseaudio  # For PulseAudio interaction
+    - opengl  # For graphics rendering with Ubuntu Frame
+    - x11  # Wayland support for Ubuntu Frame
+    - ubuntu-frame  # Connect to Ubuntu Frame for video output
+    - shutdown
+    - alsa
+    - hardware-observe
+    - network-bind
 
   pulseaudio:
     command: bin/pulseaudio
@@ -58,24 +57,49 @@ apps:
     command: bin/config
 
 plugs:
-  playback:
-    interface: audio-playback
-  wayland:
-  network:
-  opengl:
-  network-bind:
-  shutdown:
-  hardware-observe:
-  alsa:
-
-slots:
   audio-playback:
+    interface: audio-playback
+
+  pulseaudio:
+    interface: pulseaudio
+
+  opengl:
+    interface: opengl
+
+  wayland:
+    interface: wayland
+
+  # ubuntu-frame:
+    # interface: content
+    # target: ubuntu-frame
+    # default-provider: ubuntu-frame
+    # content: ubuntu-frame
+   
+  network:
+    interface: network
+  
+  network-bind:
+    interface: network-bind
+    
+  shutdown:
+    interface: shutdown
+    
+  hardware-observe:
+    interface: hardware-observe
+    
+  alsa:
+    interface: alsa
+  
+# slots:
+  # audio-playback:
+    # interface: pulseaudio
 
 parts:
   copy-source-code:
-    #after: [desktop-qt5]
+    after: [desktop-qt5]
     plugin: dump
-    source: cluemaster_display_source/
+    source: ./cluemaster_display_source
+    source-type: local
     stage-packages:
       - python3
       - bash
@@ -86,7 +110,7 @@ parts:
       - locales
       - libvdpau1
       - i965-va-driver
-      - libmpv2
+      - libmpv1
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
@@ -122,8 +146,15 @@ parts:
       - -usr/share/alsa/pcm/surround50.conf
       - -usr/share/alsa/pcm/surround51.conf
       - -usr/share/alsa/pcm/surround71.conf
-      - -usr/lib/x86_64-linux-gnu/libFLAC.so.8.3.0
+      - -usr/lib/x86_64-linux-gnu/libFLAC.so.8.3.0 #new to fix file conflict
       - -usr/share/doc/libflac8/changelog.Debian.gz
+      - -usr/share/doc/*
+      - -usr/man/man5/*
+      - -usr/share/man/man5/*
+      - -usr/share/X11/*
+      - -etc/X11/*
+      - -etc/init.d/x11-common
+      - -usr/lib/x86_64-linux-gnu/*
       - -README.md
     stage-snaps: [mir-kiosk-x11]
 
@@ -161,16 +192,19 @@ parts:
       - dpkg-dev
     stage-packages:
       - libxkbcommon0
-      #- ttf-ubuntu-font-family
-      #- ubuntu-font-family
+      - fonts-dejavu-core  # Replace ttf-ubuntu-font-family with fonts-dejavu-core
       - dmz-cursor-theme
       - light-themes
       - adwaita-icon-theme
-      #- gnome-themes-standard
+      - gnome-themes-standard
       - shared-mime-info
       - libqt5gui5
       - libgdk-pixbuf2.0-0
-      - libqt5svg5
+      - libqt5svg5 
+      #- appmenu-qt5 #Not supported in CORE 22
+      - qtbase5-dev
+      - libqt5widgets5
+      - libqt5dbus5
       - locales-all
       - xdg-user-dirs
       - libdrm2
@@ -183,34 +217,47 @@ parts:
       - libglvnd0
       - libglx0
       - fcitx-frontend-qt5
+      - qt3d5-dev
+      - libgl1-mesa-glx
     stage:
       - -usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2
       - -usr/share/doc/libwebp6/changelog.Debian.gz
+      - -usr/share/drirc.d/00-mesa-defaults.conf
+      - -usr/share/man/man7/xkeyboard-config.7.gz
+      - -usr/share/pkgconfig/xkeyboard-config.pc
 
   pulseaudio-common:
-    source: bin
+    source: ./bin
+    source-type: local
     plugin: dump
     organize:
       client-wrapper: bin/client-wrapper
       config: bin/config
       pulseaudio: bin/pulseaudio
+    prime:
+      - -bin/config
+    override-prime: |
+      craftctl default  # Run the default prime step for dump
+      chmod -R 644 "$CRAFT_PART_INSTALL/bin/config"  # Set permissions for config
 
   alsa-lib:
     plugin: autotools
     source: https://github.com/alsa-project/alsa-lib.git
     source-tag: v1.2.5.1
+    stage:
+      - -usr/share/alsa/alsa.conf # added to resolve file diff conflict
     prime:
       - -usr/include
       - -usr/share/aclocal
       - -usr/lib/lib*.la
-      - -usr/lib/pkgconfig
+      - -usr/lib/pkgconfig    
 
   pulseaudio:
     plugin: meson
     source: https://github.com/pulseaudio/pulseaudio.git
     source-tag: v15.0
     source-depth: 1
-    after: [ alsa-lib ]
+    after: [alsa-lib]
     build-packages:
       - meson
       - check
@@ -237,6 +284,9 @@ parts:
       - libflac8
       - libglib2.0-0
       - libgomp1
+      - pulseaudio
+      - libpulse0
+      - libjson-c5 # Replace libjson-c4 with libjson-c5
       - libltdl7
       - libogg0
       - libsbc1
@@ -250,30 +300,36 @@ parts:
       - libvorbis0a
       - libvorbisenc2
     meson-parameters:
-      - --prefix="/usr"
+      - --prefix=/usr
       - --sysconfdir=/etc
       - --libexec=/usr/lib
       - --libdir=/usr/lib
       - --localstatedir=/var
-      - -Dgstreamer="disabled"
-      - -Dbluez5-gstreamer="disabled"
-      - -Dorc="disabled"
-      - -Dgsettings="disabled"
-      - -Dadrian-aec="false"
-      - -Dgtk="disabled"
-      - -Dhal-compat="false"
-      - -Dwebrtc-aec="disabled"
-      - -Doss-output="disabled"
-      - -Djack="disabled"
-      - -Dx11="disabled"
-      - -Dsystem_user="root"
-      - -Dsystem_group="root"
-      - -Daccess_group="root"
+      - -Dgstreamer=disabled
+      - -Dbluez5-gstreamer=disabled
+      - -Dorc=disabled
+      - -Dgsettings=disabled
+      - -Dadrian-aec=false
+      - -Dgtk=disabled
+      - -Dhal-compat=false
+      - -Dwebrtc-aec=disabled
+      - -Doss-output=disabled
+      - -Djack=disabled
+      - -Dx11=disabled
+      - -Dsystem_user=root
+      - -Dsystem_group=root
+      - -Daccess_group=root
+    stage:    # added to resolve file diff conflict
+      - -etc/alsa/conf.d/10-speexrate.conf
+      - -etc/alsa/conf.d/50-arcam-av-ctl.conf
+      - -etc/alsa/conf.d/50-oss.conf
+      - -etc/alsa/conf.d/50-pulseaudio.conf
+      - -etc/alsa/conf.d/60-upmix.conf
+      - -etc/alsa/conf.d/60-vdownmix.conf
+      - -etc/alsa/conf.d/98-usb-stream.conf 
     override-build: |
       craftctl default
-      VER=$(cd $CRAFT_PART_SRC; git tag|sed 's/^v//')
-      craftctl set version=$VER
-      mkdir -p $CRAFT_PART_INSTALL/usr/share/applications
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/applications     
     override-prime: |
       craftctl default
       find usr/share/doc/ -type f,l ! -name copyright | xargs rm -rf
@@ -325,7 +381,8 @@ parts:
 
   extras:
     plugin: dump
-    source: static/
+    source: ./static/
+    source-type: local
     organize:
       "prepare-launch": "bin/"
 

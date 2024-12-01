@@ -1,6 +1,6 @@
 name: cluemaster-mediadisplay-core
-base: core24
-version: '2024.10.17-DEVELOPMENT'
+base: core22
+version: '2024.10.24-DEVELOPMENT'
 summary: Clumaster.io TV Timer Display for Escape Rooms
 description: |
   ClueMaster Media Display is a Dynamic TV Display software for escape rooms.
@@ -10,10 +10,8 @@ description: |
 grade: stable 
 confinement: strict
 
-platforms:
-  amd64:
-    build-on: [amd64]
-    build-for: [amd64]
+architectures:
+  - amd64
 
 apps:
   cluemaster-mediadisplay-core:
@@ -24,17 +22,6 @@ apps:
     command: usr/local/bin/x11_kiosk_launch $SNAP/bin/desktop-launch $SNAP/bin/prepare-launch $SNAP/bin/python3 $SNAP/main.py
     environment:
       DISABLE_WAYLAND: 1
-    plugs:
-      - network
-      - network-bind
-      - home
-      - opengl
-      - pulseaudio
-      - mount-observe
-      - optical-drive
-      - screen-inhibit-control
-      - x11
-      - audio-playback
 
   pulseaudio:
     command: bin/pulseaudio
@@ -73,7 +60,7 @@ slots:
 
 parts:
   copy-source-code:
-    #after: [desktop-qt5]
+    after: [desktop-qt5]
     plugin: dump
     source: cluemaster_display_source/
     stage-packages:
@@ -86,7 +73,7 @@ parts:
       - locales
       - libvdpau1
       - i965-va-driver
-      - libmpv2
+      - libmpv1
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
@@ -161,16 +148,16 @@ parts:
       - dpkg-dev
     stage-packages:
       - libxkbcommon0
-      #- ttf-ubuntu-font-family
-      #- ubuntu-font-family
+      - ttf-ubuntu-font-family
       - dmz-cursor-theme
       - light-themes
       - adwaita-icon-theme
-      #- gnome-themes-standard
+      - gnome-themes-standard
       - shared-mime-info
       - libqt5gui5
       - libgdk-pixbuf2.0-0
-      - libqt5svg5
+      - libqt5svg5 
+      - try: [appmenu-qt5]
       - locales-all
       - xdg-user-dirs
       - libdrm2
@@ -183,6 +170,7 @@ parts:
       - libglvnd0
       - libglx0
       - fcitx-frontend-qt5
+
     stage:
       - -usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2
       - -usr/share/doc/libwebp6/changelog.Debian.gz
@@ -212,7 +200,6 @@ parts:
     source-depth: 1
     after: [ alsa-lib ]
     build-packages:
-      - meson
       - check
       - doxygen
       - intltool
@@ -237,6 +224,7 @@ parts:
       - libflac8
       - libglib2.0-0
       - libgomp1
+      - libjson-c4
       - libltdl7
       - libogg0
       - libsbc1
@@ -270,12 +258,12 @@ parts:
       - -Dsystem_group="root"
       - -Daccess_group="root"
     override-build: |
-      craftctl default
-      VER=$(cd $CRAFT_PART_SRC; git tag|sed 's/^v//')
-      craftctl set version=$VER
-      mkdir -p $CRAFT_PART_INSTALL/usr/share/applications
+      snapcraftctl build
+      VER=$(cd $SNAPCRAFT_PART_SRC; git tag|sed 's/^v//')
+      snapcraftctl set-version $VER
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/applications
     override-prime: |
-      craftctl default
+      snapcraftctl prime
       find usr/share/doc/ -type f,l ! -name copyright | xargs rm -rf
     prime:
       - -usr/include
@@ -303,7 +291,7 @@ parts:
     prime:
       - -usr/lib/alsa-lib/*.la
     override-prime: |
-      craftctl default
+      snapcraftctl prime
       # make links relative
       cd etc/alsa/conf.d
       for link in $(find . -type l); do
