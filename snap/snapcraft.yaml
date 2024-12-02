@@ -22,7 +22,7 @@ apps:
     command: usr/local/bin/x11_kiosk_launch $SNAP/bin/desktop-launch $SNAP/bin/prepare-launch $SNAP/bin/python3 $SNAP/main.py
     environment:
       DISABLE_WAYLAND: 1
-      LD_LIBRARY_PATH: "$SNAP/usr/lib:$SNAP/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+      #LD_LIBRARY_PATH: "$SNAP/usr/lib:$SNAP/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
 
   pulseaudio:
     command: bin/pulseaudio
@@ -75,6 +75,7 @@ parts:
       - libvdpau1
       - i965-va-driver
       - libmpv1
+      - libmpv2
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
@@ -114,6 +115,10 @@ parts:
       - -usr/share/doc/libflac8/changelog.Debian.gz
       - -README.md
     stage-snaps: [mir-kiosk-x11]
+    override-build: |
+      # Create a symlink to make libmpv2 available as libmpv1
+      ln -s $SNAP/usr/lib/x86_64-linux-gnu/libmpv.so.2 $SNAP/usr/lib/x86_64-linux-gnu/libmpv.so.1
+      ln -s $SNAP/usr/lib/x86_64-linux-gnu/libmpv.so.2 $SNAP/usr/lib/x86_64-linux-gnu/libmpv.so
 
   python-packages:
     after: [copy-source-code]
