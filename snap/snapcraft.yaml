@@ -69,7 +69,6 @@ parts:
       - ffmpeg
       - libass9
       - mpv
-      - mpv-libs
       - alsa-base
       - locales
       - libvdpau1
@@ -114,6 +113,8 @@ parts:
       - -usr/share/doc/libflac8/changelog.Debian.gz
       - -README.md
     stage-snaps: [mir-kiosk-x11]
+    prime:
+      - -usr/lib/*/libmpv*
 
   python-packages:
     after: [copy-source-code]
