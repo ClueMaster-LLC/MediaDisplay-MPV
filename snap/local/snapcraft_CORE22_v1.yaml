@@ -99,10 +99,6 @@ parts:
     after: [desktop-qt5]
     plugin: dump
     source: ./cluemaster_display_source
-    override-build: |
-      craftctl default
-      ln -s $SNAPCRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET/libmpv.so.2 \
-            $SNAPCRAFT_PART_INSTALL/usr/lib/$CRAFT_ARCH_TRIPLET/libmpv.so.1
     source-type: local
     stage-packages:
       - python3
