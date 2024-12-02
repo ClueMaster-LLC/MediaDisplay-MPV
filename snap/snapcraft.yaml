@@ -69,6 +69,7 @@ parts:
       - ffmpeg
       - libass9
       - mpv
+      - mpv-libs
       - alsa-base
       - locales
       - libvdpau1
