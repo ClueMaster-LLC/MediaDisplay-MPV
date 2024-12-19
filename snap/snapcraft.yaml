@@ -85,6 +85,7 @@ parts:
     plugin: dump
     source: cluemaster_display_source/
     stage-packages:
+      - requests
       - libmpv1
       - mpv
       - ffmpeg
