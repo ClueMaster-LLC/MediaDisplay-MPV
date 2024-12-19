@@ -67,8 +67,13 @@ parts:
     stage-packages:
       - python3.9-venv
     build-packages:
+      - python3.9
       - python3.9-venv
       - python3.9-dev
+      - python3.9-pip
+      - gcc
+      - build-essential
+      - libpq-dev
     build-environment:
       - SNAPCRAFT_PYTHON_INTERPRETER: python3.9
     override-build: |
@@ -85,7 +90,6 @@ parts:
     plugin: dump
     source: cluemaster_display_source/
     stage-packages:
-      - requests
       - libmpv1
       - mpv
       - ffmpeg
@@ -163,8 +167,8 @@ parts:
       - simplejson
       - psutil
       - python-mpv ~= 0.5.2
-    organize:
-      usr/lib/*/samba/*: usr/lib/
+    #organize:
+      #usr/lib/*/samba/*: usr/lib/
     stage:
       - -bin/activate
       - -bin/activate.csh
