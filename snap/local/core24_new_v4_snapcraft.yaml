@@ -45,7 +45,7 @@ parts:
     source-type: local  # Ensure it's treated as a local source
     organize:
       # Copy files under the same folder name inside the Snap
-      "*": cluemaster_source/
+      "*": cluemaster_display_source/
 
   python-dependencies:
     plugin: python # This part pulls in the Python runtime
