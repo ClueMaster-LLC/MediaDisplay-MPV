@@ -83,7 +83,7 @@ parts:
   copy-source-code:
     after: [desktop-qt5]
     plugin: dump
-    source: cluemaster_videoplayer_source/
+    source: cluemaster_display_source/
     stage-packages:
       - libmpv1
       - mpv
