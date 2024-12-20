@@ -19,7 +19,7 @@ apps:
     restart-condition: always
     command-chain:
       - env-setup
-    command: usr/local/bin/x11_kiosk_launch $SNAP/bin/desktop-launch $SNAP/bin/prepare-launch $SNAP/bin/python3 $SNAP/main.py
+    command: usr/local/bin/x11_kiosk_launch $SNAP/bin/desktop-launch $SNAP/bin/prepare-launch $SNAP/bin/python3.9 $SNAP/main.py
     environment:
       DISABLE_WAYLAND: 1
       # Added 12-11-2024 to test live print to log commands
