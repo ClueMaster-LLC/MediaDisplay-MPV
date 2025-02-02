@@ -130,7 +130,7 @@ parts:
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
-      - git+https://github.com/hiransarkar21/python-mpv
+      - git+https://github.com/ClueMaster-LLC/python-mpv
       - simplejson
       - psutil
     organize:
