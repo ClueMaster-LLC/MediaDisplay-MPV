@@ -55,6 +55,8 @@ class AuthenticationBackend(QThread):
                 while True:
                     device_request_api = requests.get(device_request_url, headers=headers)
                     if device_request_api.status_code != 200:
+                        print("Device request URL : ", device_request_api.url)
+                        print("Device request headers : ", headers)
                         print("Device Registration - Device Request API status not 200")
                         time.sleep(3)
                         pass
