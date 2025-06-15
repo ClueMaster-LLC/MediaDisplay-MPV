@@ -1,6 +1,6 @@
 name: cluemaster-mediadisplay-core
 base: core20 
-version: '2025.30.1'
+version: '2025.06.14'
 summary: Clumaster.io TV Timer Display for Escape Rooms
 description: |
   ClueMaster Media Display is a Dynamic TV Display software for escape rooms.
@@ -44,6 +44,9 @@ apps:
   config:
     command: bin/config
 
+  shell:
+    command: bin/bash
+
 plugs:
   playback:
     interface: audio-playback
@@ -68,12 +71,10 @@ parts:
       - bash
       - ffmpeg
       - libass9
-      - mpv
       - alsa-base
       - locales
       - libvdpau1
       - i965-va-driver
-      - libmpv1
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
@@ -111,6 +112,8 @@ parts:
       - -usr/share/alsa/pcm/surround71.conf
       - -usr/lib/x86_64-linux-gnu/libFLAC.so.8.3.0
       - -usr/share/doc/libflac8/changelog.Debian.gz
+      - -usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1
+      - -usr/share/doc/libfreetype6/changelog.Debian.gz
       - -README.md
     stage-snaps: [mir-kiosk-x11]
 
@@ -130,11 +133,64 @@ parts:
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
-      - git+https://github.com/ClueMaster-LLC/python-mpv
+      - git+https://github.com/hiransarkar21/xpython-mpv
       - simplejson
       - psutil
+      - gevent
     organize:
       usr/lib/*/samba/*: usr/lib/
+
+  mpv:
+    plugin: meson
+    source: https://github.com/mpv-player/mpv.git
+    source-tag: v0.35.0
+    source-depth: 1
+    build-packages:
+      - python3
+      - meson
+      - ninja-build
+      - build-essential
+      - pkg-config
+      - libasound2-dev
+      - libx11-dev
+      - libxext-dev
+      - libxinerama-dev
+      - libxrandr-dev
+      - libxss-dev
+      - libgl1-mesa-dev
+      - libegl1-mesa-dev
+      - libwayland-dev
+      - wayland-protocols
+      - libdrm-dev
+      - libavcodec-dev
+      - libavfilter-dev
+      - libavformat-dev
+      - libswresample-dev
+      - libswscale-dev
+      - liblua5.2-dev
+      - libfreetype6-dev
+      - libjpeg-dev
+      - libuchardet-dev
+      - liblcms2-dev
+      - libarchive-dev
+      - libass-dev
+      - libxkbcommon-dev
+      - libxpresent-dev 
+
+    stage-packages:
+      - liblcms2-2
+      - libarchive13
+      - liblua5.2-0
+      - libuchardet0
+      - libxpresent1
+
+    meson-parameters:
+      - --prefix=/usr
+      - -Dlibmpv=true
+      - -Dlua=lua52
+      - -Dgl=enabled
+      - -Dx11=enabled
+      - -Dwayland=enabled
 
   desktop-qt5:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
@@ -325,6 +381,8 @@ environment:
   ALSA_CONFIG_PATH: $SNAP/usr/share/alsa/alsa.conf
   ALSA_MIXER_SIMPLE: $SNAP/usr/share/alsa/smixer.conf
   ALSA_PLUGIN_DIR: $SNAP/usr/lib/alsa-lib
+  QT_QPA_PLATFORM_PLUGIN_PATH: $SNAP/usr/lib/x86_64-linux-gnu/qt5/plugins/platforms
+  QT_PLUGIN_PATH: $SNAP/usr/lib/x86_64-linux-gnu/qt5/plugins
 
 
 layout:
@@ -356,3 +414,4 @@ layout:
     symlink: $SNAP/usr/share/alsa
   /usr/share/applications:
     bind: $SNAP/usr/share/applications
+
