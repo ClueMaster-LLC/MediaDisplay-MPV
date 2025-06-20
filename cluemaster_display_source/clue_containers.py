@@ -21,6 +21,8 @@ MASTER_DIRECTORY = os.path.join(os.environ.get("HOME"), "CluemasterDisplay")
 with open(os.path.join(MASTER_DIRECTORY, "assets/application data/platform_specs.json")) as platform_specs_file:
     PLATFORM = json.load(platform_specs_file)["platform"]
 
+# Clue Screen debug statement
+print(">>> [CLUE SCREEN]")
 
 class TextClueContainer(QWidget):
 
@@ -35,7 +37,7 @@ class TextClueContainer(QWidget):
         self.preferred_height = preferred_height
         self.custom_width = int(0.987 * self.screen_width)
         self.custom_padding = int(self.screen_width - self.custom_width)
-        print(self.custom_width)
+        print(">>> ", self.custom_width)
 
         # widgets
         self.text_clue_container = QLabel(self)
@@ -137,7 +139,7 @@ class ClueVideoWidget(QWidget):
     def verify_status_of_master_clue_video_player(self, event):
         """ this method is triggered with every event emitted by the media player"""
 
-        current_event_id = event["event_id"]
+        current_event_id = event.event_id.value
         end_of_file_event_id = 7
 
         if current_event_id == end_of_file_event_id:
@@ -265,7 +267,7 @@ class AudioClueContainer(QWidget):
     def verify_status_of_master_audio_player(self, event):
         """ this method is triggered with every event emitted by the media player"""
 
-        current_event_id = event["event_id"]
+        current_event_id = event.event_id.value
         end_of_file_event_id = 7
 
         if current_event_id == end_of_file_event_id:
@@ -347,10 +349,10 @@ class ClueWindow(QWidget):
         """ this method contains the codes for determining the type of clue and calling the respective method"""
 
         try:
-            # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json")) as game_clue_json_file:
-            #     initial_dictionary = json.load(game_clue_json_file)
+            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json")) as game_clue_json_file:
+                initial_dictionary = json.load(game_clue_json_file)
 
-            game_clue_response = threads.CLUE_RESPONSE
+            game_clue_response = initial_dictionary
 
             if game_clue_response["clueStatus"] is True:
 
@@ -523,10 +525,10 @@ class ClueWindow(QWidget):
         """ this method sends a post response, when the video or audio clue finishes playing, to notify the webapp to
             restore the clue status"""
 
-        # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json")) as game_clue_json_file:
-        #     initial_dictionary = json.load(game_clue_json_file)
+        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json")) as game_clue_json_file:
+            initial_dictionary = json.load(game_clue_json_file)
 
-        game_clue_response = threads.CLUE_RESPONSE
+        game_clue_response = initial_dictionary
         game_id = game_clue_response["gameId"]
         clue_id = game_clue_response["gameClueId"]
 
@@ -534,9 +536,7 @@ class ClueWindow(QWidget):
 
         while True:
             try:
-                time.sleep(1)
                 requests.post(post_game_status_api.format(game_ids=game_id, clue_ids=clue_id), headers=self.headers).raise_for_status()
-                time.sleep(1)
 
             except requests.exceptions.ConnectionError:
                 # if the post response inside the try block faces connection error while making the response then
@@ -545,7 +545,7 @@ class ClueWindow(QWidget):
 
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
-                    print("401 Client Error - Device Deleted")
+                    print(">>> 401 Client Error - Device Deleted")
                 else:
                     print(">> Console output - Not a 401 error")
 

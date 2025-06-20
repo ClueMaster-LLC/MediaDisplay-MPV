@@ -16,6 +16,8 @@ from PyQt5.QtCore import Qt, QThread, pyqtSignal
 ROOT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 MASTER_DIRECTORY = os.path.join(os.environ.get("HOME"), "CluemasterDisplay")
 
+# Loading Screen debug statement
+print(">>> [LOADING SCREEN]")
 
 class LoadingBackend(QThread):
     authentication_details = pyqtSignal(dict)
@@ -151,7 +153,7 @@ class LoadingBackend(QThread):
                         if "401 Client Error" in str(request_error):
                             self.check_api_token_status()
                         else:
-                            print(">> Console output - Not a 401 error")
+                            print(">>> Console output - Not a 401 error")
 
                     # picture directory
                     print(">>> Verifying picture")
@@ -189,7 +191,7 @@ class LoadingBackend(QThread):
                         if "401 Client Error" in str(request_error):
                             self.check_api_token_status()
                         else:
-                            print(">> Console output - Not a 401 error")
+                            print(">>> Console output - Not a 401 error")
 
                     # video directory
                     print(">>> Verifying video")
@@ -227,7 +229,7 @@ class LoadingBackend(QThread):
                         if "401 Client Error" in str(request_error):
                             self.check_api_token_status()
                         else:
-                            print(">> Console output - Not a 401 error")
+                            print(">>> Console output - Not a 401 error")
 
                     # intro media directory
                     print(">>> Verifying intro")
@@ -265,7 +267,7 @@ class LoadingBackend(QThread):
                         if "401 Client Error" in str(request_error):
                             self.check_api_token_status()
                         else:
-                            print(">> Console output - Not a 401 error")
+                            print(">>> Console output - Not a 401 error")
 
                     # end media directory
                     print(">>> Verifying end media - win")
@@ -303,7 +305,7 @@ class LoadingBackend(QThread):
                         if "401 Client Error" in str(request_error):
                             self.check_api_token_status()
                         else:
-                            print(">> Console output - Not a 401 error")
+                            print(">>> Console output - Not a 401 error")
 
                     # end media directory
                     print(">>> Verifying end media - loss")
@@ -341,7 +343,7 @@ class LoadingBackend(QThread):
                         if "401 Client Error" in str(request_error):
                             self.check_api_token_status()
                         else:
-                            print(">> Console output - Not a 401 error")
+                            print(">>> Console output - Not a 401 error")
 
                     # downloading clue medias
                     print(">>> Verifying clue medias")
@@ -404,7 +406,7 @@ class LoadingBackend(QThread):
                         if "401 Client Error" in str(request_error):
                             self.check_api_token_status()
                         else:
-                            print(">> Console output - Not a 401 error")
+                            print(">>> Console output - Not a 401 error")
 
                     # emit downloading configurations signal
                     self.downloading_configurations.emit()
@@ -448,11 +450,11 @@ class LoadingBackend(QThread):
             if "401 Client Error" in str(request_error):
                 self.check_api_token_status()
             else:
-                print(">> Console output - Not a 401 error")
+                print(">>> Console output - Not a 401 error")
 
     def check_api_token_status(self):
         if self.registering_device is False:
-            print("401 Client Error - Device Removed or Not Registered")
+            print(">>> 401 Client Error - Device Removed or Not Registered")
             self.registering_device = True
             self.complete_reset.emit()
             self.stop()

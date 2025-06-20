@@ -36,7 +36,7 @@ class GenerateNewToken:
             threads.THREAD_INFO = thread_file_response
 
         except:
-            print("Error while updating thread info file from create_new_api_token.py")
+            print(">>> Error while updating thread info file from create_new_api_token.py")
 
         # reading device unique code
         # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/unique_code.json"), "r") as unique_code_json_file:
