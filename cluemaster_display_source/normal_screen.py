@@ -2,9 +2,6 @@ import os
 import mpv
 import time
 import json
-
-from gevent.libev.corecext import callback
-
 import threads
 import requests
 import game_idle
@@ -20,7 +17,6 @@ import authentication_screen
 from requests.structures import CaseInsensitiveDict
 
 # Setting up base directories
-
 ROOT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 MASTER_DIRECTORY = os.path.join(os.environ.get("HOME"), "CluemasterDisplay")
 
@@ -28,6 +24,8 @@ MASTER_DIRECTORY = os.path.join(os.environ.get("HOME"), "CluemasterDisplay")
 with open(os.path.join(MASTER_DIRECTORY, "assets/application data/platform_specs.json")) as platform_specs_file:
     PLATFORM = json.load(platform_specs_file)["platform"]
 
+# Normal Screen debug statement
+print(">>> [NORMAL SCREEN]")
 
 class NetworkStatus(QMainWindow):
 
@@ -87,10 +85,9 @@ class CheckTimerRequestThread(QThread):
                 print(">>> Console output - Checking timer request response ")
                 response = requests.get(self.get_timer_request_api, headers=self.headers)
                 response.raise_for_status()
-                print("Response - ", response.text)
+                print(">>> Response - ", response.text)
                 request_id = response.json()["DeviceRequestid"]
-                requests.post(POST_DEVICE_API.format(device_unique_code=self.device_id, deviceRequestId=request_id),
-                              headers=self.headers).raise_for_status()
+                requests.post(POST_DEVICE_API.format(device_unique_code=self.device_id, deviceRequestId=request_id), headers=self.headers).raise_for_status()
 
                 self.proceed.emit()
                 return
@@ -109,9 +106,9 @@ class CheckTimerRequestThread(QThread):
 
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
-                    print("401 Client Error - Device Not Registered")
+                    print(">>> 401 Client Error - Device Not Registered")
                 else:
-                    print(">> Console output - Not a 401 error")
+                    print(">>> Console output - Not a 401 error")
 
             finally:
                 time.sleep(1.5)
@@ -146,9 +143,9 @@ class EndAudioMediaWidget(QMainWindow):
     def verify_status_of_master_audio_player(self, event):
         """ this method is triggered with every event emitted by the media player"""
 
-        current_event_id = event["event_id"]
+        current_event_id = event.event_id.value
         end_of_file_event_id = 7
-
+        
         if current_event_id == end_of_file_event_id:
             # if the current media player event matches with the end of file event id then emit the clue_video_ended
             # signal and then close the window
@@ -160,7 +157,6 @@ class EndAudioMediaWidget(QMainWindow):
                 pass
         else:
             pass
-
 
 class EndMediaWidget(QWidget):
 
@@ -213,7 +209,7 @@ class EndMediaWidget(QWidget):
         """this method checks if the current event emitted by the media players is end of file event, if it is then
            close the media player and the window else pass"""
 
-        event_id = event["event_id"]
+        event_id = event.event_id.value
         end_of_file_id = 7
 
         if event_id == end_of_file_id:
@@ -227,6 +223,7 @@ class EndMediaWidget(QWidget):
 
 
 class IntroVideoWindow(QWidget):
+
     intro_video_ended = pyqtSignal(bool)
 
     def __init__(self, file_name):
@@ -274,15 +271,11 @@ class IntroVideoWindow(QWidget):
     def verify_status_of_intro_video_player(self, event):
         """this method checks if the current event emitted by the media players is end of file event, if it is then
            close the media player and the window else pass"""
+        
+        event_id = event.event_id.value
+        end_of_file_event_id = 7
 
-        print(f"MPV EVENT: {event}")
-
-        event_id = event["event_id"]
-        print(f"MPV EVENT ID: {event_id}")
-
-        mpv_end_of_file_event_id = 7
-
-        if event_id == mpv_end_of_file_event_id:
+        if event_id == end_of_file_event_id:
 
             # current event id matched with the end of file event id
             self.master_intro_video_player.quit()
@@ -321,13 +314,15 @@ class NormalWindow(QMainWindow):
 
         if PLATFORM == "Intel":
             self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.master_picture_displayer = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
 
         elif PLATFORM == "AMD":
             self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.master_picture_displayer = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
 
         else:
             self.master_video_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
-            #, log_handler = print, loglevel = 'debug'
+            self.master_picture_displayer = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
 
         self.master_image_viewer = QLabel(self)
         self.master_audio_player = mpv.MPV()
@@ -432,7 +427,7 @@ class NormalWindow(QMainWindow):
             game details api"""
 
         self.start_threads_timer.stop()
-
+        
         self.game_details_thread.start()
         self.game_details_thread.deviceIDcorrupted.connect(self.force_authenticate_device)
         self.game_details_thread.apiStatus.connect(self.verify_status_of_game_details_api)
@@ -440,7 +435,7 @@ class NormalWindow(QMainWindow):
         self.game_details_thread.statusUpdated.connect(self.verify_game_status)
         self.game_details_thread.custom_game_status.connect(self.complete_game_shutdown)
 
-        print("Game Details : ", threads.GAME_DETAILS)
+        print(">>> Game Details : ", threads.GAME_DETAILS)
 
         self.download_files_request.start()
         self.download_files_request.downloadFiles.connect(self.download_files)
@@ -494,16 +489,6 @@ class NormalWindow(QMainWindow):
             else:
                 pass
 
-        ## TODO SAVE THiS CODE for = 3 and only stop the game if the timer is > 0
-        # elif self.external_master_overlay_window.is_countdown_timer_active:
-        #     if self.external_master_overlay_window.time_remaining_in_seconds <= 0:
-        #         self.master_end_media_container(status="lost")
-        #     else:
-        #         pass
-        #
-        # else:
-        #     pass
-
         elif game_status == 3:
             # if status is 3 then reset game
 
@@ -518,8 +503,7 @@ class NormalWindow(QMainWindow):
                     except AttributeError:
                         pass
 
-                    self.external_intro_video_window.master_intro_video_player.unregister_event_callback(
-                        self.external_intro_video_window.verify_status_of_intro_video_player)
+                    self.external_intro_video_window.master_intro_video_player.unregister_event_callback(self.external_intro_video_window.verify_status_of_intro_video_player)
                     self.external_intro_video_window.master_intro_video_player.terminate()
                     self.external_intro_video_window.close()
 
@@ -562,7 +546,7 @@ class NormalWindow(QMainWindow):
                             self.master_audio_player.quit()
 
                         if self.are_animated_images_triggered is True:
-                            self.master_video_player._set_property("pause", True)
+                            self.master_picture_displayer._set_property("pause", True)
 
                     else:
                         pass
@@ -580,8 +564,7 @@ class NormalWindow(QMainWindow):
 
                     try:
                         # self.custom_end_media_widget.end_media_player.stop()
-                        self.custom_end_media_widget.end_media_player.unregister_event_callback(
-                            self.custom_end_media_widget.verify_status_of_end_media_player)
+                        self.custom_end_media_widget.end_media_player.unregister_event_callback(self.custom_end_media_widget.verify_status_of_end_media_player)
                         self.custom_end_media_widget.end_media_player.terminate()
                         self.custom_end_media_widget.close()
 
@@ -590,8 +573,7 @@ class NormalWindow(QMainWindow):
 
                     try:
                         # self.custom_end_audio_media_widget.master_audio_player.stop()
-                        self.custom_end_audio_media_widget.master_audio_player.unregister_event_callback(
-                            self.custom_end_audio_media_widget.verify_status_of_master_audio_player)
+                        self.custom_end_audio_media_widget.master_audio_player.unregister_event_callback(self.custom_end_audio_media_widget.verify_status_of_master_audio_player)
                         self.custom_end_audio_media_widget.master_audio_player.terminate()
                         self.custom_end_audio_media_widget.close()
 
@@ -686,7 +668,7 @@ class NormalWindow(QMainWindow):
                         self.master_audio_player.quit()
 
                     if self.are_animated_images_triggered is True:
-                        self.master_video_player._set_property("pause", True)
+                        self.master_picture_displayer._set_property("pause", True)
 
                 else:
                     pass
@@ -840,8 +822,7 @@ class NormalWindow(QMainWindow):
         """ this method triggers the NetworkStatus window and the ClueContainers window and then starts the master
             or background videos or audios or displays the background picture based on a hierarchy order"""
 
-        with open(os.path.join(MASTER_DIRECTORY,
-                               "assets/application data/device configurations.json")) as device_configurations_json_file:
+        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/device configurations.json")) as device_configurations_json_file:
             initial_dictionary = json.load(device_configurations_json_file)
 
         room_info_response = initial_dictionary
@@ -855,8 +836,7 @@ class NormalWindow(QMainWindow):
 
             print(">>> Master Media Files - Music", initial_dictionary_of_game_details['isMusic'])
 
-            with open(os.path.join(MASTER_DIRECTORY,
-                                   "assets/application data/device configurations.json")) as device_configurations_json_file:
+            with open(os.path.join(MASTER_DIRECTORY, "assets/application data/device configurations.json")) as device_configurations_json_file:
                 initial_dictionary_of_room_info = json.load(device_configurations_json_file)
 
             game_details_response = initial_dictionary_of_game_details
@@ -896,22 +876,22 @@ class NormalWindow(QMainWindow):
             # if the method faces simplejson DecodeError, then pass
             pass
 
-        while self.master_video_started is False and game_details_response["isVideo"] is True:
+        while self.master_video_started is False:
             print(">>> Console Output - Master video hasn't started")
             time.sleep(1)
             continue
 
-        print(">>> Console Output - Master video started/Skipped")
+        print(">>> Console Output - Master video started")
 
         # classes
         self.external_master_overlay_window = master_overlay.MasterOverlay()
+        self.external_master_overlay_window.raise_()
         self.external_master_overlay_window.game_ended.connect(self.processing_stop_game_request_from_timers)
-        self.external_master_overlay_window.raiseMe.connect(self.raise_overlay_window)
 
         if room_info_response["Clues Allowed"] is True:
             self.external_clue_icon_container_window = master_overlay.ClueContainer()
+            self.external_clue_icon_container_window.raise_()
             self.external_clue_icon_container_window.showFullScreen()
-            self.external_clue_icon_container_window.raiseMe.connect(self.raise_clue_icon_window)
 
         else:
             pass
@@ -920,11 +900,6 @@ class NormalWindow(QMainWindow):
         self.external_clue_containers_window.mute_game.connect(self.mute_game)
         self.external_clue_containers_window.unmute_game.connect(self.unmute_game)
 
-    def raise_overlay_window(self):
-        self.external_master_overlay_window.raise_()
-
-    def raise_clue_icon_window(self):
-        self.external_clue_icon_container_window.raise_()
 
     def master_intro_video_container(self):
         """ this method is triggered as soon as the game starts, this method checks if the intro video is already
@@ -944,8 +919,7 @@ class NormalWindow(QMainWindow):
             if get_intro_api_response.content.decode("utf-8") != "No record found":
                 # intro video is not shown to the users till now
 
-                default = os.path.join(MASTER_DIRECTORY, "assets/room data/intro media/{}".format(
-                    os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/intro media/"))[0]))
+                default = os.path.join(MASTER_DIRECTORY, "assets/room data/intro media/{}".format(os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/intro media/"))[0]))
 
                 self.is_intro_video_playing = True
                 self.external_intro_video_window = IntroVideoWindow(file_name=default)
@@ -971,15 +945,15 @@ class NormalWindow(QMainWindow):
 
         except requests.exceptions.HTTPError as request_error:
             if "401 Client Error" in str(request_error):
-                print("401 Client Error - Device Removed or Not Registered")
+                print(">>> 401 Client Error - Device Removed or Not Registered")
             else:
-                print(">> Console output - Not a 401 error")
+                print(">>> Console output - Not a 401 error")
 
     def verify_status_of_intro_video_window(self):
         """ ths method is called as soon as the intro video player ends, codes are programmed to wait until the app
             receives the update timer request from from the webapp, and then it moves to the main game screen """
 
-        print("Verify ending of Intro Video")
+        print(">>> Verify ending of Intro Video")
 
         try:
             # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameDetails.json")) as game_details_json_file:
@@ -987,6 +961,7 @@ class NormalWindow(QMainWindow):
 
             game_details_response = threads.GAME_DETAILS
             if game_details_response["gameStatus"] != 3:
+
                 self.is_intro_video_playing = False
                 self.intro_post_request()
 
@@ -1017,8 +992,7 @@ class NormalWindow(QMainWindow):
             response_of_intro_request_api = requests.get(get_intro_request_api, headers=self.headers)
             response_of_intro_request_api.raise_for_status()
             device_request_id = response_of_intro_request_api.json()["DeviceRequestid"]
-            requests.post(POST_DEVICE_API.format(device_unique_code=self.device_id, deviceRequestId=device_request_id),
-                          headers=self.headers).raise_for_status()
+            requests.post(POST_DEVICE_API.format(device_unique_code=self.device_id, deviceRequestId=device_request_id), headers=self.headers).raise_for_status()
 
         except requests.exceptions.ConnectionError:
             # if the method faces connection error, then pass
@@ -1034,17 +1008,16 @@ class NormalWindow(QMainWindow):
 
         except requests.exceptions.HTTPError as request_error:
             if "401 Client Error" in str(request_error):
-                print("401 Client Error - Device Removed or Not Registered")
+                print(">>> 401 Client Error - Device Removed or Not Registered")
             else:
-                print(">> Console output - Not a 401 error")
+                print(">>> Console output - Not a 401 error")
 
     def master_background_video_container(self):
         """ this method holds the location of the master or background video and loads it into the master_video_player
             and then starts playing it"""
 
         try:
-            default = os.path.join(MASTER_DIRECTORY, "assets/room data/video/{}".format(
-                os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/video/"))[0]))
+            default = os.path.join(MASTER_DIRECTORY, "assets/room data/video/{}".format(os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/video/"))[0]))
         except IndexError:
             print(">>> Console output - Master background video not found")
         except FileNotFoundError:
@@ -1054,31 +1027,28 @@ class NormalWindow(QMainWindow):
                 self.master_video_player.loop = True
                 self.master_video_player.play(default)
                 self.master_video_player.register_event_callback(self.track_master_video_player)
-
+                self.is_master_video_playing = True
             else:
                 pass
 
     def track_master_video_player(self, event):
         """this method tracks the master video player, so that the other windows are called only after the master
             video player has ended"""
-        print("MPV EVENT : ", event)
 
-        event_id = event["event_id"]
+        event_id = event.event_id.value
         if self.master_video_started is False:
-            if event_id == 9:
-                # time.sleep(2)
-                self.is_master_video_playing = True
+            if event_id == 6:
                 self.master_video_started = True
         else:
             pass
+            
 
     def master_background_image_container(self):
         """ this method holds the location of the master or background photo and loads it into a QLabel and
             displays it"""
 
         try:
-            default = os.path.join(MASTER_DIRECTORY, "assets/room data/picture/{}".format(
-                os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/picture/"))[0]))
+            default = os.path.join(MASTER_DIRECTORY, "assets/room data/picture/{}".format(os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/picture/"))[0]))
         except IndexError:
             print(">>> Console output - Master background image not found")
         except FileNotFoundError:
@@ -1088,15 +1058,8 @@ class NormalWindow(QMainWindow):
                 if default.endswith(".apng") or default.endswith(".ajpg") or default.endswith(".gif"):
 
                     self.are_animated_images_triggered = True
-                    self.master_video_player.loop = True
-                    self.master_video_player.play(default)
-
-                elif (default.endswith(".m4v") or default.endswith(".mp4") or default.endswith(".mkv") or
-                        default.endswith(".avi") or default.endswith(".mov") or default.endswith(".mpg") or
-                        default.endswith(".mpeg")):
-                    self.master_video_player.loop = True
-                    self.master_video_player.play(default)
-                    self.master_video_player.register_event_callback(self.track_master_video_player)
+                    self.master_picture_displayer.loop = True
+                    self.master_picture_displayer.play(default)
 
                 elif default.endswith(".svg"):
 
@@ -1118,8 +1081,7 @@ class NormalWindow(QMainWindow):
            and then starts playing it """
 
         try:
-            default = os.path.join(MASTER_DIRECTORY, "assets/room data/music/{}".format(
-                os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/music/"))[0]))
+            default = os.path.join(MASTER_DIRECTORY, "assets/room data/music/{}".format(os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/music/"))[0]))
         except IndexError:
             print(">>> Console output - Background audio not found")
         except FileNotFoundError:
@@ -1278,7 +1240,7 @@ class NormalWindow(QMainWindow):
             self.master_audio_player.quit()
 
         if self.are_animated_images_triggered is True:
-            self.master_video_player._set_property("pause", True)
+            self.master_picture_displayer._set_property("pause", True)
 
         self.are_master_background_players_stopped = True
 
@@ -1322,23 +1284,21 @@ class NormalWindow(QMainWindow):
 
         except requests.exceptions.HTTPError as request_error:
             if "401 Client Error" in str(request_error):
-                print("401 Client Error - Device Removed or Not Registered")
+                print(">>> 401 Client Error - Device Removed or Not Registered")
             else:
-                print(">> Console output - Not a 401 error")
+                print(">>> Console output - Not a 401 error")
 
     def master_end_media_container(self, status):
         """ this method starts the EndMediaWidget widow and show the end media that is either win video or lost video"""
 
-        with open(os.path.join(MASTER_DIRECTORY,
-                               "assets/application data/device configurations.json")) as device_configurations_json_file:
+        with open(os.path.join(MASTER_DIRECTORY, "assets/application data/device configurations.json")) as device_configurations_json_file:
             initial_dictionary = json.load(device_configurations_json_file)
 
         room_info_response = initial_dictionary
 
         if status == "won":
             if room_info_response["IsSuccessVideo"] is True:  # checking if the win video is enabled in the webapp
-                default = os.path.join(MASTER_DIRECTORY, "assets/room data/success end media/{}".format(
-                    os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/success end media/"))[0]))
+                default = os.path.join(MASTER_DIRECTORY, "assets/room data/success end media/{}".format(os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/success end media/"))[0]))
 
                 if default.endswith(".mp3") or default.endswith(".wav"):
                     self.custom_end_audio_media_widget = EndAudioMediaWidget(file_name=default)
@@ -1350,8 +1310,7 @@ class NormalWindow(QMainWindow):
 
         elif status == "lost":
             if room_info_response["IsFailVideo"] is True:  # checking if the lost video is enabled in the webapp
-                default = os.path.join(MASTER_DIRECTORY, "assets/room data/fail end media/{}".format(
-                    os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/fail end media"))[0]))
+                default = os.path.join(MASTER_DIRECTORY, "assets/room data/fail end media/{}".format(os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/fail end media"))[0]))
 
                 if default.endswith(".mp3") or default.endswith(".wav"):
                     self.custom_end_audio_media_widget = EndAudioMediaWidget(file_name=default)
