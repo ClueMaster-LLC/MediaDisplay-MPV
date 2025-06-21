@@ -293,7 +293,6 @@ parts:
       - --libdir=/usr/lib
       - --localstatedir=/var
       - -Dgstreamer="disabled"
-      - -Dbluez5-backend="none"
       - -Dbluez5-gstreamer="disabled"
       - -Dorc="disabled"
       - -Dgsettings="disabled"
