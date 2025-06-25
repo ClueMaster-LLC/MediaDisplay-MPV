@@ -81,9 +81,11 @@ parts:
       - libglu1-mesa
       - samba-libs
       - git
+      - mpv
       - qtwayland5
       - mesa-utils
       - libgl1-mesa-dri
+      - python3-dbus
       - python3-pyqt5.qtmultimedia
       - libqt5multimedia5-plugins
       - python3-pyqt5.qtsvg
@@ -126,7 +128,6 @@ parts:
     build-packages:
       - python3-pip
       - python3-dev
-      - python3-dbus
       - gcc
       - build-essential
       - python3-wheel
