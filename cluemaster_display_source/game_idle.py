@@ -19,8 +19,6 @@ MASTER_DIRECTORY = os.path.join(os.environ.get("HOME"), "CluemasterDisplay")
 with open(os.path.join(MASTER_DIRECTORY, "assets/application data/platform_specs.json")) as platform_specs_file:
     PLATFORM = json.load(platform_specs_file)["platform"]
 
-# Game IDLE Screen debug statement
-print(">>> [IDLE SCREEN]")
 
 class GameIdleMPVPlayer(QWidget):
 
@@ -135,24 +133,17 @@ class GameIdle(QMainWindow):
                     # checking if photo is enabled in the webapp
                     self.picture_location = os.path.join(MASTER_DIRECTORY, "assets/room data/picture/{}".format(os.listdir(os.path.join(MASTER_DIRECTORY, "assets/room data/picture/"))[0]))
 
-                    if self.picture_location.endswith(".apng") or self.picture_location.endswith(".ajpg") or \
-                            self.picture_location.endswith(".gif"):
-
-                        self.mpv_player_triggered = True
-                        self.external_master_mpv_players = GameIdleMPVPlayer(file_name=self.picture_location)
-                        self.external_master_mpv_players.setParent(self)
-                        self.external_master_mpv_players.show()
-
-                    elif self.picture_location.endswith(".svg"):
-
+                    if self.picture_location.endswith(".svg"):
                         self.svg_widget = QSvgWidget(self.picture_location)
                         self.svg_widget.resize(self.screen_width, self.screen_height)
                         self.svg_widget.setParent(self)
                         self.svg_widget.show()
 
                     else:
-                        self.master_background.setPixmap(QPixmap(self.picture_location).scaled(self.screen_width, self.screen_height))
-                        self.setCentralWidget(self.master_background)
+                        self.mpv_player_triggered = True
+                        self.external_master_mpv_players = GameIdleMPVPlayer(file_name=self.picture_location)
+                        self.external_master_mpv_players.setParent(self)
+                        self.external_master_mpv_players.show()
                 else:
                     self.setStyleSheet("background-color:#191F26;")
             else:
@@ -164,6 +155,10 @@ class GameIdle(QMainWindow):
 
         except simplejson.errors.JSONDecodeError:
             # if the code inside the try block faces simplejson decode error then pass
+            pass
+
+        except Exception as error:
+            # something else happend like a photo was missing from the file storage or glcoud file error
             pass
 
     def restart_device(self):

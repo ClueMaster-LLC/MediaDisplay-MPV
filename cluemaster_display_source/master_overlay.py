@@ -32,6 +32,7 @@ class CustomIconLabel(QLabel):
 
 
 class ClueContainer(QWidget):
+    raiseMe = pyqtSignal()
 
     def __init__(self):
         super(ClueContainer, self).__init__()
@@ -261,11 +262,13 @@ class ClueContainer(QWidget):
                     break
 
         self.setLayout(self.master_clue_icon_container_layout)
+        self.raiseMe.emit()
 
 
 class MasterOverlay(QWidget):
 
     game_ended = pyqtSignal()
+    raiseMe = pyqtSignal()
 
     def __init__(self):
         super(MasterOverlay, self).__init__()
@@ -354,7 +357,7 @@ class MasterOverlay(QWidget):
         """ this method is triggered as soon as the MasterOverlay window is initialized, this method determines if the
             timer is a countdown timer or a countup timer and calls the respective method"""
 
-        print(">>> Console Output - Load application timer")
+        print("Console Output - Load application timer")
 
         try:
             with open(os.path.join(MASTER_DIRECTORY, "assets/application data/device configurations.json")) as device_configurations_json_file:
@@ -375,7 +378,7 @@ class MasterOverlay(QWidget):
 
     def fetch_cloud_timer(self):
         """ this method when called fetches the latest timer value from the GetGameTimer api and returns it"""
-        print(">>> Console Output - Fetch Cloud Timer")
+        print("Console Output - Fetch Cloud Timer")
         self.get_game_start_end_timer_api = GET_GAME_START_END_TIME.format(self.game_id)
 
         while True:
@@ -385,7 +388,7 @@ class MasterOverlay(QWidget):
                 get_game_timer_response.raise_for_status()
 
                 if get_game_timer_response.status_code == 200:
-                    print(">>> ", get_game_timer_response.json())
+                    print(get_game_timer_response.json())
                     end_timer_value_from_api = get_game_timer_response.json()["gameEndDateTime"]
                     cleaned_end_time = datetime.strptime(end_timer_value_from_api, "%Y-%m-%dT%H:%M:%S")
                     return cleaned_end_time
@@ -405,12 +408,12 @@ class MasterOverlay(QWidget):
 
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
-                    print(">>> 401 Client Error - Device Removed or Not Registered")
+                    print("401 Client Error - Device Removed or Not Registered")
                 else:
-                    print(">>> Console output - Not a 401 error ", request_error)
+                    print(">> Console output - Not a 401 error ", request_error)
 
             except Exception as error:
-                print(">>> Console Output - Error ", error)
+                print("Console Output - Error ", error)
 
 
     def application_countdown_timer(self):
@@ -425,6 +428,7 @@ class MasterOverlay(QWidget):
 
         self.update_countdown_timer()
         self.countdown_timer.start()
+        self.raiseMe.emit()
 
     def update_countdown_timer(self):
         """ this method is triggered every 1 second to update the countdown timer"""
@@ -454,6 +458,7 @@ class MasterOverlay(QWidget):
         self.countup_label.show()
 
         self.countup_timer.start()
+        self.raiseMe.emit()
 
     def update_countup_timer(self):
         """ this method is triggered every 1 second to update the countup timer"""

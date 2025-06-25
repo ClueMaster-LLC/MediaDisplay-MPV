@@ -14,6 +14,7 @@ MASTER_DIRECTORY = os.path.join(os.environ.get("HOME"), "CluemasterDisplay")
 THREAD_INFO = None
 GAME_DETAILS = None
 UNIQUE_CODE = None
+CLUE_RESPONSE = None
 
 class GameDetails(QThread):
 
@@ -101,7 +102,7 @@ class GameDetails(QThread):
 
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
-                    print(">>> 401 Client Error - Device Removed or Not Registered ( From GameDetails API)")
+                    print("401 Client Error - Device Removed or Not Registered ( From GameDetails API)")
                     # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
                     #     thread_file_response = json.load(thread_file)
 
@@ -123,7 +124,7 @@ class GameDetails(QThread):
 
                         self.custom_game_status.emit()
                 else:
-                    print(">>> Console output - Not a 401 error")
+                    print(">> Console output - Not a 401 error")
 
             except PermissionError:
                 # application update detected
@@ -232,7 +233,7 @@ class ShutdownRestartRequest(QThread):
 
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
-                    print(">>> 401 Client Error - Device Removed or Not Registered ( From ShutdownRestart API )")
+                    print("401 Client Error - Device Removed or Not Registered ( From ShutdownRestart API )")
                     # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
                     #     thread_file_response = json.load(thread_file)
 
@@ -243,7 +244,7 @@ class ShutdownRestartRequest(QThread):
                     else:
                         print(">>> Console output - API Token Expired (Shutdown Restart)")
                 else:
-                    print(">>> Console output - Not a 401 error")
+                    print(">> Console output - Not a 401 error")
 
             except FileNotFoundError:
                 # if the code faces the FilNotFoundError then pass
@@ -344,7 +345,7 @@ class UpdateRoomInfo(QThread):
 
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
-                    print(">>> 401 Client Error - Device Removed or Not Registered ( From UpdateRoomInfo API )")
+                    print("401 Client Error - Device Removed or Not Registered ( From UpdateRoomInfo API )")
                     # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
                     #     thread_file_response = json.load(thread_file)
 
@@ -355,7 +356,7 @@ class UpdateRoomInfo(QThread):
                     else:
                         print(">>> Console output - API Token Expired (UpdateRoomInfo)")
                 else:
-                    print(">>> Console output - Not a 401 error")
+                    print(">> Console output - Not a 401 error")
 
             except PermissionError:
                 # application update detected
@@ -432,34 +433,53 @@ class GetGameClue(QThread):
                 else:
                     return
 
-                print(">>> Console output - Clue response")
+                print(">>> threads - Send Clue ACK response")
                 json_response = requests.get(game_clue_url, headers=headers)
                 json_response.raise_for_status()
-                gameClueId = json_response.json()["gameClueId"]
-                gameId = json_response.json()["gameId"]
 
-                requests.post(POST_GAME_CLUE.format(gameId=gameId, gameClueId=gameClueId), headers=headers).raise_for_status()
+                if 'status' in json_response.json():
+                    if json_response.json()['status'] == 'No clues Found':
+                        # print(f">>> threads - Clue json_RESP: {json_response.json()}")
+                        pass
+                else:
+                    print(f">>> threads - Clue json_RESP: {json_response.json()}")
+                    gameClueId = json_response.json()["gameClueId"]
+                    gameId = json_response.json()["gameId"]
 
-                with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json"), "w") as game_clue_json_file:
-                    json.dump(json_response.json(), game_clue_json_file)
+                    print(f">>> threads - GAMECLUEID: {gameClueId}")
+                    print(f">>> threads - GAMECLUEID: {gameId}")
 
-                self.statusChanged.emit()
 
-            except requests.exceptions.ConnectionError:
+                    requests.post(POST_GAME_CLUE.format(gameId=gameId, gameClueId=gameClueId), headers=headers).raise_for_status()
+
+                # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/GameClue.json"), "w") as game_clue_json_file:
+                #     json.dump(json_response.json(), game_clue_json_file)
+
+                    threads.CLUE_RESPONSE = json_response.json()
+
+                    self.statusChanged.emit()
+
+            except requests.exceptions.ConnectionError as e:
                 # if the code inside the try block faces connection error while making api calls, then pass
-                pass
+                print(f">>> threads - Clue POST requests.exceptions.ConnectionError ERROR: {e}")
+                time.sleep(1)
+                # pass
 
-            except json.decoder.JSONDecodeError:
+            except json.decoder.JSONDecodeError as e:
                 # if the code inside the try is facing json decode error then pass
+                print(f">>> threads - Clue POST json.decoder.JSONDecodeError ERROR: {e}")
+                time.sleep(1)
                 pass
 
-            except simplejson.errors.JSONDecodeError:
+            except simplejson.errors.JSONDecodeError as e:
                 # if the code inside the try is facing simplejson decode error then pass
+                print(f">>> threads - Clue POST simplejson.errors.JSONDecodeError ERROR: {e}")
+                time.sleep(1)
                 pass
 
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
-                    print(">>> 401 Client Error - Device Removed or Not Registered ( From GetGameClue API )")
+                    print("401 Client Error - Device Removed or Not Registered ( From GetGameClue API )")
                     # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
                     #     thread_file_response = json.load(thread_file)
 
@@ -468,12 +488,13 @@ class GetGameClue(QThread):
                     if thread_file_response["ResettingGame"] is True:
                         pass
                     else:
-                        print(">>> Console output - API Token Expired (GetGameClue)")
+                        print(">>> threads - API Token Expired (GetGameClue)")
                 else:
-                    print(">>> Console output - Not a 401 error")
+                    print(">> threads - Not a 401 error")
 
-            except KeyError:
+            except KeyError as e:
                 # if the code inside the try block faces KeyError, then pass
+                print(f">>> threads - Clue POST KeyError ERROR: {e}")
                 pass
 
             except PermissionError:
@@ -486,7 +507,7 @@ class GetGameClue(QThread):
 
             finally:
                 # and finally
-                time.sleep(3)
+                time.sleep(2)
 
     def stop(self):
         """this method when called updates the thread running status to False and in the next loop when the condition
@@ -570,7 +591,7 @@ class GetTimerRequest(QThread):
 
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
-                    print(">>> 401 Client Error - Device Removed or Not Registered ( From GetTimerRequest API )")
+                    print("401 Client Error - Device Removed or Not Registered ( From GetTimerRequest API )")
                     # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
                     #     thread_file_response = json.load(thread_file)
 
@@ -581,7 +602,7 @@ class GetTimerRequest(QThread):
                     else:
                         print(">>> Console output - API Token Expired (GetTimeRequest)")
                 else:
-                    print(">>> Console output - Not a 401 error")
+                    print(">> Console output - Not a 401 error")
 
             else:
                 # if no error then
@@ -672,7 +693,7 @@ class DownloadConfigs(QThread):
 
             except requests.exceptions.HTTPError as request_error:
                 if "401 Client Error" in str(request_error):
-                    print(">>> 401 Client Error - Device Removed or Not Registered ( From DownloadConfigs API )")
+                    print("401 Client Error - Device Removed or Not Registered ( From DownloadConfigs API )")
                     # with open(os.path.join(MASTER_DIRECTORY, "assets/application data/ThreadInfo.json")) as thread_file:
                     #     thread_file_response = json.load(thread_file)
 
@@ -683,7 +704,7 @@ class DownloadConfigs(QThread):
                     else:
                         print(">>> Console output - API Token Expired (DownloadConfigs)")
                 else:
-                    print(">>> Console output - Not a 401 error")
+                    print(">> Console output - Not a 401 error")
 
             except FileNotFoundError:
                 # if the code faces the FilNotFoundError then pass

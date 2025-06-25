@@ -15,8 +15,6 @@ from PyQt5.QtWidgets import QApplication, QLabel, QWidget, QVBoxLayout, QShortcu
 ROOT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 MASTER_DIRECTORY = os.path.join(os.environ.get("HOME"), "CluemasterDisplay")
 
-# Authentication Screen debug statement
-print(">>> [AUTHENTICATION SCREEN]")
 
 class AuthenticationBackend(QThread):
     authentication_complete = pyqtSignal()
@@ -57,14 +55,14 @@ class AuthenticationBackend(QThread):
                 while True:
                     device_request_api = requests.get(device_request_url, headers=headers)
                     if device_request_api.status_code != 200:
-                        print(">>> Device Registration - Device Request API status not 200")
+                        print("Device Registration - Device Request API status not 200")
                         time.sleep(3)
                         pass
 
                     else:
-                        print(">>> Got Request")
+                        print("Got Request")
                         threads.UNIQUE_CODE["apiKey"] = self.unverified_api_token
-                        print(">>> New UNIQUE_CODE data : ", threads.UNIQUE_CODE)
+                        print("New UNIQUE_CODE data : ", threads.UNIQUE_CODE)
 
                         updated_unique_code_file_data = threads.UNIQUE_CODE
                         with open(self.unique_code_file, "w") as file:
@@ -167,7 +165,7 @@ class AuthenticationBackend(QThread):
                                 if "401 Client Error" in str(request_error):
                                     self.check_api_token_status()
                                 else:
-                                    print(">>> Console output - Not a 401 error")
+                                    print(">> Console output - Not a 401 error")
 
                             # picture directory
                             print(">>> Verifying picture")
@@ -193,7 +191,7 @@ class AuthenticationBackend(QThread):
                                 if "401 Client Error" in str(request_error):
                                     self.check_api_token_status()
                                 else:
-                                    print(">>> Console output - Not a 401 error")
+                                    print(">> Console output - Not a 401 error")
 
                             # video directory
                             print(">>> Verifying video")
@@ -218,7 +216,7 @@ class AuthenticationBackend(QThread):
                                 if "401 Client Error" in str(request_error):
                                     self.check_api_token_status()
                                 else:
-                                    print(">>> Console output - Not a 401 error")
+                                    print(">> Console output - Not a 401 error")
 
                             # intro media directory
                             print(">>> Verifying  intro")
@@ -243,7 +241,7 @@ class AuthenticationBackend(QThread):
                                 if "401 Client Error" in str(request_error):
                                     self.check_api_token_status()
                                 else:
-                                    print(">>> Console output - Not a 401 error")
+                                    print(">> Console output - Not a 401 error")
 
                             # end media directory
                             print(">>> Verifying end media - win")
@@ -268,7 +266,7 @@ class AuthenticationBackend(QThread):
                                 if "401 Client Error" in str(request_error):
                                     self.check_api_token_status()
                                 else:
-                                    print(">>> Console output - Not a 401 error")
+                                    print(">> Console output - Not a 401 error")
 
                             # end media directory
                             print(">>> Verifying end media - loss")
@@ -293,7 +291,7 @@ class AuthenticationBackend(QThread):
                                 if "401 Client Error" in str(request_error):
                                     self.check_api_token_status()
                                 else:
-                                    print(">>> Console output - Not a 401 error")
+                                    print(">> Console output - Not a 401 error")
 
                             # clue medias
                             print(">>> Verifying clue medias")
@@ -377,12 +375,12 @@ class AuthenticationBackend(QThread):
             if "401 Client Error" in str(request_error):
                 self.check_api_token_status()
             else:
-                print(">>> Console output - Not a 401 error Master Except Block")
+                print(">> Console output - Not a 401 error Master Except Block")
                 print(request_error)
 
     def check_api_token_status(self):
         if self.resetting_game is False:
-            print(">>> 401 Client Error - Device Removed or Not Registered")
+            print("401 Client Error - Device Removed or Not Registered")
             self.resetting_game = True
             self.complete_reset.emit()
             self.stop()
