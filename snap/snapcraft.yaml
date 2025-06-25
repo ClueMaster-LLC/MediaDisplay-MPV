@@ -136,7 +136,7 @@ parts:
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
-      - git+https://github.com/hiransarkar21/python-mpv
+      - git+https://github.com/Cluemaster-LLC/python-mpv
       - simplejson
       - psutil
       - gevent
@@ -294,7 +294,6 @@ parts:
       - --libdir=/usr/lib
       - --localstatedir=/var
       - -Dgstreamer="disabled"
-      - -Dbluez5-backend="none"
       - -Dbluez5-gstreamer="disabled"
       - -Dorc="disabled"
       - -Dgsettings="disabled"
