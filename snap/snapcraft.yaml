@@ -81,7 +81,6 @@ parts:
       - libglu1-mesa
       - samba-libs
       - git
-      - mpv
       - qtwayland5
       - mesa-utils
       - libgl1-mesa-dri
