@@ -275,11 +275,7 @@ class IntroVideoWindow(QWidget):
         """this method checks if the current event emitted by the media players is end of file event, if it is then
            close the media player and the window else pass"""
 
-        print(f"MPV EVENT: {event}")
-
         event_id = event.event_id.value
-        print(f"MPV EVENT ID: {event_id}")
-
         mpv_end_of_file_event_id = 7
 
         if event_id == mpv_end_of_file_event_id:
@@ -1061,11 +1057,11 @@ class NormalWindow(QMainWindow):
     def track_master_video_player(self, event):
         """this method tracks the master video player, so that the other windows are called only after the master
             video player has ended"""
-        print("MPV EVENT : ", event)
-
+        
+        print(event.event_id.value)
         event_id = event.event_id.value
         if self.master_video_started is False:
-            if event_id == 9:
+            if event_id == 6:
                 # time.sleep(2)
                 self.is_master_video_playing = True
                 self.master_video_started = True
