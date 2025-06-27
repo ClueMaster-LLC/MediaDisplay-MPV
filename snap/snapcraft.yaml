@@ -31,9 +31,7 @@ apps:
 
   audio-system:
     command: bin/audio
-    daemon: simple
-    restart-condition: always
-    install-mode: enable
+    daemon: oneshot
 
   pactl:
     command-chain: [bin/client-wrapper]

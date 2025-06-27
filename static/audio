@@ -15,7 +15,7 @@ fi
 if ! pgrep -x pulseaudio > /dev/null; then
   echo "⚠️  PulseAudio not running, starting now..."
   "$SNAP/bin/pulseaudio" &
-  sleep 2
+  sleep 3
 else
   echo "✅ PulseAudio is already running."
 fi
