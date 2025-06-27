@@ -185,14 +185,20 @@ parts:
       - libass-dev
       - libxkbcommon-dev
       - libxpresent-dev 
-
+      - libva-dev
+      - libva-drm-dev
+      - libva-x11-dev
+      - libvdpau-dev
     stage-packages:
       - liblcms2-2
       - libarchive13
       - liblua5.2-0
       - libuchardet0
       - libxpresent1
-
+      - libva2
+      - libva-drm2
+      - libva-x11-2
+      - libvdpau1
     meson-parameters:
       - --prefix=/usr
       - -Dlibmpv=true
@@ -200,6 +206,8 @@ parts:
       - -Dgl=enabled
       - -Dx11=enabled
       - -Dwayland=enabled
+      - -Dvaapi=enabled
+      - -Dvdpau=enabled
 
   desktop-qt5:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
