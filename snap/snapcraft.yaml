@@ -78,11 +78,14 @@ parts:
       - libass9
       - alsa-base
       - locales
-      - libvdpau1
       - i965-va-driver
       - va-driver-all
       - vdpau-driver-all
       - mesa-va-drivers
+      - libva2
+      - libva-drm2
+      - libva-x11-2
+      - libvdpau1
       - libvdpau-va-gl1
       - libglu1-mesa
       - samba-libs
@@ -186,8 +189,6 @@ parts:
       - libxkbcommon-dev
       - libxpresent-dev 
       - libva-dev
-      - libva-drm-dev
-      - libva-x11-dev
       - libvdpau-dev
     stage-packages:
       - liblcms2-2
@@ -195,10 +196,6 @@ parts:
       - liblua5.2-0
       - libuchardet0
       - libxpresent1
-      - libva2
-      - libva-drm2
-      - libva-x11-2
-      - libvdpau1
     meson-parameters:
       - --prefix=/usr
       - -Dlibmpv=true
