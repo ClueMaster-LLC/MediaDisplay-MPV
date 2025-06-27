@@ -83,6 +83,7 @@ parts:
       - libva2
       - libva-drm2
       - libva-x11-2
+      - libva-wayland2
       - libvdpau1
       - libvdpau-va-gl1
       - libglu1-mesa
