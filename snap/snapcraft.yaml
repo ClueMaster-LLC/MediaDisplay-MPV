@@ -29,6 +29,12 @@ apps:
     restart-condition: always
     install-mode: enable
 
+  audio-system:
+    command: bin/audio
+    daemon: simple
+    restart-condition: always
+    install-mode: enable
+
   pactl:
     command-chain: [bin/client-wrapper]
     command: usr/bin/pactl
@@ -371,6 +377,7 @@ parts:
       "client-wrapper": "bin/"
       "config": "bin/"
       "pulseaudio": "bin/pulseaudio"
+      "audio": "bin/audio"
 
 environment:
   LD_LIBRARY_PATH: "$SNAP/usr/lib/pulseaudio:$SNAP/usr/lib/alsa-lib:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/usr/lib"

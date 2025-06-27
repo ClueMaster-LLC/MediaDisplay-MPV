@@ -1,0 +1,45 @@
+#!/bin/sh
+set -e
+
+echo "=== ClueMaster Audio Script ==="
+
+# Check /dev/snd presence
+if [ ! -d /dev/snd ]; then
+  echo "❌ /dev/snd not found. ALSA devices not accessible."
+else
+  echo "✅ ALSA device nodes detected:"
+  ls -1 /dev/snd/
+fi
+
+# Start PulseAudio if not running
+if ! pgrep -x pulseaudio > /dev/null; then
+  echo "⚠️  PulseAudio not running, starting now..."
+  "$SNAP/bin/pulseaudio" &
+  sleep 2
+else
+  echo "✅ PulseAudio is already running."
+fi
+
+# Check sinks
+echo "🔍 Checking PulseAudio sinks..."
+if pactl list short sinks | grep -i dummy > /dev/null; then
+  echo "❌ Dummy sink detected. Restarting PulseAudio..."
+  pulseaudio -k
+  sleep 1
+  "$SNAP/bin/pulseaudio" &
+  sleep 2
+else
+  echo "✅ Valid sinks detected:"
+  pactl list short sinks
+fi
+
+# Set volume and unmute
+echo "🔊 Setting sink volume to 100% and unmuting..."
+pactl set-sink-mute @DEFAULT_SINK@ 0 || true
+pactl set-sink-volume @DEFAULT_SINK@ 100% || true
+
+# Show final audio status
+echo "🎛  Final audio sink list:"
+pactl list short sinks
+
+echo "=== Audio Check Complete ==="
