@@ -394,6 +394,7 @@ environment:
   ALSA_PLUGIN_DIR: $SNAP/usr/lib/alsa-lib
   QT_QPA_PLATFORM_PLUGIN_PATH: $SNAP/usr/lib/x86_64-linux-gnu/qt5/plugins/platforms
   QT_PLUGIN_PATH: $SNAP/usr/lib/x86_64-linux-gnu/qt5/plugins
+  VDPAU_DRIVER: va_gl
 
 
 layout:
