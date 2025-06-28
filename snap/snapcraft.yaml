@@ -189,12 +189,14 @@ parts:
       - libxpresent-dev 
       - libva-dev
       - libvdpau-dev
+      - libplacebo-dev
     stage-packages:
       - liblcms2-2
       - libarchive13
       - liblua5.2-0
       - libuchardet0
       - libxpresent1
+      - libplacebo72
     meson-parameters:
       - --prefix=/usr
       - -Dlibmpv=true
@@ -204,6 +206,7 @@ parts:
       - -Dwayland=enabled
       - -Dvaapi=enabled
       - -Dvdpau=enabled
+      - -Dgpu-next=enabled
 
   desktop-qt5:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
