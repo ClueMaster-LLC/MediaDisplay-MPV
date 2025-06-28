@@ -33,6 +33,9 @@ apps:
     command: bin/audio
     daemon: oneshot
 
+  gpu-debug:
+    command: bin/gpu-debug
+
   pactl:
     command-chain: [bin/client-wrapper]
     command: usr/bin/pactl
@@ -66,8 +69,15 @@ slots:
   audio-playback:
 
 parts:
+  debug-tools:
+    plugin: nil
+    stage-packages:
+      - vainfo
+      - vdpauinfo
+      - pciutils
+
+    
   copy-source-code:
-    after: [desktop-qt5]
     plugin: dump
     source: cluemaster_display_source/
     stage-packages:
@@ -76,22 +86,21 @@ parts:
       - libass9
       - alsa-base
       - locales
-      - i965-va-driver
-      - va-driver-all
-      - vdpau-driver-all
-      - mesa-va-drivers
+      - i965-va-driver            # Intel (legacy)
+      - intel-media-va-driver    # Intel (modern)
+      - mesa-va-drivers          # AMD and Intel
+      - vdpau-driver-all         # NVIDIA + others
+      - libvdpau-va-gl1          # Bridges VAAPI → VDPAU (critical for NVIDIA in Snap)
       - libva2
       - libva-drm2
       - libva-x11-2
       - libva-wayland2
       - libvdpau1
-      - libvdpau-va-gl1
       - libglu1-mesa
-      - samba-libs
-      - git
-      - qtwayland5
       - mesa-utils
       - libgl1-mesa-dri
+      - qtwayland5
+      - samba-libs
       - python3-dbus
       - python3-pyqt5.qtmultimedia
       - libqt5multimedia5-plugins
@@ -189,7 +198,6 @@ parts:
       - libxpresent-dev 
       - libva-dev
       - libvdpau-dev
-      - libplacebo-dev
     stage-packages:
       - liblcms2-2
       - libarchive13
@@ -205,8 +213,6 @@ parts:
       - -Dwayland=enabled
       - -Dvaapi=enabled
       - -Dvdpau=enabled
-      - -Dgpu-next=enabled
-      - -Dlibplacebo=enabled
 
   desktop-qt5:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
@@ -377,6 +383,7 @@ parts:
       - -README.md
 
   extras:
+    after: [debug-tools]
     plugin: dump
     source: static/
     organize:
@@ -385,6 +392,8 @@ parts:
       "config": "bin/"
       "pulseaudio": "bin/pulseaudio"
       "audio": "bin/audio"
+      "gpu-debug": "bin/gpu-debug"
+      "sample.mp4": "bin/sample.mp4"
 
 environment:
   LD_LIBRARY_PATH: "$SNAP/usr/lib/pulseaudio:$SNAP/usr/lib/alsa-lib:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/usr/lib"
@@ -397,6 +406,7 @@ environment:
   ALSA_PLUGIN_DIR: $SNAP/usr/lib/alsa-lib
   QT_QPA_PLATFORM_PLUGIN_PATH: $SNAP/usr/lib/x86_64-linux-gnu/qt5/plugins/platforms
   QT_PLUGIN_PATH: $SNAP/usr/lib/x86_64-linux-gnu/qt5/plugins
+  LIBVA_DRIVER_NAME: auto
   VDPAU_DRIVER: va_gl
 
 

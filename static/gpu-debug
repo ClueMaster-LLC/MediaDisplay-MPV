@@ -1,0 +1,57 @@
+#!/bin/bash
+
+set -e
+
+LOGDIR="$SNAP_COMMON/logs"
+LOGFILE="$LOGDIR/gpu-debug.log"
+mkdir -p "$LOGDIR"
+
+# Clear the old log
+echo "==== GPU Hardware Acceleration Debug Log ====" > "$LOGFILE"
+
+# Color codes (ignored in log, retained for terminal if run manually)
+COLOR_GREEN="\033[1;32m"
+COLOR_RED="\033[1;31m"
+COLOR_YELLOW="\033[1;33m"
+COLOR_RESET="\033[0m"
+
+log() {
+  echo -e "$@" | tee -a "$LOGFILE"
+}
+
+log "${COLOR_YELLOW}==== GPU Vendor Detection ====${COLOR_RESET}"
+if command -v lspci >/dev/null; then
+  lspci | grep -i 'vga\|3d\|display' | tee -a "$LOGFILE"
+else
+  log "${COLOR_RED}lspci not available${COLOR_RESET}"
+fi
+log ""
+
+log "${COLOR_YELLOW}==== VAINFO ====${COLOR_RESET}"
+vainfo 2>&1 | tee -a "$LOGFILE" || log "${COLOR_RED}vainfo failed${COLOR_RESET}"
+log ""
+
+log "${COLOR_YELLOW}==== VDPAUINFO ====${COLOR_RESET}"
+export VDPAU_DRIVER=va_gl
+vdpauinfo 2>&1 | tee -a "$LOGFILE" || log "${COLOR_RED}vdpauinfo failed${COLOR_RESET}"
+log ""
+
+log "${COLOR_YELLOW}==== MPV Playback Test (HW Decoding) ====${COLOR_RESET}"
+
+TEST_VIDEO="$SNAP/bin/sample.mp4"
+if [ ! -f "$TEST_VIDEO" ]; then
+  log "${COLOR_RED}Sample video not found at $TEST_VIDEO${COLOR_RESET}"
+  exit 1
+fi
+
+MPV_LOG="/tmp/mpv_hwaccel.log"
+$SNAP/usr/bin/mpv --no-config --vo=gpu --hwdec=auto --gpu-context=x11 "$TEST_VIDEO" \
+  --msg-level=ffmpeg=info --log-file="$MPV_LOG" 2>&1 | tee -a "$LOGFILE"
+
+if grep -q "Using hardware decoding" "$MPV_LOG"; then
+  log "${COLOR_GREEN}✔ Hardware decoding used in MPV${COLOR_RESET}"
+else
+  log "${COLOR_RED}✘ Hardware decoding NOT used in MPV${COLOR_RESET}"
+fi
+
+log "${COLOR_YELLOW}==== Log saved to $LOGFILE ====${COLOR_RESET}"
