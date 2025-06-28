@@ -2,7 +2,7 @@
 
 set -e
 
-LOGDIR="$SNAP_COMMON/logs"
+LOGDIR="$SNAP_USER_COMMON/logs"
 LOGFILE="$LOGDIR/gpu-debug.log"
 mkdir -p "$LOGDIR"
 
@@ -44,8 +44,9 @@ if [ ! -f "$TEST_VIDEO" ]; then
   exit 1
 fi
 
-MPV_LOG="/tmp/mpv_hwaccel.log"
-$SNAP/usr/bin/mpv --no-config --vo=gpu --hwdec=auto --gpu-context=x11 "$TEST_VIDEO" \
+MPV_LOG="$SNAP_USER_COMMON/mpv_hwaccel.log"
+$SNAP/usr/bin/mpv --no-config --vo=gpu --hwdec=auto-safe \
+  --gpu-context=auto --gpu-api=opengl "$TEST_VIDEO" \
   --msg-level=ffmpeg=info --log-file="$MPV_LOG" 2>&1 | tee -a "$LOGFILE"
 
 if grep -q "Using hardware decoding" "$MPV_LOG"; then
