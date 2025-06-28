@@ -183,9 +183,9 @@ class EndMediaWidget(QWidget):
 
         # widgets
         if PLATFORM == "Intel":
-            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
         elif PLATFORM == "AMD":
-            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
         else:
             self.end_media_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
 
@@ -249,9 +249,9 @@ class IntroVideoWindow(QWidget):
 
         # widgets
         if PLATFORM == "Intel":
-            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
         elif PLATFORM == "AMD":
-            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
         else:
             self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
 
@@ -316,10 +316,10 @@ class NormalWindow(QMainWindow):
             config = json.load(master_specs)["mpv_configurations"]
 
         if PLATFORM == "Intel":
-            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
 
         elif PLATFORM == "AMD":
-            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
 
         else:
             self.master_video_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
