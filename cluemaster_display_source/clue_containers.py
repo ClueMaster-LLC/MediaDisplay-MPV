@@ -99,9 +99,9 @@ class ClueVideoWidget(QWidget):
         # widget
 
         if PLATFORM == "Intel":
-            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
         elif PLATFORM == "AMD":
-            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
         else:
             self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
 
@@ -175,9 +175,9 @@ class ClueAnimatedImageContainer(QWidget):
 
         # widget
         if PLATFORM == "Intel":
-            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
         elif PLATFORM == "AMD":
-            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
         else:
             self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
 
