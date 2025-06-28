@@ -207,6 +207,7 @@ parts:
       - -Dvaapi=enabled
       - -Dvdpau=enabled
       - -Dgpu-next=enabled
+      - -Dlibplacebo=enabled
 
   desktop-qt5:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
