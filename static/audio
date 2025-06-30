@@ -1,45 +1,47 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
-echo "=== ClueMaster Audio Script ==="
+echo "[audio-system] Waiting for PulseAudio..."
 
-# Check /dev/snd presence
-if [ ! -d /dev/snd ]; then
-  echo "❌ /dev/snd not found. ALSA devices not accessible."
-else
-  echo "✅ ALSA device nodes detected:"
-  ls -1 /dev/snd/
+MAX_RETRIES=10
+RETRY_INTERVAL=1
+SUCCESS=0
+
+for i in $(seq 1 $MAX_RETRIES); do
+  if pactl info >/dev/null 2>&1; then
+    echo "[audio-system] PulseAudio is available. Proceeding with configuration."
+    SUCCESS=1
+    break
+  fi
+  echo "[audio-system] Attempt $i/$MAX_RETRIES: PulseAudio not ready yet."
+  sleep $RETRY_INTERVAL
+done
+
+if [ "$SUCCESS" -ne 1 ]; then
+  echo "[audio-system] PulseAudio did not start within timeout. Failing setup."
+  exit 1
 fi
 
-# Start PulseAudio if not running
-if ! pgrep -x pulseaudio > /dev/null; then
-  echo "⚠️  PulseAudio not running, starting now..."
-  "$SNAP/bin/pulseaudio" &
-  sleep 3
+# Set default sink if one is running
+DEFAULT_SINK=$(pactl list short sinks | grep -m1 RUNNING | awk '{print $2}')
+if [ -n "$DEFAULT_SINK" ]; then
+  echo "[audio-system] Setting default sink to: $DEFAULT_SINK"
+  pactl set-default-sink "$DEFAULT_SINK"
 else
-  echo "✅ PulseAudio is already running."
+  echo "[audio-system] No RUNNING sink found. Trying to set any available sink..."
+  DEFAULT_SINK=$(pactl list short sinks | awk 'NR==1 {print $2}')
+  if [ -n "$DEFAULT_SINK" ]; then
+    echo "[audio-system] Setting fallback default sink to: $DEFAULT_SINK"
+    pactl set-default-sink "$DEFAULT_SINK"
+  else
+    echo "[audio-system] No sinks found at all. Failing."
+    exit 1
+  fi
 fi
 
-# Check sinks
-echo "🔍 Checking PulseAudio sinks..."
-if pactl list short sinks | grep -i dummy > /dev/null; then
-  echo "❌ Dummy sink detected. Restarting PulseAudio..."
-  pulseaudio -k
-  sleep 1
-  "$SNAP/bin/pulseaudio" &
-  sleep 2
-else
-  echo "✅ Valid sinks detected:"
-  pactl list short sinks
-fi
+# Set volume to 100%
+echo "[audio-system] Setting volume to 100% on sink: $DEFAULT_SINK"
+pactl set-sink-volume "$DEFAULT_SINK" 100%
 
-# Set volume and unmute
-echo "🔊 Setting sink volume to 100% and unmuting..."
-pactl set-sink-mute @DEFAULT_SINK@ 0 || true
-pactl set-sink-volume @DEFAULT_SINK@ 100% || true
-
-# Show final audio status
-echo "🎛  Final audio sink list:"
-pactl list short sinks
-
-echo "=== Audio Check Complete ==="
+echo "[audio-system] Audio system setup completed successfully."
+exit 0

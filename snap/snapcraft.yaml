@@ -29,10 +29,6 @@ apps:
     restart-condition: always
     install-mode: enable
 
-  audio-system:
-    command: bin/audio
-    daemon: oneshot
-
   gpu-debug:
     command: bin/gpu-debug
 
@@ -168,6 +164,7 @@ parts:
     build-packages:
       - python3
       - meson
+      - cmake
       - ninja-build
       - build-essential
       - pkg-config
@@ -208,11 +205,13 @@ parts:
       - --prefix=/usr
       - -Dlibmpv=true
       - -Dlua=lua52
+      - -Dcplayer=true
       - -Dgl=enabled
       - -Dx11=enabled
       - -Dwayland=enabled
       - -Dvaapi=enabled
       - -Dvdpau=enabled
+      - -Degl=enabled
 
   desktop-qt5:
     source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
