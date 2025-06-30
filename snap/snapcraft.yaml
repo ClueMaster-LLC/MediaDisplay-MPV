@@ -258,7 +258,7 @@ parts:
       - -usr/lib/pkgconfig
 
   pulseaudio-common:
-    source: bin
+    source: bin/
     plugin: dump
     organize:
       client-wrapper: bin/client-wrapper
