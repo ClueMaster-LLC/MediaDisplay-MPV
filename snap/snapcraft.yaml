@@ -29,9 +29,6 @@ apps:
     restart-condition: always
     install-mode: enable
 
-  gpu-debug:
-    command: bin/gpu-debug
-
   pactl:
     command-chain: [bin/client-wrapper]
     command: usr/bin/pactl
@@ -65,13 +62,6 @@ slots:
   audio-playback:
 
 parts:
-  debug-tools:
-    plugin: nil
-    stage-packages:
-      - vainfo
-      - vdpauinfo
-      - pciutils
-
   copy-source-code:
     plugin: dump
     source: cluemaster_display_source/
@@ -97,8 +87,8 @@ parts:
       - qtwayland5
       - samba-libs
       - python3-dbus
-      - python3-pyqt5.qtmultimedia
-      - libqt5multimedia5-plugins
+      # - python3-pyqt5.qtmultimedia
+      # - libqt5multimedia5-plugins
       - python3-pyqt5.qtsvg
     stage:
       - -usr/share/alsa/alsa.conf
@@ -123,6 +113,7 @@ parts:
       - -usr/share/alsa/pcm/surround71.conf
       - -usr/lib/x86_64-linux-gnu/libFLAC.so.8.3.0
       - -usr/share/doc/libflac8/changelog.Debian.gz
+      # - -usr/lib/x86_64-linux-gnu/qt5/plugins/mediaservice/libqtmedia_pulse.so
       - -README.md
     stage-snaps: [mir-kiosk-x11]
 
@@ -383,7 +374,6 @@ parts:
       - -README.md
 
   extras:
-    after: [debug-tools]
     plugin: dump
     source: static/
     organize:
