@@ -72,7 +72,6 @@ parts:
       - vdpauinfo
       - pciutils
 
-    
   copy-source-code:
     plugin: dump
     source: cluemaster_display_source/
@@ -338,7 +337,19 @@ parts:
 
     override-prime: |
       snapcraftctl prime
+
+      # Clean up irrelevant docs
       find usr/share/doc/ -type f,l ! -name copyright | xargs rm -rf
+
+      # Forcefully remove any incorrect PulseAudio libs (just in case)
+      find usr/lib/x86_64-linux-gnu -name 'libpulsecommon-13.99*' -delete || true
+      find usr/lib/x86_64-linux-gnu -name 'libpulse*.so*' -delete || true
+
+      # Ensure custom PulseAudio 15 libs are staged properly
+      mkdir -p $SNAPCRAFT_PRIME/usr/lib/x86_64-linux-gnu
+      cp -av usr/lib/libpulse*.so* usr/lib/pulse* $SNAPCRAFT_PRIME/usr/lib/x86_64-linux-gnu/ || true
+      cp -av usr/lib/pulse-15.0 $SNAPCRAFT_PRIME/usr/lib/ || true
+
     prime:
       - -usr/include
       - -usr/share/zsh
