@@ -99,11 +99,14 @@ class ClueVideoWidget(QWidget):
         # widget
 
         if PLATFORM == "Intel":
-            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
+            print("Intel CLUE")
+            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec="auto", vo="gpu", loglevel="info", log_handler=self.mpv_log_handler)
         elif PLATFORM == "AMD":
-            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
+            print("AMD CLUE")
+            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec="auto", vo="gpu", loglevel="info", log_handler=self.mpv_log_handler)
         else:
-            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
+            print("VM CLUE")
+            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), vo="x11", loglevel="info", log_handler=self.mpv_log_handler)
 
         # variables
         self.file_name = file_name
@@ -111,6 +114,9 @@ class ClueVideoWidget(QWidget):
         # instance methods
         self.window_configurations()
         self.frontend()
+    
+    def mpv_log_handler(self, level, component, message):
+        print(f"[CLUE VIDEO MPV:{level}] [{component}] {message}")
 
     def window_configurations(self):
         """ this method contains code for the configurations of the window"""
@@ -175,9 +181,9 @@ class ClueAnimatedImageContainer(QWidget):
 
         # widget
         if PLATFORM == "Intel":
-            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
+            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
         elif PLATFORM == "AMD":
-            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
+            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
         else:
             self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
 

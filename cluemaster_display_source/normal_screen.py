@@ -183,11 +183,14 @@ class EndMediaWidget(QWidget):
 
         # widgets
         if PLATFORM == "Intel":
-            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
+            print("ENDMEDIA Intel")
+            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec="auto", vo="gpu")
         elif PLATFORM == "AMD":
-            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
+            print("ENDMEDIA AMD")
+            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec="auto", vo="gpu")
         else:
-            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
+            print("ENDMEDIA VM")
+            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), vo="x11")
 
         # variables
         self.file_name = file_name
@@ -249,15 +252,21 @@ class IntroVideoWindow(QWidget):
 
         # widgets
         if PLATFORM == "Intel":
-            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
+            print("INTRO Intel")
+            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec="auto", vo="gpu", loglevel="info", log_handler=self.mpv_log_handler)
         elif PLATFORM == "AMD":
-            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
+            print("INTRO AMD")
+            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec="auto", vo="gpu", loglevel="info", log_handler=self.mpv_log_handler)
         else:
-            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
+            print("INTRO VM")
+            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"], log_handler=self.mpv_log_handler, loglevel="info")
 
         # instance methods
         self.window_configurations()
         self.frontend()
+    
+    def mpv_log_handler(self, level, component, message):
+        print(f"[INTRO MPV:{level}] [{component}] {message}")
 
     def window_configurations(self):
         """ this method contains the codes for the configurations of the window"""
@@ -316,13 +325,16 @@ class NormalWindow(QMainWindow):
             config = json.load(master_specs)["mpv_configurations"]
 
         if PLATFORM == "Intel":
-            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
+            print("NORMAL Intel")
+            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec="auto", vo="gpu", loglevel="info", log_handler=self.mpv_log_handler)
 
         elif PLATFORM == "AMD":
-            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
+            print("NORMAL AMD")
+            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec="auto", vo="gpu", loglevel="info", log_handler=self.mpv_log_handler)
 
         else:
-            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
+            print("NORMAL VM")
+            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), vo="x11", loglevel="info", log_handler=self.mpv_log_handler)
             #, log_handler = print, loglevel = 'debug'
 
         self.master_image_viewer = QLabel(self)
@@ -367,6 +379,9 @@ class NormalWindow(QMainWindow):
         self.showFullScreen()
         self.window_configurations()
         self.frontend()
+
+    def mpv_log_handler(self, level, component, message):
+        print(f"[NORMAL MPV:{level}] [{component}] {message}")
 
     def restore_thread_status(self):
         """ this methods restores the status of threads"""

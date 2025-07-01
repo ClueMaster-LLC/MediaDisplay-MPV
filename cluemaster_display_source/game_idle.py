@@ -14,6 +14,7 @@ from requests.structures import CaseInsensitiveDict
 # Setting up base directories
 ROOT_DIRECTORY = os.path.dirname(os.path.abspath(__file__))
 MASTER_DIRECTORY = os.path.join(os.environ.get("HOME"), "CluemasterDisplay")
+print("Game IDLE Screen")
 
 # Pulling up platform specifications
 with open(os.path.join(MASTER_DIRECTORY, "assets/application data/platform_specs.json")) as platform_specs_file:
@@ -39,11 +40,14 @@ class GameIdleMPVPlayer(QWidget):
 
         # widget
         if PLATFORM == "Intel":
-            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
+            print("IDLE Intel")
+            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec="auto", vo="auto", loglevel="info", log_handler=self.mpv_log_handler)
         elif PLATFORM == "AMD":
-            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["gpu_context"], gpu_api="opengl")
+            print("IDLE AMD")
+            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec="auto", vo="auto", loglevel="info", log_handler=self.mpv_log_handler)
         else:
-            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
+            print("IDLE VM")
+            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), vo="x11", loglevel="info", log_handler=self.mpv_log_handler)
 
         # variables
         self.file_name = file_name
@@ -51,6 +55,9 @@ class GameIdleMPVPlayer(QWidget):
         # instance methods
         self.window_configurations()
         self.frontend()
+
+    def mpv_log_handler(self, level, component, message):
+        print(f"[IDLE MPV:{level}] [{component}] {message}")
 
     def window_configurations(self):
         """ this method contains code for the configurations of the window"""
