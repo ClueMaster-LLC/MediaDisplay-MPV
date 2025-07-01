@@ -63,32 +63,31 @@ slots:
 
 parts:
   copy-source-code:
+    after: [desktop-qt5]
     plugin: dump
     source: cluemaster_display_source/
     stage-packages:
+      - python3
       - bash
       - ffmpeg
       - libass9
       - alsa-base
       - locales
-      - i965-va-driver            # Intel (legacy)
-      - intel-media-va-driver    # Intel (modern)
-      - mesa-va-drivers          # AMD and Intel
-      - vdpau-driver-all         # NVIDIA + others
-      - libvdpau-va-gl1          # Bridges VAAPI → VDPAU (critical for NVIDIA in Snap)
-      - libva2
-      - libva-drm2
-      - libva-x11-2
-      - libva-wayland2
       - libvdpau1
+      - i965-va-driver
+      - va-driver-all
+      - vdpau-driver-all
+      - mesa-va-drivers
+      - libvdpau-va-gl1
       - libglu1-mesa
+      - samba-libs
+      - git
+      - python3-dbus
+      - qtwayland5
       - mesa-utils
       - libgl1-mesa-dri
-      - qtwayland5
-      - samba-libs
-      - python3-dbus
-      # - python3-pyqt5.qtmultimedia
-      # - libqt5multimedia5-plugins
+      - python3-pyqt5.qtmultimedia
+      - libqt5multimedia5-plugins
       - python3-pyqt5.qtsvg
     stage:
       - -usr/share/alsa/alsa.conf
@@ -113,7 +112,8 @@ parts:
       - -usr/share/alsa/pcm/surround71.conf
       - -usr/lib/x86_64-linux-gnu/libFLAC.so.8.3.0
       - -usr/share/doc/libflac8/changelog.Debian.gz
-      # - -usr/lib/x86_64-linux-gnu/qt5/plugins/mediaservice/libqtmedia_pulse.so
+      - -usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1
+      - -usr/share/doc/libfreetype6/changelog.Debian.gz
       - -README.md
     stage-snaps: [mir-kiosk-x11]
 
@@ -133,7 +133,7 @@ parts:
     python-packages:
       - PyQt5 ~= 5.14.1
       - requests
-      - git+https://github.com/Cluemaster-LLC/python-mpv
+      - git+https://github.com/ClueMaster-LLC/python-mpv
       - simplejson
       - psutil
       - gevent
@@ -185,6 +185,7 @@ parts:
       - liblua5.2-0
       - libuchardet0
       - libxpresent1
+      - libva-wayland2
     meson-parameters:
       - --prefix=/usr
       - -Dlibmpv=true
@@ -234,8 +235,6 @@ parts:
     stage:
       - -usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2
       - -usr/share/doc/libwebp6/changelog.Debian.gz
-      - -usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1
-      - -usr/share/doc/libfreetype6/changelog.Debian.gz
 
   pulseaudio-common:
     source: bin
@@ -378,12 +377,9 @@ parts:
     source: static/
     organize:
       "prepare-launch": "bin/"
-      "audio": "bin/audio"
-      "gpu-debug": "bin/gpu-debug"
-      "sample.mp4": "bin/sample.mp4"
 
 environment:
-  LD_LIBRARY_PATH: "$SNAP/usr/lib/pulseaudio:$SNAP/usr/lib/alsa-lib:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/usr/lib"
+  LD_LIBRARY_PATH: "$SNAP/usr/lib/pulseaudio:$SNAP/usr/lib/alsa-lib"
   PULSE_RUNTIME_PATH: /var/run/pulse
   PULSE_STATE_PATH: $SNAP_COMMON/state
   ALSA_CONFIG_UCM: $SNAP/usr/share/alsa/ucm2
@@ -391,10 +387,6 @@ environment:
   ALSA_CONFIG_PATH: $SNAP/usr/share/alsa/alsa.conf
   ALSA_MIXER_SIMPLE: $SNAP/usr/share/alsa/smixer.conf
   ALSA_PLUGIN_DIR: $SNAP/usr/lib/alsa-lib
-  QT_QPA_PLATFORM_PLUGIN_PATH: $SNAP/usr/lib/x86_64-linux-gnu/qt5/plugins/platforms
-  QT_PLUGIN_PATH: $SNAP/usr/lib/x86_64-linux-gnu/qt5/plugins
-  LIBVA_DRIVER_NAME: auto
-  VDPAU_DRIVER: va_gl
 
 
 layout:
@@ -426,4 +418,3 @@ layout:
     symlink: $SNAP/usr/share/alsa
   /usr/share/applications:
     bind: $SNAP/usr/share/applications
-
