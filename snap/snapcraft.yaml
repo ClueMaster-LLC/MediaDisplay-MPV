@@ -243,6 +243,8 @@ parts:
     stage:
       - -usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2
       - -usr/share/doc/libwebp6/changelog.Debian.gz
+      - -usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1
+      - -usr/share/doc/libfreetype6/changelog.Debian.gz
 
   pulseaudio-common:
     source: bin
