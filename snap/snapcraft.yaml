@@ -123,8 +123,6 @@ parts:
       - -usr/share/alsa/pcm/surround71.conf
       - -usr/lib/x86_64-linux-gnu/libFLAC.so.8.3.0
       - -usr/share/doc/libflac8/changelog.Debian.gz
-      - -usr/lib/x86_64-linux-gnu/libfreetype.so.6.17.1
-      - -usr/share/doc/libfreetype6/changelog.Debian.gz
       - -README.md
     stage-snaps: [mir-kiosk-x11]
 
@@ -246,6 +244,14 @@ parts:
       - -usr/lib/x86_64-linux-gnu/libwebp.so.6.0.2
       - -usr/share/doc/libwebp6/changelog.Debian.gz
 
+  pulseaudio-common:
+    source: bin
+    plugin: dump
+    organize:
+      client-wrapper: bin/client-wrapper
+      config: bin/config
+      pulseaudio: bin/pulseaudio
+
   alsa-lib:
     plugin: autotools
     source: https://github.com/alsa-project/alsa-lib.git
@@ -255,14 +261,6 @@ parts:
       - -usr/share/aclocal
       - -usr/lib/lib*.la
       - -usr/lib/pkgconfig
-
-  pulseaudio-common:
-    source: bin/
-    plugin: dump
-    organize:
-      client-wrapper: bin/client-wrapper
-      config: bin/config
-      pulseaudio: bin/pulseaudio
 
   pulseaudio:
     plugin: meson
@@ -330,26 +328,12 @@ parts:
       - -Daccess_group="root"
     override-build: |
       snapcraftctl build
-      VER=$(cd $SNAPCRAFT_PART_SRC; git tag | sed 's/^v//')
+      VER=$(cd $SNAPCRAFT_PART_SRC; git tag|sed 's/^v//')
       snapcraftctl set-version $VER
       mkdir -p $SNAPCRAFT_PART_INSTALL/usr/share/applications
-      install -m 755 $SNAPCRAFT_PART_BUILD/src/daemon/pulseaudio $SNAPCRAFT_PART_INSTALL/usr/bin/pulseaudio
-
     override-prime: |
       snapcraftctl prime
-
-      # Clean up irrelevant docs
       find usr/share/doc/ -type f,l ! -name copyright | xargs rm -rf
-
-      # Forcefully remove any incorrect PulseAudio libs (just in case)
-      find usr/lib/x86_64-linux-gnu -name 'libpulsecommon-13.99*' -delete || true
-      find usr/lib/x86_64-linux-gnu -name 'libpulse*.so*' -delete || true
-
-      # Ensure custom PulseAudio 15 libs are staged properly
-      mkdir -p $SNAPCRAFT_PRIME/usr/lib/x86_64-linux-gnu
-      cp -av usr/lib/libpulse*.so* usr/lib/pulse* $SNAPCRAFT_PRIME/usr/lib/x86_64-linux-gnu/ || true
-      cp -av usr/lib/pulse-15.0 $SNAPCRAFT_PRIME/usr/lib/ || true
-
     prime:
       - -usr/include
       - -usr/share/zsh
