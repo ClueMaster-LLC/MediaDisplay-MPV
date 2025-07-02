@@ -100,10 +100,10 @@ class ClueVideoWidget(QWidget):
 
         if PLATFORM == "Intel":
             print("Intel CLUE")
-            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec="vaapi-copy", vo=config["vo"], gpu_context=config["context"], loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec="vaapi-copy", vo=config["vo"], gpu_context="x11", loglevel="info", log_handler=self.mpv_log_handler)
         elif PLATFORM == "AMD":
             print("AMD CLUE")
-            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec="vaapi-copy", vo=config["vo"], gpu_context=config["context"], loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec="vaapi-copy", vo=config["vo"], gpu_context="x11", loglevel="info", log_handler=self.mpv_log_handler)
         else:
             print("VM CLUE")
             self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), vo="x11", loglevel="info", log_handler=self.mpv_log_handler)
@@ -181,9 +181,9 @@ class ClueAnimatedImageContainer(QWidget):
 
         # widget
         if PLATFORM == "Intel":
-            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["context"])
+            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11")
         elif PLATFORM == "AMD":
-            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context=config["context"])
+            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11")
         else:
             self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"])
 
