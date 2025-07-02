@@ -184,10 +184,10 @@ class EndMediaWidget(QWidget):
         # widgets
         if PLATFORM == "Intel":
             print("ENDMEDIA Intel")
-            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11")
+            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
         elif PLATFORM == "AMD":
             print("ENDMEDIA AMD")
-            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11")
+            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
         else:
             print("ENDMEDIA VM")
             self.end_media_player = mpv.MPV(wid=str(int(self.winId())), vo="x11")
@@ -253,10 +253,12 @@ class IntroVideoWindow(QWidget):
         # widgets
         if PLATFORM == "Intel":
             print("INTRO Intel")
-            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11", loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_intro_video_player._set_property("gpu-context", "x11")
         elif PLATFORM == "AMD":
             print("INTRO AMD")
-            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11", loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_intro_video_player._set_property("gpu-context", "x11")
         else:
             print("INTRO VM")
             self.master_intro_video_player = mpv.MPV(wid=str(int(self.winId())), vo=config["vo"], log_handler=self.mpv_log_handler, loglevel="info")
@@ -326,12 +328,12 @@ class NormalWindow(QMainWindow):
 
         if PLATFORM == "Intel":
             print("NORMAL Intel")
-            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11", loglevel="info", log_handler=self.mpv_log_handler)
-
+            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_video_player._set_property("gpu-context", "x11")
         elif PLATFORM == "AMD":
             print("NORMAL AMD")
-            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11", loglevel="info", log_handler=self.mpv_log_handler)
-
+            self.master_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_video_player._set_property("gpu-context", "x11")
         else:
             print("NORMAL VM")
             self.master_video_player = mpv.MPV(wid=str(int(self.winId())), vo="x11", loglevel="info", log_handler=self.mpv_log_handler)

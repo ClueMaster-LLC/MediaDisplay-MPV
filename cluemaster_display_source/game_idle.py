@@ -41,10 +41,12 @@ class GameIdleMPVPlayer(QWidget):
         # widget
         if PLATFORM == "Intel":
             print("IDLE Intel")
-            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11", loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_animated_image_player._set_property("gpu-context", "x11")
         elif PLATFORM == "AMD":
             print("IDLE AMD")
-            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11", loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_animated_image_player._set_property("gpu-context", "x11")
         else:
             print("IDLE VM")
             self.master_animated_image_player = mpv.MPV(wid=str(int(self.winId())), vo="x11", loglevel="info", log_handler=self.mpv_log_handler)
