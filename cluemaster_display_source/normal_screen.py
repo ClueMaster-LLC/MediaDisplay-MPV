@@ -184,10 +184,10 @@ class EndMediaWidget(QWidget):
         # widgets
         if PLATFORM == "Intel":
             print("ENDMEDIA Intel")
-            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11egl")
         elif PLATFORM == "AMD":
             print("ENDMEDIA AMD")
-            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"])
+            self.end_media_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11egl")
         else:
             print("ENDMEDIA VM")
             self.end_media_player = mpv.MPV(wid=str(int(self.winId())), vo="x11")

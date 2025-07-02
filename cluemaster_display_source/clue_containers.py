@@ -100,10 +100,10 @@ class ClueVideoWidget(QWidget):
 
         if PLATFORM == "Intel":
             print("Intel CLUE")
-            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec="vaapi", vo=config["vo"], gpu_context="x11egl", loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11egl", loglevel="info", log_handler=self.mpv_log_handler)
         elif PLATFORM == "AMD":
             print("AMD CLUE")
-            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec="vaapi", vo=config["vo"], gpu_context="x11egl", loglevel="info", log_handler=self.mpv_log_handler)
+            self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), hwdec=config["hwdec"], vo=config["vo"], gpu_context="x11egl", loglevel="info", log_handler=self.mpv_log_handler)
         else:
             print("VM CLUE")
             self.master_clue_video_player = mpv.MPV(wid=str(int(self.winId())), vo="x11", loglevel="info", log_handler=self.mpv_log_handler)

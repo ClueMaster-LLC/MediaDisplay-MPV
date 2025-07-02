@@ -58,9 +58,9 @@ class SplashBackend(QThread):
                     if "hypervisor" in file_data:
                         dictionary = {"platform": "VirtualMachine", "mpv_configurations": {"vo": "x11"}}
                     elif "Intel" in file_data:
-                        dictionary = {"platform": "Intel", "mpv_configurations": {"hwdec": "vaapi", "vo": "gpu", "context": "x11"}}
+                        dictionary = {"platform": "Intel", "mpv_configurations": {"hwdec": "vaapi", "vo": "gpu"}}
                     elif "AMD" in file_data:
-                        dictionary = {"platform": "AMD", "mpv_configurations": {"hwdec": "vaapi", "vo": "gpu", "context": "x11"}}
+                        dictionary = {"platform": "AMD", "mpv_configurations": {"hwdec": "vaapi", "vo": "gpu"}}
                     else:
                         dictionary = {"platform": "Unspecified"}
 
