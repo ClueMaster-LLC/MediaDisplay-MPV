@@ -299,6 +299,8 @@ class IntroVideoWindow(QWidget):
 
 
 class NormalWindow(QMainWindow):
+    master_video_started_signal = pyqtSignal()
+    master_video_failed_signal = pyqtSignal()
 
     def __init__(self):
         super(NormalWindow, self).__init__()
@@ -875,6 +877,37 @@ class NormalWindow(QMainWindow):
                 # background or master video is enabled
                 self.master_background_video_container()
 
+                if game_details_response.get("isVideo"):
+                    self.master_video_started = False
+                    self._video_wait_loop = QEventLoop()
+
+                    # timer with 5s timeout
+                    self.master_video_timer = QTimer()
+                    self.master_video_timer.setSingleShot(True)
+                    self.master_video_timer.setInterval(5000)
+                    self.master_video_timer.timeout.connect(lambda: self.master_video_failed_signal.emit())
+
+                    # signals
+                    self.master_video_started_signal.connect(self._video_wait_loop.quit)
+                    self.master_video_failed_signal.connect(self._video_wait_loop.quit)
+
+                    print(">>> Console Output - Waiting for master video to start")
+                    self.master_video_timer.start()
+                    self._video_wait_loop.exec_()
+
+                    # after wait
+                    self.master_video_timer.stop()
+                    if self.master_video_started:
+                        print(">>> Console Output - Master video started successfully.")
+                    else:
+                        print(">>> Console Output - Master video failed. Restarting app...")
+                        
+                        self.close()
+                        import splash_screen
+                        self.splash_screen_window = splash_screen.SplashWindow()
+                        self.splash_screen_window.show()
+                        return 
+
                 if game_details_response["isMusic"] is True:
                     # background or master audio is enabled
                     self.master_background_audio_container()
@@ -904,13 +937,6 @@ class NormalWindow(QMainWindow):
         except simplejson.errors.JSONDecodeError:
             # if the method faces simplejson DecodeError, then pass
             pass
-
-        while self.master_video_started is False and game_details_response["isVideo"] is True:
-            print(">>> Console Output - Master video hasn't started")
-            time.sleep(1)
-            continue
-
-        print(">>> Console Output - Master video started/Skipped")
 
         # classes
         self.external_master_overlay_window = master_overlay.MasterOverlay()
@@ -1071,15 +1097,12 @@ class NormalWindow(QMainWindow):
         """this method tracks the master video player, so that the other windows are called only after the master
             video player has ended"""
         
-        print(event.event_id.value)
         event_id = event.event_id.value
-        if self.master_video_started is False:
-            if event_id == 6:
-                # time.sleep(2)
-                self.is_master_video_playing = True
-                self.master_video_started = True
-        else:
-            pass
+        if not self.master_video_started and event_id == 6:
+            self.is_master_video_playing = True
+            self.master_video_started = True
+            self.master_video_started_signal.emit()
+            print(">>> Master video started successfully.")
 
     def master_background_image_container(self):
         """ this method holds the location of the master or background photo and loads it into a QLabel and
