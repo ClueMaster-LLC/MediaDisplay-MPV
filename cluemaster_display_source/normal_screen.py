@@ -505,7 +505,7 @@ class NormalWindow(QMainWindow):
             else:
                 pass
 
-        ## TODO SAVE THiS CODE for = 3 and only stop the game if the timer is > 0
+        ## TODO SAVE THiS CODE for = 2 and only stop the game if the timer is > 0
         # elif self.external_master_overlay_window.is_countdown_timer_active:
         #     if self.external_master_overlay_window.time_remaining_in_seconds <= 0:
         #         self.master_end_media_container(status="lost")
@@ -1330,6 +1330,11 @@ class NormalWindow(QMainWindow):
 
             if win_loss_text == "won":
                 self.master_end_media_container(status="won")
+
+            # TODO - Adding tempfix until we can fix the cluemaster status codes - robert 07-04-25
+            elif self.external_master_overlay_window.is_countdown_timer_active:
+                if self.external_master_overlay_window.time_remaining_in_seconds > 0:
+                    self.master_end_media_container(status="won")
 
             elif self.external_master_overlay_window.is_countdown_timer_active:
                 if self.external_master_overlay_window.time_remaining_in_seconds <= 0:

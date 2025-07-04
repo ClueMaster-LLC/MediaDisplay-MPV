@@ -414,7 +414,8 @@ class ClueWindow(QWidget):
             text clue or the manual typed message"""
 
         self.is_text_clue_visible = True
-        self.notify_audio_player.play(os.path.join(ROOT_DIRECTORY, "assets/MessageAlert.mp3"))
+        # self.notify_audio_player.play(os.path.join(ROOT_DIRECTORY, "assets/MessageAlert.mp3"))
+        self.notify_audio_player.play(message_alert_audio())
 
         self.external_text_clue_container_window = TextClueContainer(text=text, preferred_height=self.preferred_height)
         self.external_text_clue_container_window.showFullScreen()
@@ -476,7 +477,8 @@ class ClueWindow(QWidget):
             if default.endswith(".gif") or default.endswith(".apng") or default.endswith(".ajpg") or default.endswith(".jpg") or default.endswith(".PNG") or default.endswith(".jpeg") or default.endswith(".png") or default.endswith(".JPG"):
 
                 self.is_animated_image_clue_playing = True
-                self.notify_audio_player.play(os.path.join(ROOT_DIRECTORY, "assets/MessageAlert.mp3"))
+                # self.notify_audio_player.play(os.path.join(ROOT_DIRECTORY, "assets/MessageAlert.mp3"))
+                self.notify_audio_player.play(message_alert_audio())
                 self.external_clue_gif_window = ClueAnimatedImageContainer(file_name=default)
                 self.external_clue_gif_window.setParent(self)
                 self.external_clue_gif_window.showFullScreen()
@@ -485,7 +487,8 @@ class ClueWindow(QWidget):
             elif default.endswith(".svg"):
 
                 self.is_svg_clue_visible = True
-                self.notify_audio_player.play(os.path.join(ROOT_DIRECTORY, "assets/MessageAlert.mp3"))
+                # self.notify_audio_player.play(os.path.join(ROOT_DIRECTORY, "assets/MessageAlert.mp3"))
+                self.notify_audio_player.play(message_alert_audio())
                 self.external_clue_animated_svg_renderer = ClueAnimatedSVGRenderer(file_name=default)
                 self.external_clue_animated_svg_renderer.setParent(self)
                 self.external_clue_animated_svg_renderer.showFullScreen()
@@ -557,3 +560,17 @@ class ClueWindow(QWidget):
 
             else:
                 break
+
+    def message_alert_audio(self):
+        """ This function when called, locates a custom audio alert file if exists and plays, else plays default"""
+        print(""">>> Console output - Locating Custom Audio Alert File if Exists""")
+
+        # default_file = os.path.join(MASTER_DIRECTORY, "assets/" + "MessageAlert.mp3")
+        default_file = os.path.join(ROOT_DIRECTORY, "assets/MessageAlert.mp3")
+        # custom_file = os.path.join(MASTER_DIRECTORY, "assets/custom clue alert media/" + "MessageAlert_custom.mp3")
+        custom_file = os.path.join(ROOT_DIRECTORY, "assets/custom clue alert media/" + "MessageAlert_custom.mp3")
+
+        if os.path.isfile(custom_file):
+            return custom_file
+        else:
+            return default_file

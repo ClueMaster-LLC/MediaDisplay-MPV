@@ -70,6 +70,7 @@ class LoadingBackend(QThread):
                     room_data_fail_end_media_subfolder = os.path.join(MASTER_DIRECTORY, main_folder, "fail end media")
                     room_data_success_end_media_subfolder = os.path.join(MASTER_DIRECTORY, main_folder, "success end media")
                     main_clue_media_file_directory = os.path.join(MASTER_DIRECTORY, "assets", "clue medias")
+                    room_data_custom_clue_alert_media_subfolder = os.path.join(MASTER_DIRECTORY, main_folder, "custom clue alert media")
 
                     response_of_room_info_api = requests.get(room_info_api_url, headers=headers)
                     response_of_room_info_api.raise_for_status()
@@ -85,6 +86,7 @@ class LoadingBackend(QThread):
                     intro_video_file_url = response_of_room_info_api.json()["IntroVideoPath"]
                     end_success_file_url = response_of_room_info_api.json()["SuccessVideoPath"]
                     end_fail_file_url = response_of_room_info_api.json()["FailVideoPath"]
+                    clue_alert_music_url = response_of_room_info_api.json()["TVClueAlertMusicPath"]
 
                     # emit downloading media slot
                     self.downloading_media.emit()
@@ -114,6 +116,9 @@ class LoadingBackend(QThread):
 
                     if os.path.isdir(room_data_fail_end_media_subfolder) is False:
                         os.mkdir(room_data_fail_end_media_subfolder)
+
+                    if os.path.isdir(room_data_custom_clue_alert_media_subfolder) is False:
+                        os.mkdir(room_data_custom_clue_alert_media_subfolder)
 
                     # music directory
                     print(">>> Verifying music")
@@ -328,6 +333,47 @@ class LoadingBackend(QThread):
                                 for existing_file in files_in_fail_end_media_sub_folder:
                                     if existing_file != file_name:
                                         os.remove(os.path.join(room_data_fail_end_media_subfolder, existing_file))
+                                    else:
+                                        pass
+
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+
+                    except IndexError:
+                        pass
+
+                    except requests.exceptions.HTTPError as request_error:
+                        if "401 Client Error" in str(request_error):
+                            self.check_api_token_status()
+                        else:
+                            print(">> Console output - Not a 401 error")
+
+                    # custom clue alert media directory
+                    print(">>> Verifying custom clue alert media")
+                    try:
+                        if clue_alert_music_url is not None:
+                            file_name = clue_alert_music_url.split("/")[5].partition("?X")[0]
+                            file_location = os.path.join(room_data_custom_clue_alert_media_subfolder, 'MessageAlert_custom.mp3')
+
+                            if os.path.isfile(file_location) is False:
+                                shutil.rmtree(room_data_custom_clue_alert_media_subfolder, ignore_errors=True)
+                                os.mkdir(room_data_custom_clue_alert_media_subfolder)
+
+                                file_bytes = requests.get(clue_alert_music_url, headers=headers)
+                                file_bytes.raise_for_status()
+                                with open(os.path.join(room_data_custom_clue_alert_media_subfolder, file_name),
+                                          "wb") as file:
+                                    file.write(file_bytes.content)
+
+                                # emit file downloaded signal
+                                self.media_file_downloaded.emit()
+                            else:
+                                files_in_custom_clue_alert_media_subfolder = os.listdir(
+                                    room_data_custom_clue_alert_media_subfolder)
+                                for existing_file in files_in_custom_clue_alert_media_subfolder:
+                                    if existing_file != file_name:
+                                        os.remove(
+                                            os.path.join(room_data_custom_clue_alert_media_subfolder, existing_file))
                                     else:
                                         pass
 
