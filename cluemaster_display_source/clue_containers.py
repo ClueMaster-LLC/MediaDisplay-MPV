@@ -415,7 +415,7 @@ class ClueWindow(QWidget):
 
         self.is_text_clue_visible = True
         # self.notify_audio_player.play(os.path.join(ROOT_DIRECTORY, "assets/MessageAlert.mp3"))
-        self.notify_audio_player.play(message_alert_audio())
+        self.notify_audio_player.play(self.message_alert_audio())
 
         self.external_text_clue_container_window = TextClueContainer(text=text, preferred_height=self.preferred_height)
         self.external_text_clue_container_window.showFullScreen()
@@ -478,7 +478,7 @@ class ClueWindow(QWidget):
 
                 self.is_animated_image_clue_playing = True
                 # self.notify_audio_player.play(os.path.join(ROOT_DIRECTORY, "assets/MessageAlert.mp3"))
-                self.notify_audio_player.play(message_alert_audio())
+                self.notify_audio_player.play(self.message_alert_audio())
                 self.external_clue_gif_window = ClueAnimatedImageContainer(file_name=default)
                 self.external_clue_gif_window.setParent(self)
                 self.external_clue_gif_window.showFullScreen()
@@ -488,7 +488,7 @@ class ClueWindow(QWidget):
 
                 self.is_svg_clue_visible = True
                 # self.notify_audio_player.play(os.path.join(ROOT_DIRECTORY, "assets/MessageAlert.mp3"))
-                self.notify_audio_player.play(message_alert_audio())
+                self.notify_audio_player.play(self.message_alert_audio())
                 self.external_clue_animated_svg_renderer = ClueAnimatedSVGRenderer(file_name=default)
                 self.external_clue_animated_svg_renderer.setParent(self)
                 self.external_clue_animated_svg_renderer.showFullScreen()
@@ -567,8 +567,10 @@ class ClueWindow(QWidget):
 
         # default_file = os.path.join(MASTER_DIRECTORY, "assets/" + "MessageAlert.mp3")
         default_file = os.path.join(ROOT_DIRECTORY, "assets/MessageAlert.mp3")
+        print(f"message alert: {default_file}")
         # custom_file = os.path.join(MASTER_DIRECTORY, "assets/custom clue alert media/" + "MessageAlert_custom.mp3")
         custom_file = os.path.join(ROOT_DIRECTORY, "assets/custom clue alert media/" + "MessageAlert_custom.mp3")
+        print(f"message alert: {custom_file}")
 
         if os.path.isfile(custom_file):
             return custom_file

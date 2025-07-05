@@ -353,7 +353,7 @@ class LoadingBackend(QThread):
                     try:
                         if clue_alert_music_url is not None:
                             file_name = clue_alert_music_url.split("/")[5].partition("?X")[0]
-                            file_location = os.path.join(room_data_custom_clue_alert_media_subfolder, 'MessageAlert_custom.mp3')
+                            file_location = os.path.join(room_data_custom_clue_alert_media_subfolder, "MessageAlert_custom.mp3")
 
                             if os.path.isfile(file_location) is False:
                                 shutil.rmtree(room_data_custom_clue_alert_media_subfolder, ignore_errors=True)
@@ -361,7 +361,7 @@ class LoadingBackend(QThread):
 
                                 file_bytes = requests.get(clue_alert_music_url, headers=headers)
                                 file_bytes.raise_for_status()
-                                with open(os.path.join(room_data_custom_clue_alert_media_subfolder, file_name),
+                                with open(os.path.join(room_data_custom_clue_alert_media_subfolder, "MessageAlert_custom.mp3"),
                                           "wb") as file:
                                     file.write(file_bytes.content)
 
