@@ -1328,19 +1328,18 @@ class NormalWindow(QMainWindow):
             game_details_response.raise_for_status()
             win_loss_text = game_details_response.json()["winLossText"]
 
+            print(f"WIN/LOS API RESPONSE: {win_loss_text}")
+            print(f"GAME OVER TIME REMAINING: {self.external_master_overlay_window.time_remaining_in_seconds}")
+
             if win_loss_text == "won":
                 self.master_end_media_container(status="won")
 
             # TODO - Adding temp fix until we can fix the cluemaster status codes - robert 07-04-25
-            elif self.external_master_overlay_window.is_countdown_timer_active:
-                if self.external_master_overlay_window.time_remaining_in_seconds > 0:
-                    self.master_end_media_container(status="won")
+            elif self.external_master_overlay_window.time_remaining_in_seconds > 0:
+                self.master_end_media_container(status="won")
 
-            elif self.external_master_overlay_window.is_countdown_timer_active:
-                if self.external_master_overlay_window.time_remaining_in_seconds <= 0:
-                    self.master_end_media_container(status="lost")
-                else:
-                    pass
+            elif self.external_master_overlay_window.time_remaining_in_seconds <= 0:
+                self.master_end_media_container(status="lost")
 
             else:
                 pass
