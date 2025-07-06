@@ -353,17 +353,19 @@ class LoadingBackend(QThread):
                     try:
                         if clue_alert_music_url is not None:
                             file_name = clue_alert_music_url.split("/")[5].partition("?X")[0]
-                            file_location = os.path.join(room_data_custom_clue_alert_media_subfolder, "MessageAlert_custom.mp3")
+                            file_location = os.path.join(room_data_custom_clue_alert_media_subfolder, file_name)
 
-                            if os.path.isfile(file_location) is False:
+                            if not os.path.isfile(file_location):
+                                print(f"CUSTOM ALERT AUDIO FILE DOES NOT EXIST: {file_location}")
                                 shutil.rmtree(room_data_custom_clue_alert_media_subfolder, ignore_errors=True)
                                 os.mkdir(room_data_custom_clue_alert_media_subfolder)
 
                                 file_bytes = requests.get(clue_alert_music_url, headers=headers)
                                 file_bytes.raise_for_status()
-                                with open(os.path.join(room_data_custom_clue_alert_media_subfolder, "MessageAlert_custom.mp3"),
+                                with open(os.path.join(room_data_custom_clue_alert_media_subfolder, file_name),
                                           "wb") as file:
                                     file.write(file_bytes.content)
+                                    print(f"SAVING CUSTOM ALERT AUDIO FILE : {file_location}")
 
                                 # emit file downloaded signal
                                 self.media_file_downloaded.emit()
@@ -379,6 +381,14 @@ class LoadingBackend(QThread):
 
                                 # emit file downloaded signal
                                 self.media_file_downloaded.emit()
+                        else:
+                            files_in_custom_clue_alert_media_subfolder = os.listdir(
+                                room_data_custom_clue_alert_media_subfolder)
+                            for existing_file in files_in_custom_clue_alert_media_subfolder:
+                                os.remove(os.path.join(room_data_custom_clue_alert_media_subfolder, existing_file))
+
+                            # emit file downloaded signal
+                            self.media_file_downloaded.emit()
 
                     except IndexError:
                         pass
@@ -467,7 +477,8 @@ class LoadingBackend(QThread):
                             "Time Override": response_of_room_info_api.json()["TimeOverride"],
                             "IsPhoto": response_of_room_info_api.json()["IsPhoto"],
                             "IsFailVideo": response_of_room_info_api.json()["IsFailVideo"],
-                            "IsSuccessVideo": response_of_room_info_api.json()["IsSuccessVideo"]}
+                            "IsSuccessVideo": response_of_room_info_api.json()["IsSuccessVideo"],
+                            "IsTVClueAlert": response_of_room_info_api.json()["IsTVClueAlert"]}
 
                     with open(os.path.join(MASTER_DIRECTORY, "assets/application data", "device configurations.json"), "w") as file:
                         json.dump(data, file)

@@ -563,16 +563,22 @@ class ClueWindow(QWidget):
 
     def message_alert_audio(self):
         """ This function when called, locates a custom audio alert file if exists and plays, else plays default"""
-        print(""">>> Console output - Locating Custom Audio Alert File if Exists""")
+        # print(">>> Console output - Locating Custom Audio Alert File if Exists")
 
-        # default_file = os.path.join(MASTER_DIRECTORY, "assets/" + "MessageAlert.mp3")
+        custom_file_location = os.path.join(MASTER_DIRECTORY, "assets/room data/custom clue alert media/")
         default_file = os.path.join(ROOT_DIRECTORY, "assets/MessageAlert.mp3")
-        print(f"message alert: {default_file}")
-        # custom_file = os.path.join(MASTER_DIRECTORY, "assets/custom clue alert media/" + "MessageAlert_custom.mp3")
-        custom_file = os.path.join(ROOT_DIRECTORY, "assets/custom clue alert media/" + "MessageAlert_custom.mp3")
-        print(f"message alert: {custom_file}")
 
-        if os.path.isfile(custom_file):
+        # Look for .mp3 files only
+        mp3_files = [f for f in os.listdir(custom_file_location)
+                     if f.lower().endswith(".mp3") and os.path.isfile(os.path.join(custom_file_location, f))]
+        if len(mp3_files) == 1:
+            found_file = mp3_files[0]
+            custom_file = os.path.join(custom_file_location, found_file)
+            # print(f">>> Console output - Custom Alert Audio Found file: {found_file}")
+            print(f">>> Console output - Custom Alert Audio File Full path: {custom_file}")
             return custom_file
+        elif len(mp3_files) > 1:
+            print(f">>> Console output - Expected exactly one file in the folder, but found: " + str(len(mp3_files)))
+            return default_file
         else:
             return default_file
