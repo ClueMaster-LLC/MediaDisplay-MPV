@@ -1318,7 +1318,7 @@ class NormalWindow(QMainWindow):
             game_details_response.raise_for_status()
             win_loss_text = game_details_response.json()["winLossText"]
 
-            print(f"WIN/LOS API RESPONSE: {win_loss_text}")
+            print(f"WIN/LOSS API RESPONSE: {win_loss_text}")
             print(f"GAME OVER TIME REMAINING: {self.external_master_overlay_window.time_remaining_in_seconds}")
 
             if win_loss_text == "won":
