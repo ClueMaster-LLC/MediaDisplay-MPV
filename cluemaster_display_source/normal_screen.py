@@ -1324,6 +1324,9 @@ class NormalWindow(QMainWindow):
             if win_loss_text == "won":
                 self.master_end_media_container(status="won")
 
+            elif win_loss_text == "lost":
+                self.master_end_media_container(status="lost")
+
             # # TODO - Adding temp fix until we can fix the cluemaster status codes - robert 07-04-25
             # elif self.external_master_overlay_window.time_remaining_in_seconds > 0:
             #     self.master_end_media_container(status="won")
