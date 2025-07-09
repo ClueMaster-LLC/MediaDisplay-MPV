@@ -621,6 +621,40 @@ class NormalWindow(QMainWindow):
             else:
                 pass
 
+        elif game_status == 5:
+            """ if status is 2 then the game is over because the timer ran out to zero.
+            # don't do anything becaseu we want the tv timer to run down to zero due to the event the timer on the
+            # website hits zero first and the game stats stops a second too soon leaving 1 second on the tv. """
+            pass
+
+        elif game_status == 6:
+            """ if status is 6 then stop game due to a WIN. All the puzzles are checked and the tv should play the 
+            WIN video if configured. """
+
+            if self.is_game_in_progress is True:
+                if self.stop_game_response_received is False:
+                    self.stop_game_response_received = True
+                    self.is_game_in_progress = False
+                    self.stop_game()
+                else:
+                    pass
+            else:
+                pass
+
+        if game_status == 7:
+            # if status is 1 then start or resume game
+
+            self.resume_game()
+
+            if self.is_game_in_progress is False:
+                self.is_game_in_progress = True
+                self.game_details_thread.app_is_idle = False
+                self.download_files_request.stop()
+                self.load_intro_video()
+
+            else:
+                pass
+
         else:
             pass
 
@@ -1323,13 +1357,6 @@ class NormalWindow(QMainWindow):
 
             if win_loss_text == "won":
                 self.master_end_media_container(status="won")
-
-            elif win_loss_text == "lost":
-                self.master_end_media_container(status="lost")
-
-            # # TODO - Adding temp fix until we can fix the cluemaster status codes - robert 07-04-25
-            # elif self.external_master_overlay_window.time_remaining_in_seconds > 0:
-            #     self.master_end_media_container(status="won")
 
             elif self.external_master_overlay_window.time_remaining_in_seconds <= 0:
                 self.master_end_media_container(status="lost")
