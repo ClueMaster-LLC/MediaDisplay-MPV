@@ -642,7 +642,7 @@ class NormalWindow(QMainWindow):
                 pass
 
         if game_status == 7:
-            # if status is 1 then start or resume game
+            # if status is 7 then start or resume game and play intro video.
 
             self.resume_game()
 
