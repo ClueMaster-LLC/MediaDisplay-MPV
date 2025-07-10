@@ -111,7 +111,7 @@ class ClueContainer(QWidget):
         for icons in self.clue_icons_available[::-1]:
             if clues_used != clues_marked_used:
 
-                icons.setOpacity(0.4, self.clue_icon_unavailable_item)
+                icons.setOpacity(0.1, self.clue_icon_unavailable_item)
                 clues_marked_used += 1
 
             else:
