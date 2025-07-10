@@ -252,7 +252,7 @@ class ShutdownRestartRequest(QThread):
 
             finally:
                 # and finally
-                time.sleep(15)
+                time.sleep(10)
 
     def stop(self):
         """this method when called updates the thread running status to False and in the next loop when the condition
@@ -507,7 +507,7 @@ class GetGameClue(QThread):
 
             finally:
                 # and finally
-                time.sleep(2)
+                time.sleep(1)
 
     def stop(self):
         """this method when called updates the thread running status to False and in the next loop when the condition
@@ -575,6 +575,7 @@ class GetTimerRequest(QThread):
                 device_key = response.json()["DeviceKey"]
                 requests.post(POST_DEVICE_API.format(device_unique_code=device_key, deviceRequestId=request_id), headers=headers).raise_for_status()
 
+                print(f">>> Console output API get_timer_request_api: {response.json()}")
                 self.updateTimer.emit()
 
             except requests.exceptions.ConnectionError:
@@ -712,7 +713,7 @@ class DownloadConfigs(QThread):
 
             finally:
                 # and finally
-                time.sleep(15)
+                time.sleep(10)
 
     def stop(self):
         """this method when called updates the thread running status to False and in the next loop when the condition

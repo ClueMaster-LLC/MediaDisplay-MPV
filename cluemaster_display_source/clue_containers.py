@@ -543,9 +543,10 @@ class ClueWindow(QWidget):
 
         while True:
             try:
-                time.sleep(1)
+                # time.sleep(1)
                 requests.post(post_game_status_api.format(game_ids=game_id, clue_ids=clue_id), headers=self.headers).raise_for_status()
-                time.sleep(1)
+                print(">>> Console output - POST - Send clue status response to notify api clue is finished playing")
+                # time.sleep(1)
 
             except requests.exceptions.ConnectionError:
                 # if the post response inside the try block faces connection error while making the response then
