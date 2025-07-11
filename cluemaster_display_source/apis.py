@@ -1,5 +1,5 @@
 
-api_initial = "https://dev-deviceapi.cluemaster.io"
+api_initial = "https://deviceapi.cluemaster.io"
 # dev-deviceapi_initial = "https://dev-deviceapi.cluemaster.io"
 
 # master apis
