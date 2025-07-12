@@ -189,6 +189,41 @@ class SplashBackend(QThread):
                 json.dump(json_object, file)
 
             threads.UNIQUE_CODE = json_object
+            # self.register_device.emit(api_key)
+
+            # Get IP Address to display on Screen and report back to API
+            ipv4_address = self.fetch_device_ipv4_address()
+            threads.UNIQUE_CODE["IPv4 Address"] = ipv4_address
+
+            # Try to post the Device IP and SNAP Version back to the API to store on Device Master Table
+            try:
+                headers = CaseInsensitiveDict()
+                headers["Authorization"] = f"Basic {json_object}:{api_key}"
+                post_device_details_api_url = POST_DEVICE_DETAILS_UPDATE_API.format(device_id=json_object,
+                                                                                    device_ip=ipv4_address,
+                                                                                    snap_version=snap_version)
+                response = requests.post(url=post_device_details_api_url, headers=headers)
+                if response.status_code != 200:
+                    print(
+                        f">>>> splash_screen - ERROR SENDING DEVICE DETAILS: {response.status_code} / {response.content} / {response.json()}")
+
+                else:
+                    print(
+                        f">>> splash_screen - {json_object} - Device Details Updated: {time.ctime()} : {post_device_details_api_url}")
+
+            except requests.exceptions.HTTPError as request_error:
+                if "401 Client Error" in str(request_error):
+                    time.sleep(1)
+                    pass
+                else:
+                    print(f">>> splash_screen - {json_object} - ERROR - HTTP: {request_error}")
+                    time.sleep(1)
+                    pass
+            except Exception as other_errors:
+                print(f">>> splash_screen - {json_object} - ERROR - API: {other_errors}")
+                time.sleep(1)
+                pass
+
             self.register_device.emit(api_key)
 
     def generate_secure_api_key(self, device_id):
