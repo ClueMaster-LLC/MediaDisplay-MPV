@@ -39,9 +39,9 @@ class AuthenticationBackend(QThread):
             codes for every work, the thread does """
 
         try:
-            json_object = threads.UNIQUE_CODE
+            # json_object = threads.UNIQUE_CODE
 
-            device_unique_code = json_object["Device Unique Code"]
+            device_unique_code = threads.UNIQUE_CODE["Device Unique Code"]
             api_key = self.unverified_api_token
 
             room_info_api_url = ROOM_INFO_API.format(device_unique_code=device_unique_code)
@@ -71,7 +71,7 @@ class AuthenticationBackend(QThread):
                         break
 
                 while not requests.get(device_request_url, headers=headers).content.decode("utf-8") == "No record found":
-                    # if there is a response then we assume that the device is being registered and proceed further and
+                    # if there is a response, then we assume that the device is being registered and proceed further and
                     # download the media files and the room configurations
 
                     device_request_api = requests.get(device_request_url, headers=headers)
@@ -107,6 +107,8 @@ class AuthenticationBackend(QThread):
                             room_data_fail_end_media_subfolder = os.path.join(MASTER_DIRECTORY, main_folder, "fail end media")
                             room_data_success_end_media_subfolder = os.path.join(MASTER_DIRECTORY, main_folder, "success end media")
                             main_clue_media_file_directory = os.path.join(MASTER_DIRECTORY, "assets", "clue medias")
+                            room_data_custom_clue_alert_media_subfolder = os.path.join(MASTER_DIRECTORY, main_folder,
+                                                                                       "custom clue alert media")
 
                             if os.path.isdir(main_room_data_directory):
                                 shutil.rmtree(main_room_data_directory, ignore_errors=True)
@@ -122,6 +124,7 @@ class AuthenticationBackend(QThread):
                             os.mkdir(room_data_intro_media_subfolder)
                             os.mkdir(room_data_fail_end_media_subfolder)
                             os.mkdir(room_data_success_end_media_subfolder)
+                            os.mkdir(room_data_custom_clue_alert_media_subfolder)
 
                             response_of_room_info_api = requests.get(room_info_api_url, headers=headers)
                             response_of_room_info_api.raise_for_status()
@@ -137,6 +140,7 @@ class AuthenticationBackend(QThread):
                             intro_video_file_url = json_response_of_room_info_api["IntroVideoPath"]
                             end_success_file_url = json_response_of_room_info_api["SuccessVideoPath"]
                             end_fail_file_url = json_response_of_room_info_api["FailVideoPath"]
+                            clue_alert_music_url = response_of_room_info_api.json()["TVClueAlertMusicPath"]
 
                             # emit downloading media slot
                             self.downloading_media.emit()
@@ -293,8 +297,34 @@ class AuthenticationBackend(QThread):
                                 else:
                                     print(">> Console output - Not a 401 error")
 
+                            # clue custom audio media directory
+                            print(">>> Verifying clue custom audio media")
+                            files_in_clue_custom_audio_media_sub_folder = os.listdir(room_data_custom_clue_alert_media_subfolder)
+                            for existing_file in files_in_clue_custom_audio_media_sub_folder:
+                                os.remove(os.path.join(room_data_custom_clue_alert_media_subfolder, existing_file))
+                            try:
+                                if clue_alert_music_url is not None:
+                                    clue_custom_audio_file = requests.get(clue_alert_music_url, headers=headers)
+                                    clue_custom_audio_file.raise_for_status()
+                                    file_name = clue_alert_music_url.split("/")[5].partition("?X")[0]
+                                    with open(os.path.join(room_data_custom_clue_alert_media_subfolder, file_name),
+                                              "wb") as file:
+                                        file.write(clue_custom_audio_file.content)
+
+                                    # emit file downloaded signal
+                                    self.media_file_downloaded.emit()
+
+                            except IndexError:
+                                pass
+
+                            except requests.exceptions.HTTPError as request_error:
+                                if "401 Client Error" in str(request_error):
+                                    self.check_api_token_status()
+                                else:
+                                    print(">> Console output - Not a 401 error")
+
                             # clue medias
-                            print(">>> Verifying clue medias")
+                            print(">>> Verifying clue media")
                             files_in_clue_media_sub_folder = os.listdir(main_clue_media_file_directory)
                             for existing_file in files_in_clue_media_sub_folder:
                                 os.remove(os.path.join(main_clue_media_file_directory, existing_file))
@@ -351,11 +381,16 @@ class AuthenticationBackend(QThread):
                                 "Clue Position Vertical": json_data_of_configuration_files["CluePositionVertical"],
                                 "IsTimeLimit": json_data_of_configuration_files["IsTimeLimit"],
                                 "Time Limit": json_data_of_configuration_files["TimeLimit"],
-                                "Time Override": json_data_of_configuration_files["TimeOverride"]}
+                                "Time Override": json_data_of_configuration_files["TimeOverride"],
+                                "IsPhoto": json_data_of_configuration_files["IsPhoto"],
+                                "IsFailVideo": json_data_of_configuration_files["IsFailVideo"],
+                                "IsSuccessVideo": json_data_of_configuration_files["IsSuccessVideo"],
+                                "IsTVClueAlert": json_data_of_configuration_files["IsTVClueAlert"]}
 
                         with open(os.path.join(MASTER_DIRECTORY, "assets/application data", "device configurations.json"), "w") as file:
                             json.dump(data, file)
 
+                    self.update_device_details()
                     self.proceed.emit(True)
                     self.stop()
 
@@ -378,6 +413,61 @@ class AuthenticationBackend(QThread):
                 print(">> Console output - Not a 401 error Master Except Block")
                 print(request_error)
 
+    def update_device_details(self):
+            # Get IP Address to display on Screen and report back to API
+            ipv4_address = self.fetch_device_ipv4_address()
+            threads.UNIQUE_CODE["IPv4 Address"] = ipv4_address
+            api_key = threads.UNIQUE_CODE["apiKey"]
+            snap_version = os.environ.get("SNAP_VERSION")
+            device_unique_code = threads.UNIQUE_CODE["Device Unique Code"]
+
+            # Try to post the Device IP and SNAP Version back to the API to store on Device Master Table
+            try:
+                headers = CaseInsensitiveDict()
+                headers["Authorization"] = f"Basic {device_unique_code}:{api_key}"
+                post_device_details_api_url = POST_DEVICE_DETAILS_UPDATE_API.format(device_id=device_unique_code,
+                                                                                    device_ip=ipv4_address,
+                                                                                    snap_version=snap_version)
+                response = requests.post(url=post_device_details_api_url, headers=headers)
+                if response.status_code != 200:
+                    print(
+                        f">>>> splash_screen - ERROR SENDING DEVICE DETAILS: {response.status_code} / "
+                        f"{response.content} / {response.json()}")
+
+                else:
+                    print(
+                        f">>> splash_screen - {device_unique_code} - Device Details Updated: {time.ctime()} : "
+                        f"{post_device_details_api_url}")
+
+            except requests.exceptions.HTTPError as request_error:
+                if "401 Client Error" in str(request_error):
+                    time.sleep(1)
+                    pass
+                else:
+                    print(f">>> splash_screen - {device_unique_code} - ERROR - HTTP: {request_error}")
+                    time.sleep(1)
+                    pass
+            except Exception as other_errors:
+                print(f">>> splash_screen - {device_unique_code} - ERROR - API: {other_errors}")
+                time.sleep(1)
+                pass
+
+    @staticmethod
+    def fetch_device_ipv4_address():
+        i_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        ip_address = "127.0.0.1"
+
+        try:
+            i_socket.connect(('10.255.255.255', 1))
+            ip_address = i_socket.getsockname()[0]
+        except Exception:
+            ip_address = "127.0.0.1"
+        finally:
+            i_socket.close()
+            print(">>> Console output - Gateway IP Address: " + ip_address)
+            threads.UNIQUE_CODE["IPv4 Address"] = ip_address
+        return ip_address
+
     def check_api_token_status(self):
         if self.resetting_game is False:
             print("401 Client Error - Device Removed or Not Registered")
@@ -393,7 +483,6 @@ class AuthenticationBackend(QThread):
 
         self.is_killed = True
         self.run()
-
 
 class AuthenticationWindow(QWidget):
 

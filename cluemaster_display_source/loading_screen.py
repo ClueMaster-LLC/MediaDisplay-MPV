@@ -1,5 +1,6 @@
 import os
 import random
+import socket
 import time
 import requests
 import json
@@ -399,8 +400,8 @@ class LoadingBackend(QThread):
                         else:
                             print(">> Console output - Not a 401 error")
 
-                    # downloading clue medias
-                    print(">>> Verifying clue medias")
+                    # downloading clue media
+                    print(">>> Verifying clue media")
                     index = 0
                     while index <= len(response_of_room_info_api.json()["ClueMediaFiles"]) - 1:
                         url = response_of_room_info_api.json()["ClueMediaFiles"][index]["FilePath"]
@@ -483,6 +484,7 @@ class LoadingBackend(QThread):
                     with open(os.path.join(MASTER_DIRECTORY, "assets/application data", "device configurations.json"), "w") as file:
                         json.dump(data, file)
 
+                    self.update_device_details()
                     self.proceed.emit(True)
                     self.stop()
 
@@ -507,6 +509,42 @@ class LoadingBackend(QThread):
             else:
                 print(">> Console output - Not a 401 error")
 
+    def update_device_details(self):
+            # Get IP Address to display on Screen and report back to API
+            ipv4_address = self.fetch_device_ipv4_address()
+            api_key = threads.UNIQUE_CODE["apiKey"]
+            snap_version = os.environ.get("SNAP_VERSION")
+            device_unique_code = threads.UNIQUE_CODE["Device Unique Code"]
+
+            # Try to post the Device IP and SNAP Version back to the API to store on Device Master Table
+            try:
+                headers = CaseInsensitiveDict()
+                headers["Authorization"] = f"Basic {device_unique_code}:{api_key}"
+                post_device_details_api_url = POST_DEVICE_DETAILS_UPDATE_API.format(device_id=device_unique_code,
+                                                                                    device_ip=ipv4_address,
+                                                                                    snap_version=snap_version)
+                response = requests.post(url=post_device_details_api_url, headers=headers)
+                if response.status_code != 200:
+                    print(f">>>> splash_screen - ERROR SENDING DEVICE DETAILS: {response.status_code} / "
+                          f"{response.content} / {response.json()}")
+
+                else:
+                    print(f">>> splash_screen - {device_unique_code} - Device Details Updated: {time.ctime()} : "
+                          f"{post_device_details_api_url}")
+
+            except requests.exceptions.HTTPError as request_error:
+                if "401 Client Error" in str(request_error):
+                    time.sleep(1)
+                    pass
+                else:
+                    print(f">>> splash_screen - {device_unique_code} - ERROR - HTTP: {request_error}")
+                    time.sleep(1)
+                    pass
+            except Exception as other_errors:
+                print(f">>> splash_screen - {device_unique_code} - ERROR - API: {other_errors}")
+                time.sleep(1)
+                pass
+
     def check_api_token_status(self):
         if self.registering_device is False:
             print("401 Client Error - Device Removed or Not Registered")
@@ -522,6 +560,22 @@ class LoadingBackend(QThread):
 
         self.is_killed = True
         self.run()
+
+    @staticmethod
+    def fetch_device_ipv4_address():
+        i_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        ip_address = "127.0.0.1"
+
+        try:
+            i_socket.connect(('10.255.255.255', 1))
+            ip_address = i_socket.getsockname()[0]
+        except Exception:
+            ip_address = "127.0.0.1"
+        finally:
+            i_socket.close()
+            print(">>> Console output - Gateway IP Address: " + ip_address)
+            threads.UNIQUE_CODE["IPv4 Address"] = ip_address
+        return ip_address
 
 
 class LoadingScreen(QWidget):
