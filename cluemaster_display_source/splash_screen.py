@@ -4,7 +4,6 @@ import uuid
 import re
 import random
 import time
-import subprocess
 import requests
 import socket
 import threads
@@ -35,17 +34,17 @@ class SplashBackend(QThread):
         self.platform_specs_file = os.path.join(MASTER_DIRECTORY, "assets/application data/platform_specs.json")
 
     def run(self):
-        """ this is an autorun method which is triggered as soon as the thread is started, this method holds all the
+        """ this is an autorun method that is triggered as soon as the thread is started, this method holds all the
             codes for every work, the thread does"""
 
         time.sleep(2)
-        print(">>> Console output - Splash Screen Backend")
+        print(">>> splash_screen - Splash Screen Backend Starting")
 
         if os.path.isdir(os.path.join(MASTER_DIRECTORY, "assets/application data")) is False:
-            # if there is no directory named application data inside the assets directory then create one
+            # if there is no directory named application data inside the assets directory, then create one
             os.makedirs(os.path.join(MASTER_DIRECTORY, "assets/application data"))
         else:
-            # if the directory already exists then pass
+            # if the directory already exists, then pass
             pass
 
         if os.path.isfile(self.platform_specs_file):
@@ -71,7 +70,7 @@ class SplashBackend(QThread):
                 print(f">>> Error trying to create platform info file: {error}")
 
         if os.path.isfile(self.unique_code_file):
-            # checking if unique code.json file exists in the application data directory, if yes then get the unique
+            # checking if the unique code.json file exists in the application data directory, if yes then get the unique
             # device id and check if there are any device files for it
 
             with open(self.unique_code_file) as unique_code_json_file:
@@ -83,9 +82,6 @@ class SplashBackend(QThread):
             device_unique_code = threads.UNIQUE_CODE["Device Unique Code"]
             api_key = threads.UNIQUE_CODE["apiKey"]
             device_files_url = DEVICES_FILES_API.format(device_unique_code=device_unique_code)
-
-            ipv4_address = self.fetch_device_ipv4_address()
-            threads.UNIQUE_CODE["IPv4 Address"] = ipv4_address
 
             while self.is_killed is False:
                 try:
@@ -113,6 +109,38 @@ class SplashBackend(QThread):
 
                 else:
                     break
+
+                finally:
+                    # Get IP Address to display on Screen and report back to API
+                    ipv4_address = self.fetch_device_ipv4_address()
+                    threads.UNIQUE_CODE["IPv4 Address"] = ipv4_address
+
+                    # Try to post the Device IP and SNAP Version back to the API to store on Device Master Table
+                    try:
+                        headers = CaseInsensitiveDict()
+                        headers["Authorization"] = f"Basic {device_unique_code}:{api_key}"
+                        post_device_details_api_url = POST_DEVICE_DETAILS_UPDATE_API.format(device_id=device_unique_code,
+                                                                                            device_ip=ipv4_address,
+                                                                                            snap_version=snap_version)
+                        response = requests.post(url=post_device_details_api_url, headers=headers)
+                        if response.status_code != 200:
+                            print(f">>>> splash_screen - ERROR SENDING DEVICE DETAILS: {response.status_code} / {response.content} / {response.json()}")
+
+                        else:
+                            print(f">>> splash_screen - {device_unique_code} - Device Details Updated: {time.ctime()} : {post_device_details_api_url}")
+
+                    except requests.exceptions.HTTPError as request_error:
+                        if "401 Client Error" in str(request_error):
+                            time.sleep(1)
+                            pass
+                        else:
+                            print(f">>> splash_screen - {device_unique_code} - ERROR - HTTP: {request_error}")
+                            time.sleep(1)
+                            pass
+                    except Exception as other_errors:
+                        print(f">>> splash_screen - {device_unique_code} - ERROR - API: {other_errors}")
+                        time.sleep(1)
+                        pass
 
         else:
             # if there is no unique code.json file then generate an unique device id and secure api key and then save

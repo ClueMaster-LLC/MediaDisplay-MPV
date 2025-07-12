@@ -1,5 +1,5 @@
 
-api_initial = "https://deviceapi.cluemaster.io"
+api_initial = "https://dev-deviceapi.cluemaster.io"
 # dev-deviceapi_initial = "https://dev-deviceapi.cluemaster.io"
 
 # master apis
@@ -23,3 +23,4 @@ GET_DEVICE_EXIST = api_initial + "/api/Device/GetDeviceExist/{unique_code}"
 POST_GAME_CLUE_STATUS = api_initial + "/api/Device/PostGameClueStatus/{game_ids}/{clue_ids}"
 POST_GAME_CLUE = api_initial + "/api/Device/PostGameClue/{gameId}/{gameClueId}"
 POST_DEVICE_API = api_initial + "/api/Device/{device_unique_code}/{deviceRequestId}"
+POST_DEVICE_DETAILS_UPDATE_API = api_initial + "/api/Device/PostDeviceDetailsUpdate/{device_id}/{device_ip}/{snap_version}"
